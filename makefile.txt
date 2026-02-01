@@ -1,0 +1,7 @@
+setup: docker compose up -d && sleep 15 && cd frontend && npx prisma migrate deploy && npx prisma db seed
+dev: docker compose up
+test: docker compose up -d && cd backend && pytest --cov && cd ../frontend && npm test
+build: docker compose build
+start: docker compose up -d
+seed: cd frontend && npx prisma db seed
+lint: cd backend && black . && cd ../frontend && npm run lint
