@@ -1,0 +1,45 @@
+{
+  "name": "benchbook-ai-infra",
+  "version": "1.0.0",
+  "description": "BenchBook AI Infrastructure - SST v3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sst dev",
+    "deploy": "sst deploy --stage production",
+    "deploy:dev": "sst deploy --stage dev",
+    "remove": "sst remove",
+    "console": "sst console",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
+    "@aws-sdk/s3-request-presigner": "^3.540.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "sst": "^3.0.0",
+    "typescript": "^5.4.3",
+    "vitest": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "sst": {
+    "name": "benchbook-ai",
+    "region": "us-east-1"
+  },
+  "keywords": [
+    "benchbook",
+    "legal-ai",
+    "rag",
+    "juvenile-court",
+    "tennessee",
+    "sst",
+    "serverless"
+  ],
+  "author": "Velocity Venture / BenchBook AI Team",
+  "license": "UNLICENSED"
+}
