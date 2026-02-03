@@ -2,26 +2,94 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 38 92% 50%;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-600;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Animation for loading dots */
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+/* Prose styling for AI responses */
+.prose-invert {
+  --tw-prose-body: theme(colors.slate.200);
+  --tw-prose-headings: theme(colors.white);
+  --tw-prose-lead: theme(colors.slate.300);
+  --tw-prose-links: theme(colors.amber.400);
+  --tw-prose-bold: theme(colors.white);
+  --tw-prose-counters: theme(colors.slate.400);
+  --tw-prose-bullets: theme(colors.slate.400);
+  --tw-prose-hr: theme(colors.slate.700);
+  --tw-prose-quotes: theme(colors.slate.100);
+  --tw-prose-quote-borders: theme(colors.slate.700);
+  --tw-prose-captions: theme(colors.slate.400);
+  --tw-prose-code: theme(colors.amber.400);
+  --tw-prose-pre-code: theme(colors.slate.200);
+  --tw-prose-pre-bg: theme(colors.slate.800);
+  --tw-prose-th-borders: theme(colors.slate.600);
+  --tw-prose-td-borders: theme(colors.slate.700);
 }
