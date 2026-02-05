@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 // Types
 interface Message {
   role: "user" | "assistant";
   content: string;
-}
-
-interface ChatRequest {
-  messages: Message[];
-  query: string;
 }
 
 interface Source {
@@ -23,11 +19,36 @@ interface ChatResponse {
   sources: Source[];
 }
 
+// Validation limits
+const MAX_QUERY_LENGTH = 2000;
+const MAX_MESSAGES = 20;
+const MAX_MESSAGE_LENGTH = 4000;
+
+// Simple in-memory rate limiter (per-user, 20 requests per minute)
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 20;
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(userId);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+
+  entry.count++;
+  return true;
+}
+
 // Environment variables
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _PINECONE_INDEX = process.env.PINECONE_INDEX || "benchbook-legal";
 const PINECONE_HOST = process.env.PINECONE_HOST;
 
 // System prompt for legal research
@@ -62,14 +83,95 @@ Always prioritize child safety and due process.`;
 
 export async function POST(request: NextRequest) {
   try {
-    const body: ChatRequest = await request.json();
-    const { query, messages = [] } = body;
+    // Auth check: require authenticated user
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!query) {
+    if (!user) {
       return NextResponse.json(
-        { error: "Query is required" },
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    // Rate limiting
+    if (!checkRateLimit(user.id)) {
+      return NextResponse.json(
+        { error: "Rate limit exceeded. Please wait before making more requests." },
+        { status: 429 }
+      );
+    }
+
+    // Parse and validate request body
+    let body: { query?: unknown; messages?: unknown };
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON request body" },
         { status: 400 }
       );
+    }
+
+    const { query, messages: rawMessages } = body;
+
+    // Validate query
+    if (!query || typeof query !== "string") {
+      return NextResponse.json(
+        { error: "Query is required and must be a string" },
+        { status: 400 }
+      );
+    }
+
+    if (query.length > MAX_QUERY_LENGTH) {
+      return NextResponse.json(
+        { error: `Query must be under ${MAX_QUERY_LENGTH} characters` },
+        { status: 400 }
+      );
+    }
+
+    // Validate messages array
+    let messages: Message[] = [];
+    if (rawMessages) {
+      if (!Array.isArray(rawMessages)) {
+        return NextResponse.json(
+          { error: "Messages must be an array" },
+          { status: 400 }
+        );
+      }
+
+      if (rawMessages.length > MAX_MESSAGES) {
+        return NextResponse.json(
+          { error: `Maximum ${MAX_MESSAGES} messages allowed` },
+          { status: 400 }
+        );
+      }
+
+      for (const msg of rawMessages) {
+        if (
+          !msg ||
+          typeof msg !== "object" ||
+          !("role" in msg) ||
+          !("content" in msg) ||
+          typeof msg.content !== "string" ||
+          !["user", "assistant"].includes(msg.role)
+        ) {
+          return NextResponse.json(
+            { error: "Each message must have a valid role and content" },
+            { status: 400 }
+          );
+        }
+        if (msg.content.length > MAX_MESSAGE_LENGTH) {
+          return NextResponse.json(
+            { error: `Message content must be under ${MAX_MESSAGE_LENGTH} characters` },
+            { status: 400 }
+          );
+        }
+      }
+
+      messages = rawMessages as Message[];
     }
 
     // Check if API keys are configured
@@ -192,7 +294,7 @@ async function callOpenAI(
     body: JSON.stringify({
       model: "gpt-4o",
       messages,
-      temperature: 0.3, // Lower temperature for more consistent legal responses
+      temperature: 0.3,
       max_tokens: 2000,
     }),
   });
@@ -210,7 +312,7 @@ function mockResponse(query: string): ChatResponse {
       response: `Under **T.C.A. § 37-1-114(a)**, a child may be detained only if:
 
 1. **Immediate endangerment** — Detention is necessary to protect the child or others from immediate harm
-2. **Flight risk** — There is reason to believe the child may flee the jurisdiction  
+2. **Flight risk** — There is reason to believe the child may flee the jurisdiction
 3. **No parent/guardian available** — The child has no parent, guardian, or custodian able to provide supervision
 4. **Serious offense** — The child is charged with an offense that would be a felony if committed by an adult
 
@@ -257,7 +359,7 @@ function mockResponse(query: string): ChatResponse {
 
 **TRJPP Rule 212** governs the transfer hearing procedures and requires written findings.
 
-⚠️ **Note:** A child under 16 cannot be transferred for any offense other than first-degree murder, attempted murder, or certain other violent crimes.`,
+**Note:** A child under 16 cannot be transferred for any offense other than first-degree murder, attempted murder, or certain other violent crimes.`,
       sources: [
         {
           title: "Transfer to Criminal Court",
@@ -277,7 +379,7 @@ function mockResponse(query: string): ChatResponse {
 
   // Default response
   return {
-    response: `I can help you research Tennessee juvenile law on that topic. 
+    response: `I can help you research Tennessee juvenile law on that topic.
 
 For the most accurate information, I recommend:
 - Searching the **T.C.A. Title 37** (Juveniles) or **Title 36** (Domestic Relations)
