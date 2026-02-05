@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,84 +13,11 @@ import {
   FileText,
   MapPin,
   Video,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Mock data for hearings
-const hearingsData: Record<string, Hearing[]> = {
-  "2024-02-03": [
-    {
-      id: "1",
-      time: "09:00",
-      duration: 30,
-      caseNumber: "2024-JV-0203",
-      type: "Disposition",
-      child: "M.S.",
-      attorney: "Sarah Jones",
-      room: "Courtroom A",
-      virtual: false,
-    },
-    {
-      id: "2",
-      time: "10:00",
-      duration: 15,
-      caseNumber: "2024-JV-0147",
-      type: "Detention Review",
-      child: "K.L.",
-      attorney: "Lisa Brown (PD)",
-      room: "Courtroom A",
-      virtual: false,
-    },
-    {
-      id: "3",
-      time: "10:30",
-      duration: 30,
-      caseNumber: "2024-JV-0211",
-      type: "Preliminary",
-      child: "T.W.",
-      attorney: "John Smith (PD)",
-      room: "Courtroom A",
-      virtual: false,
-    },
-    {
-      id: "4",
-      time: "14:00",
-      duration: 60,
-      caseNumber: "2024-JV-0198",
-      type: "Transfer Hearing",
-      child: "A.R.",
-      attorney: "Mike Davis (PD)",
-      room: "Courtroom B",
-      virtual: true,
-    },
-  ],
-  "2024-02-04": [
-    {
-      id: "5",
-      time: "09:30",
-      duration: 30,
-      caseNumber: "2024-JV-0189",
-      type: "Review",
-      child: "J.D.",
-      attorney: "Pro Se",
-      room: "Courtroom A",
-      virtual: false,
-    },
-  ],
-  "2024-02-05": [
-    {
-      id: "6",
-      time: "10:00",
-      duration: 45,
-      caseNumber: "2024-JV-0211",
-      type: "Adjudicatory",
-      child: "T.W.",
-      attorney: "John Smith (PD)",
-      room: "Courtroom A",
-      virtual: false,
-    },
-  ],
-};
+import { createClient } from "@/lib/supabase/client";
+import { hearingTypeDisplay } from "@/lib/db";
 
 interface Hearing {
   id: string;
@@ -113,27 +40,11 @@ const hearingTypeColors: Record<string, string> = {
   "Transfer Hearing": "bg-orange-600",
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _timeSlots = [
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "13:00",
-  "13:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-];
-
 export default function DocketPage() {
-  const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 3)); // Feb 3, 2024
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"day" | "week">("day");
+  const [hearingsData, setHearingsData] = useState<Record<string, Hearing[]>>({});
+  const [loading, setLoading] = useState(true);
 
   const formatDate = (date: Date) => {
     return date.toISOString().split("T")[0];
@@ -144,7 +55,6 @@ export default function DocketPage() {
     const start = new Date(date);
     start.setDate(start.getDate() - start.getDay() + 1); // Monday
     for (let i = 0; i < 5; i++) {
-      // Mon-Fri
       const day = new Date(start);
       day.setDate(start.getDate() + i);
       week.push(day);
@@ -153,6 +63,50 @@ export default function DocketPage() {
   };
 
   const weekDates = getWeekDates(currentDate);
+
+  const fetchHearings = useCallback(async () => {
+    setLoading(true);
+    const supabase = createClient();
+
+    // Fetch hearings for the visible week
+    const monday = new Date(currentDate);
+    monday.setDate(monday.getDate() - monday.getDay() + 1);
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+
+    const { data, error } = await supabase
+      .from("hearings")
+      .select("id, case_number, hearing_type, hearing_date, start_time, duration_minutes, child_initials, attorney, room, is_virtual")
+      .gte("hearing_date", formatDate(monday))
+      .lte("hearing_date", formatDate(friday))
+      .order("start_time", { ascending: true });
+
+    if (!error && data) {
+      const grouped: Record<string, Hearing[]> = {};
+      for (const row of data) {
+        const dateKey = row.hearing_date;
+        if (!grouped[dateKey]) grouped[dateKey] = [];
+        grouped[dateKey].push({
+          id: row.id,
+          time: row.start_time?.substring(0, 5) || "",
+          duration: row.duration_minutes || 30,
+          caseNumber: row.case_number,
+          type: hearingTypeDisplay[row.hearing_type] || row.hearing_type,
+          child: row.child_initials || "",
+          attorney: row.attorney || "",
+          room: row.room || "Courtroom A",
+          virtual: row.is_virtual || false,
+        });
+      }
+      setHearingsData(grouped);
+    }
+    setLoading(false);
+  }, [currentDate]);
+
+  useEffect(() => {
+    fetchHearings();
+  }, [fetchHearings]);
+
   const todayKey = formatDate(currentDate);
   const todayHearings = hearingsData[todayKey] || [];
 
@@ -165,6 +119,14 @@ export default function DocketPage() {
     }
     setCurrentDate(newDate);
   };
+
+  // Compute weekly summary from fetched data
+  const weeklySummary: Record<string, number> = {};
+  for (const hearings of Object.values(hearingsData)) {
+    for (const h of hearings) {
+      weeklySummary[h.type] = (weeklySummary[h.type] || 0) + 1;
+    }
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
@@ -227,7 +189,11 @@ export default function DocketPage() {
         </CardContent>
       </Card>
 
-      {view === "day" ? (
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+        </div>
+      ) : view === "day" ? (
         /* Day View */
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Schedule */}
@@ -248,13 +214,10 @@ export default function DocketPage() {
                         className="p-4 hover:bg-slate-800/30 transition-colors"
                       >
                         <div className="flex gap-4">
-                          {/* Time */}
                           <div className="flex-shrink-0 text-center">
                             <p className="text-lg font-bold text-white">{hearing.time}</p>
                             <p className="text-xs text-slate-500">{hearing.duration} min</p>
                           </div>
-
-                          {/* Hearing Details */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div>
@@ -277,7 +240,6 @@ export default function DocketPage() {
                                 <p className="font-medium text-white">{hearing.caseNumber}</p>
                               </div>
                             </div>
-
                             <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
                               <div className="flex items-center gap-2 text-slate-400">
                                 <User className="w-4 h-4" />
@@ -293,8 +255,6 @@ export default function DocketPage() {
                               </div>
                             </div>
                           </div>
-
-                          {/* Actions */}
                           <div className="flex-shrink-0">
                             <Button variant="outline" size="sm">
                               View Case
@@ -319,7 +279,6 @@ export default function DocketPage() {
 
           {/* Mini Calendar & Stats */}
           <div className="space-y-6">
-            {/* Week Overview */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">This Week</CardTitle>
@@ -366,32 +325,30 @@ export default function DocketPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Weekly Summary</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {[
-                    { type: "Preliminary", count: 2 },
-                    { type: "Disposition", count: 1 },
-                    { type: "Review", count: 3 },
-                    { type: "Detention Review", count: 1 },
-                  ].map((item) => (
-                    <div key={item.type} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={cn(
-                            "w-2 h-2 rounded-full",
-                            hearingTypeColors[item.type] || "bg-slate-600"
-                          )}
-                        />
-                        <span className="text-sm text-slate-400">{item.type}</span>
+                  {Object.entries(weeklySummary).length > 0 ? (
+                    Object.entries(weeklySummary).map(([type, count]) => (
+                      <div key={type} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={cn(
+                              "w-2 h-2 rounded-full",
+                              hearingTypeColors[type] || "bg-slate-600"
+                            )}
+                          />
+                          <span className="text-sm text-slate-400">{type}</span>
+                        </div>
+                        <span className="text-sm font-medium text-white">{count}</span>
                       </div>
-                      <span className="text-sm font-medium text-white">{item.count}</span>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500 text-center">No hearings this week</p>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,116 +17,28 @@ import {
   AlertCircle,
   FolderOpen,
   Copy,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { documentCategoryDisplay, documentStatusDisplay } from "@/lib/db";
 
-// Document templates available
-const templates = [
-  {
-    id: "detention-order",
-    name: "Detention Order",
-    description: "Order to detain a juvenile in secure custody",
-    category: "Orders",
-    lastUsed: "2 days ago",
-    usageCount: 45,
-  },
-  {
-    id: "disposition-order",
-    name: "Disposition Order",
-    description: "Final disposition order for adjudicated cases",
-    category: "Orders",
-    lastUsed: "Yesterday",
-    usageCount: 32,
-  },
-  {
-    id: "transfer-order",
-    name: "Transfer Order",
-    description: "Order to transfer case to criminal court",
-    category: "Orders",
-    lastUsed: "1 week ago",
-    usageCount: 8,
-  },
-  {
-    id: "release-order",
-    name: "Release Order",
-    description: "Order releasing juvenile from detention",
-    category: "Orders",
-    lastUsed: "3 days ago",
-    usageCount: 28,
-  },
-  {
-    id: "summons",
-    name: "Summons",
-    description: "Court summons for hearing appearance",
-    category: "Notices",
-    lastUsed: "Today",
-    usageCount: 67,
-  },
-  {
-    id: "petition-delinquent",
-    name: "Delinquency Petition",
-    description: "Petition alleging delinquent conduct",
-    category: "Petitions",
-    lastUsed: "Yesterday",
-    usageCount: 23,
-  },
-  {
-    id: "petition-dependent",
-    name: "Dependency Petition",
-    description: "Petition for dependent/neglected child",
-    category: "Petitions",
-    lastUsed: "3 days ago",
-    usageCount: 18,
-  },
-  {
-    id: "findings-fact",
-    name: "Findings of Fact",
-    description: "Written findings supporting court orders",
-    category: "Findings",
-    lastUsed: "Yesterday",
-    usageCount: 41,
-  },
-];
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  usageCount: number;
+}
 
-// Recent documents
-const recentDocuments = [
-  {
-    id: "1",
-    name: "Detention Order - T.W.",
-    template: "Detention Order",
-    case: "2024-JV-0211",
-    status: "Signed",
-    createdAt: "Feb 1, 2024",
-    createdBy: "Judge Eckel",
-  },
-  {
-    id: "2",
-    name: "Summons - M.S.",
-    template: "Summons",
-    case: "2024-JV-0203",
-    status: "Draft",
-    createdAt: "Jan 30, 2024",
-    createdBy: "Judge Eckel",
-  },
-  {
-    id: "3",
-    name: "Disposition Order - A.R.",
-    template: "Disposition Order",
-    case: "2024-JV-0198",
-    status: "Pending Signature",
-    createdAt: "Jan 28, 2024",
-    createdBy: "Judge Eckel",
-  },
-  {
-    id: "4",
-    name: "Findings of Fact - K.L.",
-    template: "Findings of Fact",
-    case: "2024-JV-0147",
-    status: "Signed",
-    createdAt: "Jan 25, 2024",
-    createdBy: "Judge Eckel",
-  },
-];
+interface Document {
+  id: string;
+  name: string;
+  template: string;
+  case: string;
+  status: string;
+  createdAt: string;
+}
 
 const statusColors: Record<string, { bg: string; text: string; icon: React.ComponentType<{ className?: string }> }> = {
   Draft: { bg: "bg-slate-600", text: "text-slate-300", icon: Edit },
@@ -142,9 +54,63 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function DocumentsPage() {
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [recentDocuments, setRecentDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"templates" | "recent">("templates");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const supabase = createClient();
+
+      // Fetch templates and documents in parallel
+      const [templatesRes, documentsRes] = await Promise.all([
+        supabase
+          .from("document_templates")
+          .select("id, name, description, category, usage_count")
+          .order("usage_count", { ascending: false }),
+        supabase
+          .from("documents")
+          .select("id, name, template_id, case_number, status, created_at")
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ]);
+
+      if (templatesRes.data) {
+        setTemplates(
+          templatesRes.data.map((t) => ({
+            id: t.id,
+            name: t.name,
+            description: t.description || "",
+            category: documentCategoryDisplay[t.category] || t.category,
+            usageCount: t.usage_count || 0,
+          }))
+        );
+      }
+
+      if (documentsRes.data) {
+        setRecentDocuments(
+          documentsRes.data.map((d) => ({
+            id: d.id,
+            name: d.name,
+            template: d.template_id || "",
+            case: d.case_number || "",
+            status: documentStatusDisplay[d.status] || d.status,
+            createdAt: new Date(d.created_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+          }))
+        );
+      }
+
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
   const filteredTemplates = templates.filter((t) => {
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -153,6 +119,18 @@ export default function DocumentsPage() {
   });
 
   const categories = [...new Set(templates.map((t) => t.category))];
+
+  // Compute stats from real data
+  const pendingSignatureCount = recentDocuments.filter((d) => d.status === "Pending Signature").length;
+  const signedCount = recentDocuments.filter((d) => d.status === "Signed").length;
+
+  if (loading) {
+    return (
+      <div className="p-6 lg:p-8 flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
@@ -253,9 +231,8 @@ export default function DocumentsPage() {
                   <div className="flex items-center justify-between text-xs text-slate-500">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      {template.lastUsed}
+                      {template.usageCount} uses
                     </span>
-                    <span>{template.usageCount} uses</span>
                   </div>
                   <div className="mt-4 flex gap-2">
                     <Button size="sm" className="flex-1">
@@ -268,6 +245,13 @@ export default function DocumentsPage() {
                 </CardContent>
               </Card>
             ))}
+
+            {filteredTemplates.length === 0 && (
+              <div className="col-span-full p-8 text-center">
+                <FileText className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                <p className="text-slate-400">No templates found</p>
+              </div>
+            )}
           </div>
         </>
       ) : (
@@ -287,7 +271,7 @@ export default function DocumentsPage() {
                 </thead>
                 <tbody>
                   {recentDocuments.map((doc) => {
-                    const status = statusColors[doc.status];
+                    const status = statusColors[doc.status] || statusColors["Draft"];
                     return (
                       <tr
                         key={doc.id}
@@ -305,7 +289,7 @@ export default function DocumentsPage() {
                           </div>
                         </td>
                         <td className="p-4">
-                          <Badge variant="outline">{doc.case}</Badge>
+                          <Badge variant="outline">{doc.case || "—"}</Badge>
                         </td>
                         <td className="p-4">
                           <Badge className={cn("gap-1", status.bg, status.text)}>
@@ -315,7 +299,6 @@ export default function DocumentsPage() {
                         </td>
                         <td className="p-4">
                           <p className="text-sm text-slate-400">{doc.createdAt}</p>
-                          <p className="text-xs text-slate-500">{doc.createdBy}</p>
                         </td>
                         <td className="p-4">
                           <div className="flex items-center gap-1">
@@ -339,6 +322,12 @@ export default function DocumentsPage() {
                 </tbody>
               </table>
             </div>
+            {recentDocuments.length === 0 && (
+              <div className="p-8 text-center">
+                <FileText className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                <p className="text-slate-400">No documents generated yet</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -346,9 +335,9 @@ export default function DocumentsPage() {
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: "Documents This Month", value: "32", icon: FileText },
-          { label: "Pending Signature", value: "4", icon: AlertCircle },
-          { label: "Signed Today", value: "3", icon: CheckCircle },
+          { label: "Total Documents", value: recentDocuments.length.toString(), icon: FileText },
+          { label: "Pending Signature", value: pendingSignatureCount.toString(), icon: AlertCircle },
+          { label: "Signed", value: signedCount.toString(), icon: CheckCircle },
           { label: "Templates Available", value: templates.length.toString(), icon: FolderOpen },
         ].map((stat, i) => (
           <Card key={i}>
