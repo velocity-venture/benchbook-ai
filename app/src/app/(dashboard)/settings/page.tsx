@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ import {
   Building,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 const tabs = [
   { id: "profile", name: "Profile", icon: User },
@@ -31,10 +33,18 @@ const tabs = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
   const [saved, setSaved] = useState(false);
+  const router = useRouter();
 
   const handleSave = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
   };
 
   return (
@@ -68,7 +78,11 @@ export default function SettingsPage() {
             </nav>
 
             <div className="mt-8 pt-8 border-t border-slate-800">
-              <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                onClick={handleSignOut}
+              >
                 <LogOut className="w-4 h-4 mr-3" />
                 Sign Out
               </Button>

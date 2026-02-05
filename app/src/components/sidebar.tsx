@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 import {
   MessageSquare,
   FolderOpen,
@@ -15,8 +16,18 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
+
+interface SidebarProps {
+  user: {
+    email: string;
+    fullName: string;
+    initials: string;
+    county?: string;
+  };
+}
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -32,9 +43,17 @@ const bottomNav = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <div
@@ -116,18 +135,36 @@ export function Sidebar() {
           <div className="mt-4 px-3 py-3 bg-slate-900 rounded-lg">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-slate-950 font-semibold text-sm">
-                MO
+                {user.initials}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
-                  Judge Eckel
+                  {user.fullName}
                 </p>
                 <p className="text-xs text-slate-500 truncate">
-                  Tipton County
+                  {user.county || user.email}
                 </p>
               </div>
             </div>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-2 mt-3 w-full px-2 py-1.5 rounded text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Sign Out
+            </button>
           </div>
+        )}
+
+        {/* Collapsed sign out */}
+        {collapsed && (
+          <button
+            onClick={handleSignOut}
+            className="flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 w-full"
+            title="Sign Out"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
         )}
       </div>
     </div>
