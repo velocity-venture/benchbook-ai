@@ -26,7 +26,8 @@ interface ChatResponse {
 // Environment variables
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-const PINECONE_INDEX = process.env.PINECONE_INDEX || "benchbook-legal";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _PINECONE_INDEX = process.env.PINECONE_INDEX || "benchbook-legal";
 const PINECONE_HOST = process.env.PINECONE_HOST;
 
 // System prompt for legal research
@@ -141,7 +142,8 @@ async function searchPinecone(query: string): Promise<{ context: string; sources
     const matches = searchData.matches || [];
 
     // Extract context and sources
-    const sources: Source[] = matches.map((match: any) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sources: Source[] = matches.map((match: Record<string, any>) => ({
       title: match.metadata.title || "Unknown",
       citation: match.metadata.section_id || match.metadata.citation || "",
       type: match.metadata.source as Source["type"],
@@ -149,7 +151,8 @@ async function searchPinecone(query: string): Promise<{ context: string; sources
     }));
 
     const context = matches
-      .map((match: any) => match.metadata.text)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((match: Record<string, any>) => match.metadata.text)
       .join("\n\n---\n\n");
 
     return { context, sources };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// Card components available for future chat UI enhancements
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -15,9 +15,7 @@ import {
   Copy,
   ThumbsUp,
   ThumbsDown,
-  RefreshCw,
   Bookmark,
-  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +42,8 @@ const suggestedQueries = [
   "FERPA requirements for juvenile records",
 ];
 
-const exampleResponse: Message = {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _exampleResponse: Message = {
   id: "1",
   role: "assistant",
   content: `Under **T.C.A. § 37-1-114(a)**, a child may be detained only if:

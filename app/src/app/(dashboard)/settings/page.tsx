@@ -9,17 +9,14 @@ import {
   User,
   Bell,
   Shield,
-  Key,
   Palette,
   FileText,
-  HelpCircle,
   LogOut,
   Save,
   Check,
   Mail,
   Phone,
   Building,
-  MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

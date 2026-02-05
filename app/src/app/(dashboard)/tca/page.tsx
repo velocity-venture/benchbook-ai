@@ -7,15 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Search,
-  BookOpen,
   ChevronRight,
   ExternalLink,
-  Star,
   Clock,
   Copy,
   Check,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 // Common TCA sections for juvenile court
 const commonSections = [

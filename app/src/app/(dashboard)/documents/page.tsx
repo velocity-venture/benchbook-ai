@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,12 +12,10 @@ import {
   Download,
   Eye,
   Edit,
-  Trash2,
   Clock,
   CheckCircle,
   AlertCircle,
   FolderOpen,
-  Filter,
   Copy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -130,7 +128,7 @@ const recentDocuments = [
   },
 ];
 
-const statusColors: Record<string, { bg: string; text: string; icon: any }> = {
+const statusColors: Record<string, { bg: string; text: string; icon: React.ComponentType<{ className?: string }> }> = {
   Draft: { bg: "bg-slate-600", text: "text-slate-300", icon: Edit },
   "Pending Signature": { bg: "bg-yellow-600", text: "text-yellow-300", icon: AlertCircle },
   Signed: { bg: "bg-green-600", text: "text-green-300", icon: CheckCircle },

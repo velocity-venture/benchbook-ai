@@ -8,11 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   Search as SearchIcon,
   FileText,
-  User,
-  Calendar,
   MessageSquare,
   BookOpen,
-  Filter,
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -80,7 +77,7 @@ const categoryConfig = {
   chat: { label: "AI Chats", icon: MessageSquare, color: "text-amber-400" },
 };
 
-const typeConfig: Record<string, { icon: any; color: string; bgColor: string }> = {
+const typeConfig: Record<string, { icon: React.ComponentType<{ className?: string }>; color: string; bgColor: string }> = {
   case: { icon: FileText, color: "text-blue-400", bgColor: "bg-blue-500/10" },
   document: { icon: FileText, color: "text-green-400", bgColor: "bg-green-500/10" },
   tca: { icon: BookOpen, color: "text-purple-400", bgColor: "bg-purple-500/10" },

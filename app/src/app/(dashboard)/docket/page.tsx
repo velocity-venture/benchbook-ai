@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Plus,
   Calendar as CalendarIcon,
-  Clock,
   User,
   FileText,
   MapPin,
@@ -114,7 +113,8 @@ const hearingTypeColors: Record<string, string> = {
   "Transfer Hearing": "bg-orange-600",
 };
 
-const timeSlots = [
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _timeSlots = [
   "09:00",
   "09:30",
   "10:00",

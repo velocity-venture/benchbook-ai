@@ -9,10 +9,8 @@ import {
   Calendar,
   Clock,
   AlertTriangle,
-  CheckCircle,
   ArrowRight,
   FileText,
-  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 

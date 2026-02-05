@@ -9,7 +9,6 @@ import {
   Calendar,
   FileText,
   Settings,
-  LogOut,
   Scale,
   Home,
   Search,
