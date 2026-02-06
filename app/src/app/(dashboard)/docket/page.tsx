@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,6 +16,8 @@ import {
   MapPin,
   Video,
   Loader2,
+  X,
+  Save,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -45,6 +49,93 @@ export default function DocketPage() {
   const [view, setView] = useState<"day" | "week">("day");
   const [hearingsData, setHearingsData] = useState<Record<string, Hearing[]>>({});
   const [loading, setLoading] = useState(true);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
+  const [scheduleForm, setScheduleForm] = useState({
+    case_number: "",
+    hearing_type: "preliminary",
+    hearing_date: new Date().toISOString().split("T")[0],
+    start_time: "09:00",
+    duration_minutes: "30",
+    child_initials: "",
+    attorney: "",
+    room: "Courtroom A",
+    is_virtual: false,
+    notes: "",
+  });
+
+  const updateForm = (field: string, value: string | boolean) =>
+    setScheduleForm((prev) => ({ ...prev, [field]: value }));
+
+  const handleScheduleHearing = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!scheduleForm.case_number.trim()) {
+      setScheduleError("Case number is required.");
+      return;
+    }
+
+    setSaving(true);
+    setScheduleError(null);
+    const supabase = createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setScheduleError("Not authenticated.");
+      setSaving(false);
+      return;
+    }
+
+    // Try to find case_id from case_number
+    const { data: caseData } = await supabase
+      .from("cases")
+      .select("id")
+      .eq("case_number", scheduleForm.case_number.trim())
+      .maybeSingle();
+
+    const { error } = await supabase.from("hearings").insert({
+      user_id: user.id,
+      case_id: caseData?.id || null,
+      case_number: scheduleForm.case_number.trim(),
+      hearing_type: scheduleForm.hearing_type,
+      hearing_date: scheduleForm.hearing_date,
+      start_time: scheduleForm.start_time,
+      duration_minutes: parseInt(scheduleForm.duration_minutes) || 30,
+      child_initials: scheduleForm.child_initials.trim() || null,
+      attorney: scheduleForm.attorney.trim() || null,
+      room: scheduleForm.room.trim() || "Courtroom A",
+      is_virtual: scheduleForm.is_virtual,
+      notes: scheduleForm.notes.trim() || null,
+    });
+
+    if (error) {
+      setScheduleError(error.message);
+      setSaving(false);
+      return;
+    }
+
+    // Reset form and refresh
+    setShowSchedule(false);
+    setScheduleForm({
+      case_number: "",
+      hearing_type: "preliminary",
+      hearing_date: scheduleForm.hearing_date,
+      start_time: "09:00",
+      duration_minutes: "30",
+      child_initials: "",
+      attorney: "",
+      room: "Courtroom A",
+      is_virtual: false,
+      notes: "",
+    });
+    setSaving(false);
+    fetchHearings();
+  };
+
+  const selectClass =
+    "h-10 w-full px-3 rounded-lg border border-slate-700 bg-slate-900 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500";
 
   const formatDate = (date: Date) => {
     return date.toISOString().split("T")[0];
@@ -140,12 +231,153 @@ export default function DocketPage() {
           <Button variant="outline" onClick={() => setCurrentDate(new Date())}>
             Today
           </Button>
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            Schedule Hearing
+          <Button className="gap-2" onClick={() => setShowSchedule(!showSchedule)}>
+            {showSchedule ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {showSchedule ? "Cancel" : "Schedule Hearing"}
           </Button>
         </div>
       </div>
+
+      {/* Schedule Hearing Form */}
+      {showSchedule && (
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="font-semibold text-white mb-4">Schedule New Hearing</h3>
+            {scheduleError && (
+              <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                {scheduleError}
+              </div>
+            )}
+            <form onSubmit={handleScheduleHearing}>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Case Number <span className="text-red-400">*</span>
+                  </label>
+                  <Input
+                    placeholder="e.g., 2026-JV-0001"
+                    value={scheduleForm.case_number}
+                    onChange={(e) => updateForm("case_number", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Hearing Type
+                  </label>
+                  <select
+                    value={scheduleForm.hearing_type}
+                    onChange={(e) => updateForm("hearing_type", e.target.value)}
+                    className={selectClass}
+                  >
+                    <option value="preliminary">Preliminary</option>
+                    <option value="detention_review">Detention Review</option>
+                    <option value="adjudicatory">Adjudicatory</option>
+                    <option value="disposition">Disposition</option>
+                    <option value="review">Review</option>
+                    <option value="transfer">Transfer Hearing</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Date
+                  </label>
+                  <Input
+                    type="date"
+                    value={scheduleForm.hearing_date}
+                    onChange={(e) => updateForm("hearing_date", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Start Time
+                  </label>
+                  <Input
+                    type="time"
+                    value={scheduleForm.start_time}
+                    onChange={(e) => updateForm("start_time", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Duration (minutes)
+                  </label>
+                  <Input
+                    type="number"
+                    min={15}
+                    max={240}
+                    step={15}
+                    value={scheduleForm.duration_minutes}
+                    onChange={(e) => updateForm("duration_minutes", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Room
+                  </label>
+                  <Input
+                    placeholder="Courtroom A"
+                    value={scheduleForm.room}
+                    onChange={(e) => updateForm("room", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Child Initials
+                  </label>
+                  <Input
+                    placeholder="e.g., J.D."
+                    value={scheduleForm.child_initials}
+                    onChange={(e) => updateForm("child_initials", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    Attorney
+                  </label>
+                  <Input
+                    placeholder="Attorney name"
+                    value={scheduleForm.attorney}
+                    onChange={(e) => updateForm("attorney", e.target.value)}
+                  />
+                </div>
+                <div className="flex items-end">
+                  <label className="flex items-center gap-2 h-10 text-sm text-slate-300">
+                    <input
+                      type="checkbox"
+                      checked={scheduleForm.is_virtual}
+                      onChange={(e) => updateForm("is_virtual", e.target.checked)}
+                      className="rounded border-slate-600"
+                    />
+                    Virtual Hearing
+                  </label>
+                </div>
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                  Notes
+                </label>
+                <Textarea
+                  placeholder="Optional hearing notes..."
+                  value={scheduleForm.notes}
+                  onChange={(e) => updateForm("notes", e.target.value)}
+                  rows={2}
+                  className="resize-none"
+                />
+              </div>
+              <div className="flex justify-end mt-4">
+                <Button type="submit" disabled={saving} className="gap-2">
+                  {saving ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  Schedule Hearing
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Calendar Navigation */}
       <Card>
@@ -268,7 +500,7 @@ export default function DocketPage() {
                   <div className="p-8 text-center">
                     <CalendarIcon className="w-12 h-12 text-slate-600 mx-auto mb-4" />
                     <p className="text-slate-400">No hearings scheduled for this day</p>
-                    <Button variant="outline" className="mt-4">
+                    <Button variant="outline" className="mt-4" onClick={() => setShowSchedule(true)}>
                       Schedule a Hearing
                     </Button>
                   </div>
