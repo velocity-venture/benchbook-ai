@@ -367,7 +367,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-slate-400 mt-1">Generate a new detention order</p>
               </div>
             </Link>
-            <Link href="/cases?action=new">
+            <Link href="/cases/new">
               <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer">
                 <FolderOpen className="w-8 h-8 text-amber-400 mb-3" />
                 <h3 className="font-medium text-white">New Case</h3>

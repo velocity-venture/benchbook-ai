@@ -11,78 +11,49 @@ import {
   MessageSquare,
   BookOpen,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { caseTypeDisplay, caseStatusDisplay } from "@/lib/db";
 
-type SearchCategory = "all" | "cases" | "documents" | "tca" | "chat";
+type SearchCategory = "all" | "cases" | "documents" | "tca";
 
 interface SearchResult {
   id: string;
-  type: "case" | "document" | "tca" | "chat";
+  type: "case" | "document" | "tca";
   title: string;
   subtitle: string;
   date?: string;
   snippet?: string;
+  href: string;
 }
-
-// Mock search results
-const mockResults: SearchResult[] = [
-  {
-    id: "1",
-    type: "case",
-    title: "2024-JV-0203",
-    subtitle: "M.S. - Dependent/Neglect",
-    date: "Jan 28, 2024",
-    snippet: "Educational neglect petition filed by DCS...",
-  },
-  {
-    id: "2",
-    type: "tca",
-    title: "T.C.A. § 37-1-114",
-    subtitle: "Criteria for detention of child",
-    snippet: "A child may be held in detention prior to adjudication...",
-  },
-  {
-    id: "3",
-    type: "document",
-    title: "Detention Order - T.W.",
-    subtitle: "Case 2024-JV-0211",
-    date: "Feb 1, 2024",
-    snippet: "ORDER OF DETENTION. The child T.W. shall be detained...",
-  },
-  {
-    id: "4",
-    type: "chat",
-    title: "Grounds for detention",
-    subtitle: "AI Research conversation",
-    date: "Feb 1, 2024",
-    snippet: "Under T.C.A. § 37-1-114(a), a child may be detained only if...",
-  },
-  {
-    id: "5",
-    type: "case",
-    title: "2024-JV-0147",
-    subtitle: "K.L. - Delinquent (Burglary)",
-    date: "Dec 15, 2023",
-    snippet: "Transfer hearing scheduled for criminal court evaluation...",
-  },
-];
 
 const categoryConfig = {
   all: { label: "All", icon: SearchIcon, color: "text-white" },
   cases: { label: "Cases", icon: FileText, color: "text-blue-400" },
   documents: { label: "Documents", icon: FileText, color: "text-green-400" },
   tca: { label: "TN Code", icon: BookOpen, color: "text-purple-400" },
-  chat: { label: "AI Chats", icon: MessageSquare, color: "text-amber-400" },
 };
 
 const typeConfig: Record<string, { icon: React.ComponentType<{ className?: string }>; color: string; bgColor: string }> = {
   case: { icon: FileText, color: "text-blue-400", bgColor: "bg-blue-500/10" },
   document: { icon: FileText, color: "text-green-400", bgColor: "bg-green-500/10" },
   tca: { icon: BookOpen, color: "text-purple-400", bgColor: "bg-purple-500/10" },
-  chat: { icon: MessageSquare, color: "text-amber-400", bgColor: "bg-amber-500/10" },
 };
+
+// Static TCA reference data for search
+const tcaSections = [
+  { id: "37-1-101", title: "Definitions", text: "Key definitions for juvenile court proceedings including delinquent child, unruly child, dependent and neglected child" },
+  { id: "37-1-114", title: "Criteria for detention of child", text: "A child may be held in detention prior to adjudication only if felony, already detained, or fugitive" },
+  { id: "37-1-117", title: "Conduct of Hearings", text: "Rules for conducting juvenile hearings, rights of parties, evidence standards" },
+  { id: "37-1-129", title: "Dispositions", text: "Available dispositional alternatives for delinquent, unruly, and dependent children" },
+  { id: "37-1-134", title: "Transfer to Criminal Court", text: "Procedures for transferring juveniles to criminal court based on age and offense severity" },
+  { id: "37-1-146", title: "Sealing Records", text: "Expungement and sealing of juvenile records upon petition" },
+  { id: "36-1-113", title: "Termination of Parental Rights", text: "Grounds for termination of parental rights including abandonment, abuse, and severe neglect" },
+  { id: "37-2-403", title: "Child Abuse Reporting", text: "Mandatory reporting requirements for suspected child abuse or neglect" },
+];
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -90,24 +61,90 @@ export default function SearchPage() {
   const [results, setResults] = useState<SearchResult[] | null>(null);
   const [searching, setSearching] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
 
     setSearching(true);
-    // Simulate search
-    setTimeout(() => {
-      const filtered = category === "all"
-        ? mockResults
-        : mockResults.filter((r) => r.type === category.slice(0, -1) || (category === "tca" && r.type === "tca"));
-      setResults(filtered);
-      setSearching(false);
-    }, 500);
+    const allResults: SearchResult[] = [];
+    const q = query.trim().toLowerCase();
+
+    const supabase = createClient();
+
+    // Search cases
+    if (category === "all" || category === "cases") {
+      const { data: cases } = await supabase
+        .from("cases")
+        .select("id, case_number, child_initials, child_age, case_type, status, allegation, attorney, filed_date")
+        .or(`case_number.ilike.%${q}%,child_initials.ilike.%${q}%,allegation.ilike.%${q}%,attorney.ilike.%${q}%`)
+        .limit(10);
+
+      if (cases) {
+        allResults.push(
+          ...cases.map((c) => ({
+            id: c.id,
+            type: "case" as const,
+            title: c.case_number,
+            subtitle: `${c.child_initials}${c.child_age ? `, Age ${c.child_age}` : ""} — ${caseTypeDisplay[c.case_type] || c.case_type}`,
+            date: c.filed_date
+              ? new Date(c.filed_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+              : undefined,
+            snippet: c.allegation || undefined,
+            href: `/cases/${c.id}`,
+          }))
+        );
+      }
+    }
+
+    // Search documents
+    if (category === "all" || category === "documents") {
+      const { data: docs } = await supabase
+        .from("documents")
+        .select("id, name, status, created_at")
+        .ilike("name", `%${q}%`)
+        .limit(10);
+
+      if (docs) {
+        allResults.push(
+          ...docs.map((d) => ({
+            id: d.id,
+            type: "document" as const,
+            title: d.name,
+            subtitle: d.status.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+            date: new Date(d.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+            href: "/documents",
+          }))
+        );
+      }
+    }
+
+    // Search TCA (static data)
+    if (category === "all" || category === "tca") {
+      const tcaMatches = tcaSections.filter(
+        (s) =>
+          s.id.includes(q) ||
+          s.title.toLowerCase().includes(q) ||
+          s.text.toLowerCase().includes(q)
+      );
+      allResults.push(
+        ...tcaMatches.map((s) => ({
+          id: s.id,
+          type: "tca" as const,
+          title: `T.C.A. § ${s.id}`,
+          subtitle: s.title,
+          snippet: s.text,
+          href: "/tca",
+        }))
+      );
+    }
+
+    setResults(allResults);
+    setSearching(false);
   };
 
   const recentSearches = [
     "detention review",
-    "M.S. case",
+    "dependent neglect",
     "transfer hearing",
     "37-1-114",
   ];
@@ -117,7 +154,7 @@ export default function SearchPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Search</h1>
-        <p className="text-slate-400">Search across cases, documents, TN Code, and AI conversations</p>
+        <p className="text-slate-400">Search across cases, documents, and TN Code</p>
       </div>
 
       {/* Search Box */}
@@ -128,14 +165,18 @@ export default function SearchPage() {
               <div className="relative flex-1">
                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <Input
-                  placeholder="Search cases, documents, TN Code, conversations..."
+                  placeholder="Search cases, documents, TN Code..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="pl-10 h-12 text-base"
                 />
               </div>
               <Button type="submit" size="lg" disabled={searching}>
-                {searching ? "Searching..." : "Search"}
+                {searching ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Search"
+                )}
               </Button>
             </div>
           </form>
@@ -190,7 +231,7 @@ export default function SearchPage() {
               <div>
                 <CardTitle>Search Results</CardTitle>
                 <CardDescription>
-                  {results.length} result{results.length !== 1 ? "s" : ""} for "{query}"
+                  {results.length} result{results.length !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
                 </CardDescription>
               </div>
               <Button
@@ -209,9 +250,10 @@ export default function SearchPage() {
             {results.map((result) => {
               const config = typeConfig[result.type];
               return (
-                <div
-                  key={result.id}
-                  className="flex items-start gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer"
+                <Link
+                  key={`${result.type}-${result.id}`}
+                  href={result.href}
+                  className="flex items-start gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors"
                 >
                   <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", config.bgColor)}>
                     <config.icon className={cn("w-5 h-5", config.color)} />
@@ -231,15 +273,15 @@ export default function SearchPage() {
                       <p className="text-xs text-slate-500 mt-1 line-clamp-2">{result.snippet}</p>
                     )}
                   </div>
-                  <ArrowRight className="w-4 h-4 text-slate-500" />
-                </div>
+                  <ArrowRight className="w-4 h-4 text-slate-500 mt-3" />
+                </Link>
               );
             })}
 
             {results.length === 0 && (
               <div className="text-center py-8">
                 <SearchIcon className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                <p className="text-slate-400">No results found for "{query}"</p>
+                <p className="text-slate-400">No results found for &ldquo;{query}&rdquo;</p>
                 <p className="text-sm text-slate-500 mt-1">Try different keywords or filters</p>
               </div>
             )}
@@ -254,41 +296,35 @@ export default function SearchPage() {
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <FileText className="w-4 h-4 text-blue-400" />
-                Recent Cases
+                Browse Cases
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {["2024-JV-0211 (T.W.)", "2024-JV-0203 (M.S.)", "2024-JV-0147 (K.L.)"].map((c) => (
-                <Link
-                  key={c}
-                  href="/cases"
-                  className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-800 transition-colors"
-                >
-                  <span className="text-sm text-slate-300">{c}</span>
-                  <ArrowRight className="w-4 h-4 text-slate-500" />
-                </Link>
-              ))}
+            <CardContent>
+              <Link
+                href="/cases"
+                className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-800 transition-colors"
+              >
+                <span className="text-sm text-slate-300">View all cases</span>
+                <ArrowRight className="w-4 h-4 text-slate-500" />
+              </Link>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-amber-400" />
-                Recent Research
+                <BookOpen className="w-4 h-4 text-purple-400" />
+                Browse TN Code
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {["Detention standards", "Transfer hearing requirements", "FERPA compliance"].map((r) => (
-                <Link
-                  key={r}
-                  href="/chat"
-                  className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-800 transition-colors"
-                >
-                  <span className="text-sm text-slate-300">{r}</span>
-                  <ArrowRight className="w-4 h-4 text-slate-500" />
-                </Link>
-              ))}
+            <CardContent>
+              <Link
+                href="/tca"
+                className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-800 transition-colors"
+              >
+                <span className="text-sm text-slate-300">Browse Tennessee Code Annotated</span>
+                <ArrowRight className="w-4 h-4 text-slate-500" />
+              </Link>
             </CardContent>
           </Card>
         </div>

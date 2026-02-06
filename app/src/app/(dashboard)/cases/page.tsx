@@ -102,10 +102,12 @@ export default function CasesPage() {
           <h1 className="text-2xl font-bold text-white">Cases</h1>
           <p className="text-slate-400">Manage your juvenile court cases</p>
         </div>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          New Case
-        </Button>
+        <Link href="/cases/new">
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" />
+            New Case
+          </Button>
+        </Link>
       </div>
 
       {/* Filters */}
