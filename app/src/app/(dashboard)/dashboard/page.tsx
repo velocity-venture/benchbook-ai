@@ -29,8 +29,10 @@ interface UpcomingHearing {
   id: string;
   caseNumber: string;
   type: string;
+  date: string;
   time: string;
   child: string;
+  isToday: boolean;
 }
 
 interface RecentCase {
@@ -96,13 +98,17 @@ export default function DashboardPage() {
         totalDocuments: docsRes.count || 0,
       });
 
-      // Fetch today's hearings
+      // Fetch upcoming hearings (next 7 days)
+      const weekFromNow = new Date();
+      weekFromNow.setDate(weekFromNow.getDate() + 7);
       const { data: hearingsData } = await supabase
         .from("hearings")
-        .select("id, case_number, hearing_type, start_time, child_initials")
-        .eq("hearing_date", today)
+        .select("id, case_number, hearing_type, hearing_date, start_time, child_initials")
+        .gte("hearing_date", today)
+        .lte("hearing_date", weekFromNow.toISOString().split("T")[0])
+        .order("hearing_date", { ascending: true })
         .order("start_time", { ascending: true })
-        .limit(4);
+        .limit(5);
 
       if (hearingsData) {
         setUpcomingHearings(
@@ -110,8 +116,10 @@ export default function DashboardPage() {
             id: h.id,
             caseNumber: h.case_number,
             type: hearingTypeDisplay[h.hearing_type] || h.hearing_type,
+            date: h.hearing_date,
             time: h.start_time?.substring(0, 5) || "",
             child: h.child_initials || "",
+            isToday: h.hearing_date === today,
           }))
         );
       }
@@ -247,8 +255,8 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Today&apos;s Docket</CardTitle>
-              <CardDescription>Scheduled hearings for today</CardDescription>
+              <CardTitle>Upcoming Docket</CardTitle>
+              <CardDescription>Hearings this week</CardDescription>
             </div>
             <Link href="/docket">
               <Button variant="ghost" size="sm" className="gap-1">
@@ -275,7 +283,15 @@ export default function DashboardPage() {
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">{hearing.time}</Badge>
+                    <div className="text-right">
+                      <Badge variant={hearing.isToday ? "default" : "secondary"}>{hearing.time}</Badge>
+                      {!hearing.isToday && (
+                        <p className="text-xs text-slate-500 mt-1">
+                          {new Date(hearing.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                        </p>
+                      )}
+                      {hearing.isToday && <p className="text-xs text-amber-400 mt-1">Today</p>}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -304,9 +320,9 @@ export default function DashboardPage() {
             {recentCases.length > 0 ? (
               <div className="space-y-3">
                 {recentCases.map((case_) => (
+                  <Link key={case_.id} href={`/cases/${case_.id}`}>
                   <div
-                    key={case_.id}
-                    className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-800"
+                    className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
@@ -334,6 +350,7 @@ export default function DashboardPage() {
                       <p className="text-xs text-slate-500 mt-1">{case_.updatedAt}</p>
                     </div>
                   </div>
+                  </Link>
                 ))}
               </div>
             ) : (
@@ -360,7 +377,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-slate-400 mt-1">Ask AI about T.C.A., case law, DCS policy</p>
               </div>
             </Link>
-            <Link href="/documents?action=new&type=detention">
+            <Link href="/documents/new?template=detention-order">
               <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer">
                 <FileText className="w-8 h-8 text-amber-400 mb-3" />
                 <h3 className="font-medium text-white">Detention Order</h3>
