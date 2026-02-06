@@ -11,14 +11,15 @@ import {
   FileText,
   Calendar,
   Eye,
-  Edit,
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { caseTypeDisplay, caseStatusDisplay } from "@/lib/db";
+import Link from "next/link";
 
 interface CaseItem {
+  uuid: string;
   id: string;
   child: { initials: string; age: number };
   type: string;
@@ -62,6 +63,7 @@ export default function CasesPage() {
       if (!error && data) {
         setCases(
           data.map((row) => ({
+            uuid: row.id,
             id: row.case_number,
             child: {
               initials: row.child_initials,
@@ -249,14 +251,11 @@ export default function CasesPage() {
                           )}
                         </td>
                         <td className="p-4">
-                          <div className="flex items-center gap-1">
+                          <Link href={`/cases/${case_.uuid}`}>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <Eye className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          </div>
+                          </Link>
                         </td>
                       </tr>
                     ))}
