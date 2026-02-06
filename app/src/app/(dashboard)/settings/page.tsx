@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
   Mail,
   Phone,
   Building,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -32,12 +33,110 @@ const tabs = [
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  // Profile fields
+  const [profile, setProfile] = useState({
+    full_name: "",
+    title: "",
+    county: "",
+    email: "",
+    phone: "",
+    organization: "",
+  });
+
+  // Document settings (stored in profiles.settings JSONB)
+  const [docSettings, setDocSettings] = useState({
+    signature_line: "",
+    court_name: "",
+    default_font: "Times New Roman",
+    include_seal: true,
+  });
+
+  const updateProfile = (field: string, value: string) =>
+    setProfile((prev) => ({ ...prev, [field]: value }));
+
+  const updateDocSettings = (field: string, value: string | boolean) =>
+    setDocSettings((prev) => ({ ...prev, [field]: value }));
+
+  const loadProfile = useCallback(async () => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (data) {
+      setProfile({
+        full_name: data.full_name || "",
+        title: data.title || "Judge",
+        county: data.county || "",
+        email: data.email || user.email || "",
+        phone: data.phone || "",
+        organization: data.organization || "",
+      });
+
+      const settings = data.settings || {};
+      setDocSettings({
+        signature_line: settings.signature_line || `Honorable ${data.full_name || ""}, ${data.title || "Judge"}`,
+        court_name: settings.court_name || "",
+        default_font: settings.default_font || "Times New Roman",
+        include_seal: settings.include_seal !== false,
+      });
+    }
+
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setSaving(false);
+      return;
+    }
+
+    // Split full_name for display
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: profile.full_name,
+        title: profile.title,
+        county: profile.county,
+        email: profile.email,
+        phone: profile.phone,
+        organization: profile.organization,
+        settings: {
+          signature_line: docSettings.signature_line,
+          court_name: docSettings.court_name,
+          default_font: docSettings.default_font,
+          include_seal: docSettings.include_seal,
+        },
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
+
+    setSaving(false);
+    if (!error) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
   };
 
   const handleSignOut = async () => {
@@ -46,6 +145,14 @@ export default function SettingsPage() {
     router.push("/login");
     router.refresh();
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 lg:p-8 flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8">
@@ -102,33 +209,50 @@ export default function SettingsPage() {
                     {/* Avatar */}
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center text-2xl font-bold text-slate-950">
-                        MO
+                        {profile.full_name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .slice(0, 2)
+                          .toUpperCase() || "?"}
                       </div>
                       <div>
-                        <Button variant="outline" size="sm">
-                          Change Photo
-                        </Button>
-                        <p className="text-xs text-slate-500 mt-1">JPG, PNG. Max 2MB.</p>
+                        <p className="font-medium text-white">{profile.full_name || "Set your name"}</p>
+                        <p className="text-sm text-slate-400">{profile.title}</p>
                       </div>
                     </div>
 
                     {/* Form Fields */}
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-white">First Name</label>
-                        <Input defaultValue="M.O." />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-white">Last Name</label>
-                        <Input defaultValue="Eckel III" />
+                        <label className="text-sm font-medium text-white">Full Name</label>
+                        <Input
+                          value={profile.full_name}
+                          onChange={(e) => updateProfile("full_name", e.target.value)}
+                        />
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-white">Title</label>
-                        <Input defaultValue="Juvenile Court Judge" />
+                        <Input
+                          value={profile.title}
+                          onChange={(e) => updateProfile("title", e.target.value)}
+                        />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-white">Court</label>
-                        <Input defaultValue="Tipton County Juvenile Court" />
+                        <label className="text-sm font-medium text-white">County</label>
+                        <Input
+                          value={profile.county}
+                          onChange={(e) => updateProfile("county", e.target.value)}
+                          placeholder="e.g., Tipton County"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-white">Organization</label>
+                        <Input
+                          value={profile.organization}
+                          onChange={(e) => updateProfile("organization", e.target.value)}
+                          placeholder="e.g., Tipton County Juvenile Court"
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -145,29 +269,32 @@ export default function SettingsPage() {
                         <Mail className="w-4 h-4 text-slate-500" />
                         Email
                       </label>
-                      <Input defaultValue="judge.eckel@tncourts.gov" />
+                      <Input
+                        value={profile.email}
+                        onChange={(e) => updateProfile("email", e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-white flex items-center gap-2">
                         <Phone className="w-4 h-4 text-slate-500" />
                         Phone
                       </label>
-                      <Input defaultValue="(901) 555-0123" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white flex items-center gap-2">
-                        <Building className="w-4 h-4 text-slate-500" />
-                        Office Address
-                      </label>
-                      <Input defaultValue="100 Court Square, Covington, TN 38019" />
+                      <Input
+                        value={profile.phone}
+                        onChange={(e) => updateProfile("phone", e.target.value)}
+                      />
                     </div>
                   </CardContent>
                 </Card>
 
                 <div className="flex justify-end gap-3">
-                  <Button variant="outline">Cancel</Button>
-                  <Button onClick={handleSave} className="gap-2">
-                    {saved ? (
+                  <Button variant="outline" onClick={loadProfile}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave} disabled={saving} className="gap-2">
+                    {saving ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : saved ? (
                       <>
                         <Check className="w-4 h-4" />
                         Saved
@@ -277,44 +404,12 @@ export default function SettingsPage() {
                           <Shield className="w-6 h-6 text-emerald-400" />
                         </div>
                         <div>
-                          <p className="font-medium text-white">2FA Enabled</p>
-                          <p className="text-sm text-slate-400">Using authenticator app</p>
+                          <p className="font-medium text-white">2FA Status</p>
+                          <p className="text-sm text-slate-400">Not yet configured</p>
                         </div>
                       </div>
-                      <Badge variant="success">Active</Badge>
+                      <Badge variant="secondary">Inactive</Badge>
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Sessions</CardTitle>
-                    <CardDescription>Manage your active sessions</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {[
-                      { device: "MacBook Pro", location: "Covington, TN", current: true },
-                      { device: "iPhone 15", location: "Memphis, TN", current: false },
-                    ].map((session, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-white flex items-center gap-2">
-                            {session.device}
-                            {session.current && (
-                              <Badge variant="secondary" className="text-xs">
-                                Current
-                              </Badge>
-                            )}
-                          </p>
-                          <p className="text-sm text-slate-400">{session.location}</p>
-                        </div>
-                        {!session.current && (
-                          <Button variant="ghost" size="sm" className="text-red-400">
-                            Revoke
-                          </Button>
-                        )}
-                      </div>
-                    ))}
                   </CardContent>
                 </Card>
               </>
@@ -349,57 +444,86 @@ export default function SettingsPage() {
                       ))}
                     </div>
                   </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-white mb-3 block">Sidebar</label>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white">Collapsed by default</p>
-                        <p className="text-sm text-slate-400">Start with sidebar minimized</p>
-                      </div>
-                      <button className="relative w-11 h-6 rounded-full bg-slate-700">
-                        <span className="absolute top-1 left-1 w-4 h-4 rounded-full bg-white" />
-                      </button>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             )}
 
             {activeTab === "documents" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Document Settings</CardTitle>
-                  <CardDescription>Configure document generation preferences</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Default Signature Line</label>
-                    <Input defaultValue="Honorable M.O. Eckel III, Juvenile Court Judge" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Court Name (for headers)</label>
-                    <Input defaultValue="JUVENILE COURT FOR TIPTON COUNTY, TENNESSEE" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Default Font</label>
-                    <select className="w-full h-10 px-3 rounded-lg border border-slate-700 bg-slate-900 text-sm text-white">
-                      <option>Times New Roman</option>
-                      <option>Arial</option>
-                      <option>Courier New</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white">Include Court Seal</p>
-                      <p className="text-sm text-slate-400">Add seal to generated documents</p>
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Document Settings</CardTitle>
+                    <CardDescription>Configure document generation preferences</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-white">Default Signature Line</label>
+                      <Input
+                        value={docSettings.signature_line}
+                        onChange={(e) => updateDocSettings("signature_line", e.target.value)}
+                      />
                     </div>
-                    <button className="relative w-11 h-6 rounded-full bg-amber-500">
-                      <span className="absolute top-1 w-4 h-4 rounded-full bg-white translate-x-6" />
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-white">Court Name (for headers)</label>
+                      <Input
+                        value={docSettings.court_name}
+                        onChange={(e) => updateDocSettings("court_name", e.target.value)}
+                        placeholder="e.g., JUVENILE COURT FOR TIPTON COUNTY, TENNESSEE"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-white">Default Font</label>
+                      <select
+                        value={docSettings.default_font}
+                        onChange={(e) => updateDocSettings("default_font", e.target.value)}
+                        className="w-full h-10 px-3 rounded-lg border border-slate-700 bg-slate-900 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      >
+                        <option>Times New Roman</option>
+                        <option>Arial</option>
+                        <option>Courier New</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-white">Include Court Seal</p>
+                        <p className="text-sm text-slate-400">Add seal to generated documents</p>
+                      </div>
+                      <button
+                        onClick={() => updateDocSettings("include_seal", !docSettings.include_seal)}
+                        className={cn(
+                          "relative w-11 h-6 rounded-full transition-colors",
+                          docSettings.include_seal ? "bg-amber-500" : "bg-slate-700"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
+                            docSettings.include_seal ? "translate-x-6" : "translate-x-1"
+                          )}
+                        />
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <div className="flex justify-end">
+                  <Button onClick={handleSave} disabled={saving} className="gap-2">
+                    {saving ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : saved ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Saved
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Save Settings
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         </div>
