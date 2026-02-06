@@ -19,6 +19,7 @@ import {
   Trash2,
   Save,
 } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { caseTypeDisplay, caseStatusDisplay } from "@/lib/db";
@@ -504,10 +505,12 @@ export default function CaseDetailPage() {
       {activeTab === "documents" && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <Button className="gap-2" size="sm">
-              <Plus className="w-4 h-4" />
-              New Document
-            </Button>
+            <Link href={`/documents/new?case=${caseDetail.id}`}>
+              <Button className="gap-2" size="sm">
+                <Plus className="w-4 h-4" />
+                New Document
+              </Button>
+            </Link>
           </div>
           {documents.length === 0 ? (
             <Card>
@@ -518,31 +521,33 @@ export default function CaseDetailPage() {
             </Card>
           ) : (
             documents.map((doc) => (
-              <Card key={doc.id}>
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-slate-500" />
-                    <div>
-                      <p className="font-medium text-white">{doc.name}</p>
-                      <p className="text-xs text-slate-500">
-                        {new Date(doc.created_at).toLocaleDateString()}
-                      </p>
+              <Link key={doc.id} href={`/documents/${doc.id}`}>
+                <Card className="hover:border-amber-500/50 transition-colors cursor-pointer">
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <FileText className="w-5 h-5 text-slate-500" />
+                      <div>
+                        <p className="font-medium text-white">{doc.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {new Date(doc.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      doc.status === "signed"
-                        ? "border-emerald-500 text-emerald-400"
-                        : doc.status === "pending_signature"
-                          ? "border-yellow-500 text-yellow-400"
-                          : "border-slate-500 text-slate-400"
-                    )}
-                  >
-                    {doc.status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                  </Badge>
-                </CardContent>
-              </Card>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        doc.status === "signed"
+                          ? "border-emerald-500 text-emerald-400"
+                          : doc.status === "pending_signature"
+                            ? "border-yellow-500 text-yellow-400"
+                            : "border-slate-500 text-slate-400"
+                      )}
+                    >
+                      {doc.status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                    </Badge>
+                  </CardContent>
+                </Card>
+              </Link>
             ))
           )}
         </div>

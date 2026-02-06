@@ -16,12 +16,12 @@ import {
   CheckCircle,
   AlertCircle,
   FolderOpen,
-  Copy,
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { documentCategoryDisplay, documentStatusDisplay } from "@/lib/db";
+import Link from "next/link";
 
 interface Template {
   id: string;
@@ -140,10 +140,12 @@ export default function DocumentsPage() {
           <h1 className="text-2xl font-bold text-white">Documents</h1>
           <p className="text-slate-400">Generate and manage court documents</p>
         </div>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          New Document
-        </Button>
+        <Link href="/documents/new">
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" />
+            New Document
+          </Button>
+        </Link>
       </div>
 
       {/* Tabs */}
@@ -235,12 +237,16 @@ export default function DocumentsPage() {
                     </span>
                   </div>
                   <div className="mt-4 flex gap-2">
-                    <Button size="sm" className="flex-1">
-                      Create
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Eye className="w-4 h-4" />
-                    </Button>
+                    <Link href={`/documents/new?template=${template.id}`} className="flex-1">
+                      <Button size="sm" className="w-full">
+                        Create
+                      </Button>
+                    </Link>
+                    <Link href={`/documents/new?template=${template.id}`}>
+                      <Button size="sm" variant="outline">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -302,18 +308,21 @@ export default function DocumentsPage() {
                         </td>
                         <td className="p-4">
                           <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Download className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Copy className="w-4 h-4" />
-                            </Button>
+                            <Link href={`/documents/${doc.id}`}>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                            <Link href={`/documents/${doc.id}`}>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                            <Link href={`/documents/${doc.id}`}>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Download className="w-4 h-4" />
+                              </Button>
+                            </Link>
                           </div>
                         </td>
                       </tr>
