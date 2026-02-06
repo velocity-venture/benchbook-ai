@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Search as SearchIcon,
   FileText,
-  MessageSquare,
   BookOpen,
   ArrowRight,
   Loader2,
@@ -16,7 +15,8 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { caseTypeDisplay, caseStatusDisplay } from "@/lib/db";
+import { caseTypeDisplay } from "@/lib/db";
+import { searchTCA } from "@/lib/tca-data";
 
 type SearchCategory = "all" | "cases" | "documents" | "tca";
 
@@ -43,17 +43,7 @@ const typeConfig: Record<string, { icon: React.ComponentType<{ className?: strin
   tca: { icon: BookOpen, color: "text-purple-400", bgColor: "bg-purple-500/10" },
 };
 
-// Static TCA reference data for search
-const tcaSections = [
-  { id: "37-1-101", title: "Definitions", text: "Key definitions for juvenile court proceedings including delinquent child, unruly child, dependent and neglected child" },
-  { id: "37-1-114", title: "Criteria for detention of child", text: "A child may be held in detention prior to adjudication only if felony, already detained, or fugitive" },
-  { id: "37-1-117", title: "Conduct of Hearings", text: "Rules for conducting juvenile hearings, rights of parties, evidence standards" },
-  { id: "37-1-129", title: "Dispositions", text: "Available dispositional alternatives for delinquent, unruly, and dependent children" },
-  { id: "37-1-134", title: "Transfer to Criminal Court", text: "Procedures for transferring juveniles to criminal court based on age and offense severity" },
-  { id: "37-1-146", title: "Sealing Records", text: "Expungement and sealing of juvenile records upon petition" },
-  { id: "36-1-113", title: "Termination of Parental Rights", text: "Grounds for termination of parental rights including abandonment, abuse, and severe neglect" },
-  { id: "37-2-403", title: "Child Abuse Reporting", text: "Mandatory reporting requirements for suspected child abuse or neglect" },
-];
+// TCA search now uses shared data from lib/tca-data.ts
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -112,27 +102,22 @@ export default function SearchPage() {
             title: d.name,
             subtitle: d.status.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
             date: new Date(d.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-            href: "/documents",
+            href: `/documents/${d.id}`,
           }))
         );
       }
     }
 
-    // Search TCA (static data)
+    // Search TCA (shared dataset from lib/tca-data.ts)
     if (category === "all" || category === "tca") {
-      const tcaMatches = tcaSections.filter(
-        (s) =>
-          s.id.includes(q) ||
-          s.title.toLowerCase().includes(q) ||
-          s.text.toLowerCase().includes(q)
-      );
+      const tcaMatches = searchTCA(q).slice(0, 10);
       allResults.push(
         ...tcaMatches.map((s) => ({
           id: s.id,
           type: "tca" as const,
-          title: `T.C.A. § ${s.id}`,
+          title: `${s.titleNum === "Rules" ? "" : "T.C.A. \u00a7 "}${s.id}`,
           subtitle: s.title,
-          snippet: s.text,
+          snippet: s.description,
           href: "/tca",
         }))
       );
