@@ -17,7 +17,6 @@ import {
   Check,
   Mail,
   Phone,
-  Building,
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
