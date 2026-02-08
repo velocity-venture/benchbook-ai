@@ -96,14 +96,24 @@ def get_query_embedding(text: str, api_key: str) -> np.ndarray:
 
 
 def search(query_vec: np.ndarray, matrix: np.ndarray, metadata: list, top_k: int = TOP_K):
-    """Compute cosine similarities and return top-k results."""
+    """Compute cosine similarities and return top-k results, deduplicated by section."""
     scores = matrix @ query_vec  # dot product on pre-normalized vectors
-    top_indices = np.argpartition(scores, -top_k)[-top_k:]
+    # Get more candidates than needed so we can deduplicate
+    candidate_k = min(top_k * 4, len(metadata))
+    top_indices = np.argpartition(scores, -candidate_k)[-candidate_k:]
     top_indices = top_indices[np.argsort(scores[top_indices])[::-1]]
 
     results = []
+    seen_sections = set()
     for idx in top_indices:
+        if len(results) >= top_k:
+            break
         chunk = metadata[idx]
+        # Deduplicate: keep only the best chunk per (source, section_id) pair
+        section_key = (chunk.get("source", ""), chunk.get("section_id", ""))
+        if section_key in seen_sections:
+            continue
+        seen_sections.add(section_key)
         results.append({
             "text": chunk.get("text", ""),
             "source": chunk.get("source", ""),
@@ -139,8 +149,9 @@ class SearchHandler(BaseHTTPRequestHandler):
             return
 
         try:
+            top_k = min(int(payload.get("top_k", TOP_K)), 20)
             query_vec = get_query_embedding(query, self.api_key)
-            results = search(query_vec, self.matrix, self.metadata)
+            results = search(query_vec, self.matrix, self.metadata, top_k=top_k)
             self._respond(200, {"results": results})
         except Exception as e:
             print(f"Search error: {e}", file=sys.stderr)

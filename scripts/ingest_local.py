@@ -274,9 +274,16 @@ def extract_section_id(text: str, source: str) -> str:
 
 def extract_title(text: str, filepath: Path) -> str:
     """Extract document title from text or filename."""
-    first = text[:500]
-    for pat in [r"^(.+?)\n", r"CHAPTER\s+\d+[:\s]+(.+?)\n",
-                r"RULE\s+\d+[:\s]+(.+?)\n", r"POLICY\s+[\d.]+[:\s]+(.+?)\n"]:
+    first = text[:800]
+    # DCS PDFs: look for "Subject: ..." line
+    m = re.search(r"Subject:\s*(.+?)(?:\n|$)", first, re.IGNORECASE)
+    if m:
+        title = m.group(1).strip()
+        if len(title) > 5:
+            return f"DCS Policy: {title}"
+    for pat in [r"CHAPTER\s+\d+[:\s]+(.+?)\n",
+                r"RULE\s+\d+[:\s]+(.+?)\n", r"POLICY\s+[\d.]+[:\s]+(.+?)\n",
+                r"^(.+?)\n"]:
         m = re.search(pat, first, re.IGNORECASE)
         if m:
             title = m.group(1).strip()
