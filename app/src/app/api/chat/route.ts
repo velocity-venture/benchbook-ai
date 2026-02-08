@@ -180,7 +180,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(mockResponse(query));
     }
 
-    // Step 1: Search Pinecone for relevant documents (if configured)
+    // Step 1: Search for relevant documents
+    // Priority: Pinecone > local search server > no context
     let context = "";
     let sources: Source[] = [];
 
@@ -188,6 +189,12 @@ export async function POST(request: NextRequest) {
       const searchResults = await searchPinecone(query);
       context = searchResults.context;
       sources = searchResults.sources;
+    }
+
+    if (!context) {
+      const localResults = await searchLocal(query);
+      context = localResults.context;
+      sources = localResults.sources;
     }
 
     // Step 2: Call OpenAI with context
@@ -260,6 +267,53 @@ async function searchPinecone(query: string): Promise<{ context: string; sources
     return { context, sources };
   } catch (error) {
     console.error("Pinecone search error:", error);
+    return { context: "", sources: [] };
+  }
+}
+
+async function searchLocal(query: string): Promise<{ context: string; sources: Source[] }> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch("http://127.0.0.1:8765/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      console.error("Local search server returned", response.status);
+      return { context: "", sources: [] };
+    }
+
+    const data = await response.json();
+    const matches = data.results || [];
+
+    const sources: Source[] = matches.map(
+      (match: { title?: string; section_id?: string; source?: string; text?: string; score?: number }) => ({
+        title: match.title || "Unknown",
+        citation: match.section_id || "",
+        type: (match.source || "LOCAL") as Source["type"],
+        snippet: match.text?.substring(0, 200) || "",
+      })
+    );
+
+    const context = matches
+      .map((match: { text?: string }) => match.text)
+      .filter(Boolean)
+      .join("\n\n---\n\n");
+
+    return { context, sources };
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      console.error("Local search server timed out");
+    } else {
+      console.error("Local search error:", error);
+    }
     return { context: "", sources: [] };
   }
 }
