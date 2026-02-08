@@ -1,0 +1,15 @@
+RULE 206: DISCOVERY
+
+(a) Each juvenile court shall ensure that the parties in delinquent and unruly proceedings have access to any discovery materials consistent with Rule 16 of the Rules of Criminal Procedure.
+
+(b) An informal request for discovery is encouraged, but if the parties cannot agree as to discovery, then a formal discovery request shall be made.
+
+Advisory Commission Comments:
+
+The Commission acknowledged concerns about potential burdens and delays from applying criminal discovery methods directly to juvenile court proceedings. Courts may adopt local rules implementing Tennessee's criminal discovery mechanisms, provided they remain consistent with the Rules of Juvenile Procedure.
+
+Key points include:
+- Discovery rules do not apply to preliminary examinations or probable cause hearings, citing State v. Willoughby.
+- The state must disclose exculpatory evidence per Brady v. Maryland.
+- When parties cannot agree on discovery, the Tennessee Rules of Criminal Procedure shall be utilized to ensure that each side has access to discovery materials in each case.
+- Practitioners should familiarize themselves with Rule 16 of the Rules of Criminal Procedure.

@@ -2,3 +2,9 @@
 .env.*
 !.env.example
 .envrc
+
+# Legal corpus (large generated/downloaded files)
+legal-corpus/_processed/
+legal-corpus/tca/*.html
+legal-corpus/dcs/*.pdf
+legal-corpus/trjpp/all-rules.txt

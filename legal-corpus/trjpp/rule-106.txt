@@ -1,0 +1,25 @@
+RULE 106: FILING AND SERVICE OF PLEADINGS AND OTHER PARTIES
+
+(a) Service - When Required. Unless the Court otherwise orders, every order required by its terms to be served; every pleading subsequent to the original petition; and every written motion (other than ex parte), notice, appearance, or similar papers shall be served upon each of the parties, including the child alleged to be delinquent or unruly. Service shall also be made on a child alleged to be dependent and neglected, if age 14 or over. If a court appointed special advocate (CASA) is appointed, the CASA volunteer shall be served in the same manner as a party.
+
+(b) Service - How Made.
+
+(1) Whenever service of a pleading is required or permitted to be made on a party represented by an attorney or guardian ad litem, the service shall be made upon the attorney or guardian ad litem unless service on the party is ordered by the court. Service upon the attorney, guardian ad litem or upon a party shall be made by delivering a copy of the document to be served either in person, by leaving it at the person's office, by leaving it at the person's home in a conspicuous place or with a person of suitable age and discretion residing therein, or by mailing it to such person's last known address. If no address is known, service is completed by leaving a copy with the clerk of the court. Service by mail is complete upon mailing. Items which may be filed by facsimile transmission pursuant to this rule may be served by facsimile transmission.
+
+(2) If all parties, their attorneys or guardians ad litem agree, in writing, service of documents may be made via email in Adobe PDF format in lieu of service by mail. A signed notice of such agreement, containing the email addresses of parties and the attorneys, shall be filed with the clerk.
+
+(c) Service - Proof of. Whenever any pleading or other paper is served, proof of the time and manner of such service shall be filed before action is taken thereon by the court or the parties. Proof may be by certificate of an attorney of record, the clerk, by affidavit of the person who served the papers, or by any other proof satisfactory to the court.
+
+(d) Filing. All papers after the petition required to be served upon a party shall be filed with the court either before service or within a reasonable time thereafter. Discovery need not be filed, unless ordered by the court.
+
+(e) Filing with the Court Defined. The filing of pleadings and other papers with the court as required by these rules shall be made by filing them with the clerk of the court, except that the judge may permit the papers to be filed with the judge, in which event the judge shall note thereon the filing date and immediately transmit them to the office of the clerk. The clerk shall endorse upon every pleading and other papers filed with the clerk in an action the date and hour of the filing. If papers required or permitted to be filed are prepared by or on behalf of a pro se litigant incarcerated in a correctional facility and are not received by the clerk of the court until after the deadline for filing, filing shall be timely if the papers were delivered to the appropriate individual at the correctional facility within the time allowed for filing. This provision shall also apply to service of papers by such litigants. "Correctional facility" shall include a prison, jail, county workhouse or similar institution in which the pro se litigant is incarcerated. Should timeliness of filing or service become an issue, the burden is on the pro se litigant to establish compliance with this provision.
+
+(f) Facsimile Filing. The juvenile court clerk shall accept papers for filing by facsimile transmission as provided in Rule 5A of the Rules of Civil Procedure.
+
+(g) Facsimile Filing Exceptions. The following documents shall not be filed by facsimile transmission:
+
+(1) Any pleading or similar document for which a filing fee must be paid (excluding the facsimile service charge), including, without limitation, a petition, a request for a hearing before the judge from the magistrate's order, or a notice of appeal to a trial court or appellate court; or
+
+(2) A summons; bond; a document requiring an official seal; or a document the court has previously ordered to be filed under seal.
+
+(h) Electronic Filing, Signing, Or Verification. Any juvenile court may, by local rule, allow papers to be filed, signed or verified by electronic means that comply with technological standards promulgated by the Supreme Court. Pleadings and other papers filed electronically under such local rules shall be considered the same as written papers.

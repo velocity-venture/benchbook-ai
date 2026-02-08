@@ -1,0 +1,9 @@
+RULE 203: PROCEDURES UPON TAKING A DELINQUENT CHILD INTO CUSTODY
+
+(a) Release Without Detention. When a child is taken into custody but is not detainable, the child must be released to the child's parent, guardian or other custodian within a reasonable time. A summons is then served requiring the child's court appearance.
+
+(b) Detention Without Release. If a child alleged to be delinquent is held in secure detention without a prior court order, a magistrate must make a probable cause determination within 48 hours (or 24 hours excluding nonjudicial days for special circumstances cases). If the magistrate fails to make required findings, the child is immediately released. If held, a detention hearing must occur within 72 hours (excluding nonjudicial days), not exceeding 84 hours total.
+
+(c) Secure Detention Requirements. The child must be placed in a juvenile detention facility, and both court and custodians must be notified immediately. The facility must inform the child verbally and in writing of: the detention reason, right to a detention hearing, right to counsel with appointed attorney if needed, Miranda-type rights regarding statements, and rights to communicate with counsel and family.
+
+(d) Detention Hearing. The court must inform parties of hearing purpose and determine: probable cause for the offense; whether the offense qualifies for detention; whether detention serves the child's and community's best interests; and whether less restrictive alternatives exist.

@@ -1,0 +1,25 @@
+RULE 305: DISCOVERY
+
+(a) Each court shall ensure that the parties in dependent and neglect proceedings have access to information which would be available in circuit court.
+
+(b) Parties shall attempt to achieve any necessary discovery informally, in order to avoid undue expense and delay in the resolution of cases. Only when such attempts have failed, discovery may be sought and effectuated in accordance with the Tennessee Rules of Civil Procedure without a court order.
+
+(c) Leave to obtain discovery pursuant to the Tennessee Rules of Civil Procedure for reasons other than a failed attempt at informal discovery shall be freely given by the court when justice so requires.
+
+(d) Upon motion of a party or upon the court's own initiative, the court may order that the discovery be completed by a certain date.
+
+(e) Any motion to compel discovery, motion to quash, motion for protective order, or other discovery related motion shall:
+
+(1) quote verbatim the interrogatory, request, question, or subpoena at issue, or be accompanied by a copy of the interrogatory, request, subpoena, or excerpt of a deposition which shows the question and objection or response, if applicable;
+
+(2) state the reason or reasons supporting the motion; and
+
+(3) be accompanied by a statement certifying that the moving party or counsel has made a good faith effort to resolve by agreement the issues raised and that agreement has not been achieved.
+
+(f) The court shall decide any motion relating to discovery in accordance with the Tennessee Rules of Civil Procedure.
+
+(g) A child shall be required to respond to discovery requests only if the child is the petitioner or a respondent to the action.
+
+(h) A guardian ad litem shall not testify at a deposition.
+
+(i) Except as provided in subdivision (e) above, discovery materials shall not be filed with the court.

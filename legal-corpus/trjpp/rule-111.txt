@@ -1,0 +1,11 @@
+RULE 111: SCHEDULING CONFERENCES AND ORDERS
+
+(a) Conference. The court may conduct a conference with party attorneys and unrepresented parties in person, by telephone, or other suitable means to establish a scheduling order limiting timeframes for joining parties, amending pleadings, filing motions, completing discovery, and setting adjudication dates.
+
+(b) Scheduling Order. Following any conference under this rule, the court must enter an order documenting actions taken. This order governs the case's subsequent proceedings unless later modified.
+
+(c) Sanctions. The court may penalize parties or attorneys for: failing to comply with scheduling orders; failing to appear at conferences; being substantially unprepared; or failing to participate in good faith. Sanctions may include reasonable expenses and attorney's fees, unless the court determines noncompliance was substantially justified or other circumstances render an award unjust.
+
+Advisory Commission Comments:
+
+The 2016 amendments introduced this rule to reduce unnecessary delays, drawing from Tennessee Rules of Civil Procedure Rule 16. Courts may enter scheduling orders without holding conferences and may consider doing so during preliminary hearings in dependency and neglect proceedings, including dates for child and family team meetings and various hearings.

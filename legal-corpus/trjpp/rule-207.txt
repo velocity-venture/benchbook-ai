@@ -1,0 +1,27 @@
+RULE 207: PROCEDURES RELATED TO CHILD'S MENTAL CONDITION
+
+(a) At Time of Adjudicatory Hearing.
+
+(1) If at any time prior to or during the adjudicatory hearing in a delinquent or unruly case, the court has reasonable grounds to believe the child named in the petition may be incompetent to proceed with an adjudicatory hearing, the court shall stay the proceedings pending a determination of the child's competency to stand trial. Reasonable grounds to believe that the child is incompetent to proceed may be based upon an oral or written motion by any party or upon the court's own initiative.
+
+(2) The court shall order one or more evaluations of a child to assist in determining whether the child is mentally competent to stand trial. The evaluations are to be performed by a licensed psychologist or psychiatrist who has expertise in child development and has received training in forensic evaluation procedures through formal instruction, professional supervision, or both.
+
+(3) If the issue of a child's competency to stand trial arises prior to the child having either a retained or appointed attorney, no further action will occur until an attorney is in place to represent the child.
+
+(4) In any case in which such an evaluation is ordered, the court shall schedule a hearing in order to determine competency.
+
+(5) If the child is found to be incompetent to proceed with the adjudicatory hearing, the adjudication shall be stayed pending further proceedings and time limits shall be tolled. If the court finds that the provision of services or treatment to the child may result in the child achieving competence, then the court may order such treatment or services. In addition, the court may inform the parties as to procedures for voluntary admission to public and private mental health facilities in lieu of judicial commitment. If the child does not meet the standards for involuntary hospitalization, but remains incompetent to stand trial, the child shall be released to the appropriate guardian or custodian pending further hearings in juvenile court.
+
+(6) If the child is found to be competent the court shall proceed with an adjudicatory hearing.
+
+(7) The child's mental competence to stand trial may be raised at any stage of the proceeding by motion, and the court has a continuing obligation to consider the issue when raised.
+
+(b) At Time of the Offense; Affirmative Defense.
+
+(1) If the child named in the petition intends to introduce expert testimony relating to a mental disease, defect, or other condition bearing upon the issue of whether the child had the mental state required for the offense charged, the child shall, within the time provided for the filing of pretrial motions or at such later time as the court may direct, notify the court in writing of such intention and file a copy of such notice with the clerk. Upon filing of the notice, upon motion of the state, or on its own initiative, the court may cause the child to be examined in accordance with the procedures set forth in this rule and consistent with the procedures outlined in Rule 12.2 of the Rules of Criminal Procedure.
+
+(2) The court, upon good cause shown and in its discretion, may waive the requirements in subdivision (b)(1) and permit the introduction of such defense, or may continue the hearing for the purpose of an examination in accordance with the procedures set forth in this rule. A continuance granted for this purpose tolls the time limits for adjudicatory hearings.
+
+(c) Inadmissibility of Child's Statements During Competency Examination.
+
+No statement made by the child in the course of any examination relating to his or her competency to stand trial (whether conducted with or without the child's consent), no testimony by any expert based on such statement, and no other fruits of the statement are admissible in evidence against the child in a delinquent or unruly adjudicatory hearing.

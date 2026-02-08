@@ -1,0 +1,13 @@
+RULE 209: PLEA OF GUILTY OR NO CONTEST -- JUDICIAL DIVERSION
+
+(a) Court's Inquiry of Child. Before accepting a guilty or no contest plea, courts must inform children of: the charge nature and dispositional consequences; right to attorney representation; right to plead not guilty; right to trial with appropriate burden of proof (beyond reasonable doubt for delinquency, clear and convincing evidence for unruly charges); trial rights including witness presentation and confrontation; right against self-incrimination; that pleading guilty waives trial rights; admission of need for treatment; waiver of appeal rights for adjudication and disposition; potential questioning by court under oath; and immigration status consequences.
+
+(b) Voluntariness Determination. The court shall not accept a guilty or no contest plea without first, by addressing the child personally in open court, determining that the plea is voluntary and not the result of force or threats or promises apart from a plea bargain agreement.
+
+(c) Factual Basis. Courts must establish factual basis for guilty pleas before judgment entry or disposition approval.
+
+(d) No Contest Pleas. No contest pleas require court consent, with consideration of party views and justice administration interests.
+
+(e) Disposition Agreements. Courts must approve agreed dispositions when accepting pleas; rejected pleas void dispositional agreements.
+
+(f) Judicial Diversion. When pleas are accepted under judicial diversion with approved probation conditions, the plea shall not be entered as a judgment of guilty and the child shall not be found delinquent. Plea converts to guilty judgment upon violation findings.

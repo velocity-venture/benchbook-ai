@@ -1,0 +1,22 @@
+RULE 208: TRANSFER TO CRIMINAL COURT
+
+(a) Notice of Intent to Seek Transfer of Jurisdiction of Child to Criminal Court.
+
+The state must file written notice in good faith of intent to seek transfer per Tenn. Code Ann. Section 37-1-134. The decision must be made within 90 days of the child being charged and no less than 14 days prior to the transfer hearing or adjudicatory hearing, whichever occurs first. This timeframe may be extended by court for good cause. Once notice is filed, the court shall not hear the case on its merits but shall proceed only in accordance with Section 37-1-134.
+
+(b) Transfer Hearing.
+
+(1) At the transfer hearing:
+
+- A prosecutor shall represent the state
+- The child shall be represented by an attorney
+- The child may testify and call witnesses, but no plea shall be accepted
+- All witnesses shall testify under oath and be subject to cross-examination
+
+(2) The same rules of evidence applicable to preliminary examinations under Tennessee Rules of Criminal Procedure shall apply.
+
+(3) Unless the child appears mentally ill or intellectually disabled and asserts this claim, it shall be presumed the child is not committable. Courts shall order psychological or psychiatric examination if mental illness is alleged.
+
+(4) If transfer criteria are satisfied and probable cause exists, the child may be transferred to criminal court.
+
+(5) Any transfer order shall specify grounds and set bond if the offense is bailable.
