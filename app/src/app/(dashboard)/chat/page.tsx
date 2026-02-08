@@ -17,6 +17,7 @@ import {
   ThumbsDown,
   Bookmark,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -42,48 +43,6 @@ const suggestedQueries = [
   "FERPA requirements for juvenile records",
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _exampleResponse: Message = {
-  id: "1",
-  role: "assistant",
-  content: `Under **T.C.A. § 37-1-114(a)**, a child may be detained only if:
-
-1. **Immediate endangerment** — Detention is necessary to protect the child or others from immediate harm
-2. **Flight risk** — There is reason to believe the child may flee the jurisdiction
-3. **No parent/guardian available** — The child has no parent, guardian, or custodian able to provide supervision
-4. **Serious offense** — The child is charged with an offense that would be a felony if committed by an adult
-
-**Key Procedural Requirements:**
-- A detention hearing must be held within **48 hours** (excluding weekends and holidays) of the child being taken into custody
-- The court must consider **less restrictive alternatives** before ordering detention
-- Written findings are required explaining why detention is necessary
-
-**Relevant Case Law:**
-*In re D.W.*, 2019 WL 1234567 (Tenn. Ct. App. 2019) — Court held that mere convenience to parents does not justify detention when suitable alternatives exist.
-
-**DCS Policy 14.12** also requires caseworkers to document reasonable efforts to prevent removal before requesting court-ordered detention.`,
-  sources: [
-    {
-      title: "Grounds for Detention",
-      citation: "T.C.A. § 37-1-114",
-      type: "TCA",
-      snippet: "A child may be detained in a secure facility only if...",
-    },
-    {
-      title: "DCS Investigation Policy",
-      citation: "DCS Policy 14.12",
-      type: "DCS",
-      snippet: "Prior to any home removal, the investigator shall...",
-    },
-    {
-      title: "In re D.W.",
-      citation: "2019 WL 1234567 (Tenn. Ct. App.)",
-      type: "CASELAW",
-      snippet: "The juvenile court erred in ordering detention...",
-    },
-  ],
-  timestamp: new Date(),
-};
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -258,16 +217,8 @@ export default function ChatPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-4">
-                          <div className="prose prose-invert prose-sm max-w-none">
-                            <div
-                              className="text-slate-200"
-                              dangerouslySetInnerHTML={{
-                                __html: message.content
-                                  .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                                  .replace(/\*(.*?)\*/g, "<em>$1</em>")
-                                  .replace(/\n/g, "<br />"),
-                              }}
-                            />
+                          <div className="prose prose-invert prose-sm max-w-none text-slate-200">
+                            <ReactMarkdown>{message.content}</ReactMarkdown>
                           </div>
 
                           {/* Sources */}
