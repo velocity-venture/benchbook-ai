@@ -5,11 +5,37 @@ import { useState } from "react";
 export default function Home() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Connect to email service
-    setSubmitted(true);
+    if (!email.trim() || loading) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Something went wrong");
+        return;
+      }
+
+      setMessage(data.message);
+      setSubmitted(true);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -220,7 +246,7 @@ export default function Home() {
           {submitted ? (
             <div className="p-6 bg-green-500/10 border border-green-500/30 rounded-xl">
               <p className="text-green-400 font-medium">
-                ✓ You're on the list! We'll be in touch soon.
+                {message || "You're on the list! We'll be in touch soon."}
               </p>
             </div>
           ) : (
@@ -231,15 +257,20 @@ export default function Home() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500"
+                disabled={loading}
+                className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 disabled:opacity-50"
               />
               <button
                 type="submit"
-                className="px-6 py-3 bg-amber-500 text-slate-950 rounded-xl font-semibold hover:bg-amber-400 transition"
+                disabled={loading}
+                className="px-6 py-3 bg-amber-500 text-slate-950 rounded-xl font-semibold hover:bg-amber-400 transition disabled:opacity-50"
               >
-                Join Waitlist
+                {loading ? "Joining..." : "Join Waitlist"}
               </button>
             </form>
+          )}
+          {error && (
+            <p className="text-red-400 text-sm mt-3">{error}</p>
           )}
         </div>
       </section>
