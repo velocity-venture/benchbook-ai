@@ -32,13 +32,11 @@ export async function updateSession(request: NextRequest) {
   // Routes that require authentication
   const protectedPaths = [
     "/dashboard",
-    "/cases",
-    "/docket",
-    "/documents",
     "/chat",
     "/settings",
     "/tca",
-    "/search",
+    "/trjpp",
+    "/dcs-policies",
   ];
 
   const isProtected = protectedPaths.some(

@@ -8,10 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   User,
-  Bell,
   Shield,
   Palette,
-  FileText,
   LogOut,
   Save,
   Check,
@@ -24,10 +22,8 @@ import { createClient } from "@/lib/supabase/client";
 
 const tabs = [
   { id: "profile", name: "Profile", icon: User },
-  { id: "notifications", name: "Notifications", icon: Bell },
   { id: "security", name: "Security", icon: Shield },
   { id: "appearance", name: "Appearance", icon: Palette },
-  { id: "documents", name: "Document Settings", icon: FileText },
 ];
 
 export default function SettingsPage() {
@@ -47,19 +43,10 @@ export default function SettingsPage() {
     organization: "",
   });
 
-  // Document settings (stored in profiles.settings JSONB)
-  const [docSettings, setDocSettings] = useState({
-    signature_line: "",
-    court_name: "",
-    default_font: "Times New Roman",
-    include_seal: true,
-  });
 
   const updateProfile = (field: string, value: string) =>
     setProfile((prev) => ({ ...prev, [field]: value }));
 
-  const updateDocSettings = (field: string, value: string | boolean) =>
-    setDocSettings((prev) => ({ ...prev, [field]: value }));
 
   const loadProfile = useCallback(async () => {
     const supabase = createClient();
@@ -84,13 +71,6 @@ export default function SettingsPage() {
         organization: data.organization || "",
       });
 
-      const settings = data.settings || {};
-      setDocSettings({
-        signature_line: settings.signature_line || `Honorable ${data.full_name || ""}, ${data.title || "Judge"}`,
-        court_name: settings.court_name || "",
-        default_font: settings.default_font || "Times New Roman",
-        include_seal: settings.include_seal !== false,
-      });
     }
 
     setLoading(false);
@@ -111,7 +91,6 @@ export default function SettingsPage() {
       return;
     }
 
-    // Split full_name for display
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -121,12 +100,6 @@ export default function SettingsPage() {
         email: profile.email,
         phone: profile.phone,
         organization: profile.organization,
-        settings: {
-          signature_line: docSettings.signature_line,
-          court_name: docSettings.court_name,
-          default_font: docSettings.default_font,
-          include_seal: docSettings.include_seal,
-        },
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id);
@@ -309,64 +282,6 @@ export default function SettingsPage() {
               </>
             )}
 
-            {activeTab === "notifications" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Notification Preferences</CardTitle>
-                  <CardDescription>Choose what you want to be notified about</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {[
-                    {
-                      title: "Upcoming Hearings",
-                      description: "Get reminded about hearings 1 hour before",
-                      enabled: true,
-                    },
-                    {
-                      title: "Detention Reviews Due",
-                      description: "Alert when a detention review is coming up",
-                      enabled: true,
-                    },
-                    {
-                      title: "FERPA Compliance",
-                      description: "Reminders about record compliance deadlines",
-                      enabled: true,
-                    },
-                    {
-                      title: "New Case Assignments",
-                      description: "Notify when new cases are assigned",
-                      enabled: false,
-                    },
-                    {
-                      title: "Weekly Digest",
-                      description: "Summary of upcoming week's docket",
-                      enabled: true,
-                    },
-                  ].map((notification, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-white">{notification.title}</p>
-                        <p className="text-sm text-slate-400">{notification.description}</p>
-                      </div>
-                      <button
-                        className={cn(
-                          "relative w-11 h-6 rounded-full transition-colors",
-                          notification.enabled ? "bg-amber-500" : "bg-slate-700"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                            notification.enabled ? "translate-x-6" : "translate-x-1"
-                          )}
-                        />
-                      </button>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
             {activeTab === "security" && (
               <>
                 <Card>
@@ -447,83 +362,6 @@ export default function SettingsPage() {
               </Card>
             )}
 
-            {activeTab === "documents" && (
-              <>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Document Settings</CardTitle>
-                    <CardDescription>Configure document generation preferences</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">Default Signature Line</label>
-                      <Input
-                        value={docSettings.signature_line}
-                        onChange={(e) => updateDocSettings("signature_line", e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">Court Name (for headers)</label>
-                      <Input
-                        value={docSettings.court_name}
-                        onChange={(e) => updateDocSettings("court_name", e.target.value)}
-                        placeholder="e.g., JUVENILE COURT FOR TIPTON COUNTY, TENNESSEE"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">Default Font</label>
-                      <select
-                        value={docSettings.default_font}
-                        onChange={(e) => updateDocSettings("default_font", e.target.value)}
-                        className="w-full h-10 px-3 rounded-lg border border-slate-700 bg-slate-900 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      >
-                        <option>Times New Roman</option>
-                        <option>Arial</option>
-                        <option>Courier New</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white">Include Court Seal</p>
-                        <p className="text-sm text-slate-400">Add seal to generated documents</p>
-                      </div>
-                      <button
-                        onClick={() => updateDocSettings("include_seal", !docSettings.include_seal)}
-                        className={cn(
-                          "relative w-11 h-6 rounded-full transition-colors",
-                          docSettings.include_seal ? "bg-amber-500" : "bg-slate-700"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                            docSettings.include_seal ? "translate-x-6" : "translate-x-1"
-                          )}
-                        />
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="flex justify-end">
-                  <Button onClick={handleSave} disabled={saving} className="gap-2">
-                    {saving ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : saved ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        Saved
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        Save Settings
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </>
-            )}
           </div>
         </div>
       </div>

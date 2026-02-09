@@ -5,15 +5,15 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BenchBook AI | Legal Intelligence for Juvenile Court",
+  title: "BenchBook AI | Legal Compliance Research for Juvenile Court",
   description:
-    "AI-powered legal research, case management, and document generation for Tennessee Juvenile Court Judges.",
+    "AI-powered legal compliance research for Tennessee Juvenile Court Judges. Ask questions, get cited answers from TCA, TRJPP, and DCS policies.",
   keywords: [
     "legal tech",
     "juvenile court",
     "Tennessee law",
     "AI legal research",
-    "court management",
+    "compliance research",
   ],
 };
 

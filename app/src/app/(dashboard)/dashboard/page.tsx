@@ -1,72 +1,36 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   MessageSquare,
-  FolderOpen,
-  Calendar,
-  Clock,
-  AlertTriangle,
-  ArrowRight,
+  BookOpen,
+  Scale,
   FileText,
+  ArrowRight,
+  Clock,
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { caseStatusDisplay, hearingTypeDisplay } from "@/lib/db";
+import { tcaSections } from "@/lib/tca-data";
 
-interface DashboardStats {
-  activeCases: number;
-  hearingsToday: number;
-  pendingReviews: number;
-  totalDocuments: number;
-}
-
-interface UpcomingHearing {
+interface RecentSession {
   id: string;
-  caseNumber: string;
-  type: string;
-  date: string;
-  time: string;
-  child: string;
-  isToday: boolean;
-}
-
-interface RecentCase {
-  id: string;
-  caseNumber: string;
-  child: string;
-  status: string;
-  allegation: string;
+  title: string;
   updatedAt: string;
 }
 
-interface Alert {
-  type: "warning" | "info";
-  message: string;
-}
-
 export default function DashboardPage() {
-  const [stats, setStats] = useState<DashboardStats>({
-    activeCases: 0,
-    hearingsToday: 0,
-    pendingReviews: 0,
-    totalDocuments: 0,
-  });
-  const [upcomingHearings, setUpcomingHearings] = useState<UpcomingHearing[]>([]);
-  const [recentCases, setRecentCases] = useState<RecentCase[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [userName, setUserName] = useState("Judge");
+  const [recentSessions, setRecentSessions] = useState<RecentSession[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchData = async () => {
       const supabase = createClient();
 
-      // Get user name
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
@@ -76,105 +40,38 @@ export default function DashboardPage() {
           .single();
         const name = profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0];
         if (name) setUserName(name);
-      }
 
-      const today = new Date().toISOString().split("T")[0];
+        const { data: sessions } = await supabase
+          .from("chat_sessions")
+          .select("id, title, updated_at")
+          .eq("user_id", user.id)
+          .order("updated_at", { ascending: false })
+          .limit(5);
 
-      // Fetch stats in parallel
-      const [casesRes, hearingsTodayRes, reviewsRes, docsRes] = await Promise.all([
-        supabase.from("cases").select("id", { count: "exact", head: true }).neq("status", "closed"),
-        supabase.from("hearings").select("id", { count: "exact", head: true }).eq("hearing_date", today),
-        supabase
-          .from("cases")
-          .select("id", { count: "exact", head: true })
-          .in("status", ["review", "detention_review"]),
-        supabase.from("documents").select("id", { count: "exact", head: true }),
-      ]);
-
-      setStats({
-        activeCases: casesRes.count || 0,
-        hearingsToday: hearingsTodayRes.count || 0,
-        pendingReviews: reviewsRes.count || 0,
-        totalDocuments: docsRes.count || 0,
-      });
-
-      // Fetch upcoming hearings (next 7 days)
-      const weekFromNow = new Date();
-      weekFromNow.setDate(weekFromNow.getDate() + 7);
-      const { data: hearingsData } = await supabase
-        .from("hearings")
-        .select("id, case_number, hearing_type, hearing_date, start_time, child_initials")
-        .gte("hearing_date", today)
-        .lte("hearing_date", weekFromNow.toISOString().split("T")[0])
-        .order("hearing_date", { ascending: true })
-        .order("start_time", { ascending: true })
-        .limit(5);
-
-      if (hearingsData) {
-        setUpcomingHearings(
-          hearingsData.map((h) => ({
-            id: h.id,
-            caseNumber: h.case_number,
-            type: hearingTypeDisplay[h.hearing_type] || h.hearing_type,
-            date: h.hearing_date,
-            time: h.start_time?.substring(0, 5) || "",
-            child: h.child_initials || "",
-            isToday: h.hearing_date === today,
-          }))
-        );
-      }
-
-      // Fetch recent cases
-      const { data: casesData } = await supabase
-        .from("cases")
-        .select("id, case_number, child_initials, status, allegation, updated_at")
-        .order("updated_at", { ascending: false })
-        .limit(3);
-
-      if (casesData) {
-        setRecentCases(
-          casesData.map((c) => ({
-            id: c.id,
-            caseNumber: c.case_number,
-            child: c.child_initials,
-            status: caseStatusDisplay[c.status] || c.status,
-            allegation: c.allegation || "",
-            updatedAt: formatRelativeDate(c.updated_at),
-          }))
-        );
-      }
-
-      // Fetch compliance alerts
-      const threeDaysFromNow = new Date();
-      threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
-      const { data: deadlines } = await supabase
-        .from("compliance_deadlines")
-        .select("deadline_type, description, due_date")
-        .eq("completed", false)
-        .lte("due_date", threeDaysFromNow.toISOString().split("T")[0])
-        .order("due_date", { ascending: true })
-        .limit(5);
-
-      if (deadlines && deadlines.length > 0) {
-        setAlerts(
-          deadlines.map((d) => ({
-            type: "warning" as const,
-            message: `${d.deadline_type}: ${d.description || "Due " + d.due_date}`,
-          }))
-        );
+        if (sessions) {
+          setRecentSessions(
+            sessions.map((s) => ({
+              id: s.id,
+              title: s.title || "Untitled Research",
+              updatedAt: formatRelativeDate(s.updated_at),
+            }))
+          );
+        }
       }
 
       setLoading(false);
     };
 
-    fetchDashboardData();
+    fetchData();
   }, []);
 
-  const statCards = [
-    { name: "Active Cases", value: stats.activeCases.toString(), icon: FolderOpen, change: "" },
-    { name: "Hearings Today", value: stats.hearingsToday.toString(), icon: Calendar, change: "" },
-    { name: "Pending Reviews", value: stats.pendingReviews.toString(), icon: Clock, change: "" },
-    { name: "Documents", value: stats.totalDocuments.toString(), icon: MessageSquare, change: "" },
+  const quickQueries = [
+    { q: "What are the grounds for detention of a juvenile?", label: "Detention Grounds" },
+    { q: "What is the standard of proof for TPR?", label: "TPR Standard" },
+    { q: "When must a detention hearing be held?", label: "Detention Hearing Timeline" },
+    { q: "What are the dispositional options for a delinquent child?", label: "Delinquent Dispositions" },
+    { q: "What is DCS required to do when a report of abuse is received?", label: "DCS Abuse Response" },
+    { q: "What are the rules for discovery in juvenile proceedings?", label: "Discovery Rules" },
   ];
 
   if (loading) {
@@ -190,7 +87,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Good morning, {userName}</h1>
+          <h1 className="text-2xl font-bold text-white">Welcome, {userName}</h1>
           <p className="text-slate-400">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
@@ -203,204 +100,109 @@ export default function DashboardPage() {
         <Link href="/chat">
           <Button size="lg" className="gap-2">
             <MessageSquare className="w-4 h-4" />
-            Ask AI Research
+            New Research Session
           </Button>
         </Link>
       </div>
 
-      {/* Alerts */}
-      {alerts.length > 0 && (
-        <div className="space-y-2">
-          {alerts.map((alert, i) => (
-            <div
-              key={i}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${
-                alert.type === "warning"
-                  ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-400"
-                  : "bg-blue-500/10 border-blue-500/30 text-blue-400"
-              }`}
-            >
-              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-              <p className="text-sm">{alert.message}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((stat) => (
-          <Card key={stat.name}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-400">{stat.name}</p>
-                  <p className="text-3xl font-bold text-white mt-1">{stat.value}</p>
-                  {stat.change && (
-                    <p className="text-xs text-slate-500 mt-1">{stat.change}</p>
-                  )}
-                </div>
-                <div className="w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center">
-                  <stat.icon className="w-6 h-6 text-amber-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Today's Hearings */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Upcoming Docket</CardTitle>
-              <CardDescription>Hearings this week</CardDescription>
-            </div>
-            <Link href="/docket">
-              <Button variant="ghost" size="sm" className="gap-1">
-                View All <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {upcomingHearings.length > 0 ? (
-              <div className="space-y-3">
-                {upcomingHearings.map((hearing) => (
-                  <div
-                    key={hearing.id}
-                    className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-800"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center text-white font-medium">
-                        {hearing.time.split(":")[0]}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-white">{hearing.caseNumber}</p>
-                        <p className="text-xs text-slate-400">
-                          {hearing.type} &bull; {hearing.child}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant={hearing.isToday ? "default" : "secondary"}>{hearing.time}</Badge>
-                      {!hearing.isToday && (
-                        <p className="text-xs text-slate-500 mt-1">
-                          {new Date(hearing.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-                        </p>
-                      )}
-                      {hearing.isToday && <p className="text-xs text-amber-400 mt-1">Today</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-slate-500 text-center py-4">
-                No hearings scheduled for today
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Cases */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Recent Cases</CardTitle>
-              <CardDescription>Latest case activity</CardDescription>
-            </div>
-            <Link href="/cases">
-              <Button variant="ghost" size="sm" className="gap-1">
-                View All <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {recentCases.length > 0 ? (
-              <div className="space-y-3">
-                {recentCases.map((case_) => (
-                  <Link key={case_.id} href={`/cases/${case_.id}`}>
-                  <div
-                    className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
-                        <FileText className="w-5 h-5 text-amber-400" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-white">{case_.caseNumber}</p>
-                        <p className="text-xs text-slate-400">
-                          {case_.child} &bull; {case_.allegation}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge
-                        variant={
-                          case_.status === "Active"
-                            ? "success"
-                            : case_.status === "Pending Disposition"
-                            ? "warning"
-                            : "secondary"
-                        }
-                      >
-                        {case_.status}
-                      </Badge>
-                      <p className="text-xs text-slate-500 mt-1">{case_.updatedAt}</p>
-                    </div>
-                  </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-slate-500 text-center py-4">
-                No cases yet — create your first case to get started
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
+      {/* Recent Research Sessions */}
       <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common tasks at your fingertips</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Recent Research</CardTitle>
+            <CardDescription>Your latest research sessions</CardDescription>
+          </div>
+          <Link href="/chat">
+            <Button variant="ghost" size="sm" className="gap-1">
+              View All <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Link href="/chat">
-              <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer">
-                <MessageSquare className="w-8 h-8 text-amber-400 mb-3" />
-                <h3 className="font-medium text-white">Research TN Law</h3>
-                <p className="text-xs text-slate-400 mt-1">Ask AI about T.C.A., case law, DCS policy</p>
-              </div>
-            </Link>
-            <Link href="/documents/new?template=detention-order">
-              <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer">
-                <FileText className="w-8 h-8 text-amber-400 mb-3" />
-                <h3 className="font-medium text-white">Detention Order</h3>
-                <p className="text-xs text-slate-400 mt-1">Generate a new detention order</p>
-              </div>
-            </Link>
-            <Link href="/cases/new">
-              <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer">
-                <FolderOpen className="w-8 h-8 text-amber-400 mb-3" />
-                <h3 className="font-medium text-white">New Case</h3>
-                <p className="text-xs text-slate-400 mt-1">Create a new case file</p>
-              </div>
-            </Link>
-            <Link href="/docket">
-              <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer">
-                <Calendar className="w-8 h-8 text-amber-400 mb-3" />
-                <h3 className="font-medium text-white">Schedule Hearing</h3>
-                <p className="text-xs text-slate-400 mt-1">Add hearing to your docket</p>
-              </div>
-            </Link>
-          </div>
+          {recentSessions.length > 0 ? (
+            <div className="space-y-3">
+              {recentSessions.map((session) => (
+                <Link key={session.id} href={`/chat?session=${session.id}`}>
+                  <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
+                        <MessageSquare className="w-5 h-5 text-amber-400" />
+                      </div>
+                      <p className="text-sm font-medium text-white">{session.title}</p>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <Clock className="w-3 h-3" />
+                      {session.updatedAt}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 text-center py-4">
+              No research sessions yet. Start your first one above.
+            </p>
+          )}
         </CardContent>
       </Card>
+
+      {/* Quick Start */}
+      <div>
+        <h2 className="text-lg font-semibold text-white mb-4">Quick Start</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {quickQueries.map((item) => (
+            <Link key={item.label} href={`/chat?q=${encodeURIComponent(item.q)}`}>
+              <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-800 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
+                <h3 className="font-medium text-white text-sm mb-1">{item.label}</h3>
+                <p className="text-xs text-slate-400">{item.q}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Browse the Corpus */}
+      <div>
+        <h2 className="text-lg font-semibold text-white mb-4">Browse the Corpus</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link href="/tca">
+            <Card className="hover:border-blue-500/50 transition-colors cursor-pointer h-full">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <BookOpen className="w-6 h-6 text-blue-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-1">Tennessee Code</h3>
+                <p className="text-2xl font-bold text-blue-400 mb-1">{tcaSections.length}</p>
+                <p className="text-xs text-slate-400">TCA sections</p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/trjpp">
+            <Card className="hover:border-orange-500/50 transition-colors cursor-pointer h-full">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Scale className="w-6 h-6 text-orange-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-1">TRJPP Rules</h3>
+                <p className="text-2xl font-bold text-orange-400 mb-1">44</p>
+                <p className="text-xs text-slate-400">Juvenile practice rules</p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/dcs-policies">
+            <Card className="hover:border-green-500/50 transition-colors cursor-pointer h-full">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <FileText className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-1">DCS Policies</h3>
+                <p className="text-2xl font-bold text-green-400 mb-1">25</p>
+                <p className="text-xs text-slate-400">Department policies</p>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
