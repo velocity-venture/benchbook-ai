@@ -29,7 +29,7 @@ BenchBook AI is a specialized legal tech platform designed specifically for Tenn
 
 ### 1. AI Legal Research Assistant
 - Natural language queries: "What's the standard for detention in TN?"
-- TN Code Annotated (T.C.A.) integration
+- Complete Title 36 & 37 TN Code Annotated (T.C.A.) integration
 - Case law search and citation
 - Juvenile-specific legal research
 

@@ -136,8 +136,9 @@ PINECONE_API_KEY=pcsk_... OPENAI_API_KEY=sk-... LANGSMITH_API_KEY=lsv2_... \
 2. **Login** (10s) — Sign in as the demo judge account
 3. **Dashboard** (30s) — Active cases, today's hearings, compliance alerts
 4. **AI Chat** (60s) — Ask: "What are the requirements for a detention hearing?"
-   - Show the AI response with TCA/TRJPP citations
+   - Show the AI response with complete TCA Title 36/37 and TRJPP citations
    - Point out the source badges (TCA, DCS, TRJPP)
+   - Mention: "Plus your county's local rules can be added"
 5. **Docket** (30s) — Show week view, click "Schedule Hearing"
 6. **Documents** (30s) — Generate a detention order from template
 7. **TCA Explorer** (20s) — Search "37-1-114", show expandable section
@@ -148,11 +149,13 @@ PINECONE_API_KEY=pcsk_... OPENAI_API_KEY=sk-... LANGSMITH_API_KEY=lsv2_... \
 
 | Source | Documents | Chunks | Description |
 |--------|-----------|--------|-------------|
-| TCA Title 36 | 1 HTML | 4,434 | Domestic Relations |
-| TCA Title 37 | 1 HTML | 1,576 | Juveniles |
-| TRJPP | 44 text files | 137 | Rules of Juvenile Practice |
-| DCS Policies | 25 PDFs | 178 | Child Protective Services |
+| TCA Title 36 | 1 HTML | 4,434 | Complete Domestic Relations Code |
+| TCA Title 37 | 1 HTML | 1,576 | Complete Juveniles Code |
+| TRJPP | 44 text files | 137 | Complete Rules of Juvenile Practice and Procedure |
+| DCS Policies | 25 PDFs | 178 | All DCS policies and procedures |
 | **Total** | **71 files** | **6,325** | **All embedded with text-embedding-3-large** |
+
+**Note:** County local juvenile court rules can be added upon request during onboarding.
 
 ---
 

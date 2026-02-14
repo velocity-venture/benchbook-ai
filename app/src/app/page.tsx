@@ -33,8 +33,9 @@ export default function Home() {
             <span className="text-amber-400">Bench Book</span>
           </h1>
           <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-            Ask compliance questions, get cited answers from TCA, TRJPP, and DCS
-            policies. A closed legal universe built for Tennessee Juvenile Court.
+            Ask compliance questions, get cited answers from all of Title 36 & 37 TCA, 
+            complete TRJPP rules, all DCS policies and procedures, plus your county's 
+            local juvenile court rules. A comprehensive legal universe built for Tennessee Juvenile Court.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -62,11 +63,13 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-8 text-slate-400">
             <span>6,325 vectors</span>
             <span>&bull;</span>
-            <span>55 TCA sections</span>
+            <span>All Title 36 & 37 TCA</span>
             <span>&bull;</span>
-            <span>44 TRJPP rules</span>
+            <span>Complete TRJPP</span>
             <span>&bull;</span>
-            <span>25 DCS policies</span>
+            <span>All DCS policies</span>
+            <span>&bull;</span>
+            <span>+ County local rules</span>
           </div>
         </div>
       </section>
@@ -84,8 +87,8 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold mb-2">AI Legal Research</h3>
               <p className="text-slate-400">
-                Ask questions in plain English. Get answers with T.C.A. citations,
-                TRJPP rule references, and DCS policy guidance — all sourced and verifiable.
+                Ask questions in plain English. Get answers with complete Title 36 & 37 TCA citations,
+                TRJPP rule references, all DCS policy guidance, and county local rules — all sourced and verifiable.
               </p>
             </div>
             <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl">
@@ -94,8 +97,8 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Browse the Corpus</h3>
               <p className="text-slate-400">
-                Explore 55 TCA sections, 44 TRJPP rules, and 25 DCS policies.
-                Search by keyword, browse by topic, and drill into the full text.
+                Explore all Title 36 & 37 TCA sections, complete TRJPP rules, all DCS policies and procedures, 
+                plus county-specific local rules. Search by keyword, browse by topic, and drill into the full text.
               </p>
             </div>
             <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl">
@@ -137,9 +140,9 @@ export default function Home() {
                 <BookOpen className="w-6 h-6 text-blue-400" />
               </div>
               <h3 className="text-lg font-semibold mb-1">Tennessee Code</h3>
-              <p className="text-3xl font-bold text-blue-400 mb-2">55</p>
+              <p className="text-3xl font-bold text-blue-400 mb-2">ALL</p>
               <p className="text-sm text-slate-400">
-                Sections from Title 37 (Juveniles) and Title 36 (Domestic Relations)
+                Complete Title 37 (Juveniles) and Title 36 (Domestic Relations)
               </p>
             </div>
             <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl text-center">
@@ -147,9 +150,9 @@ export default function Home() {
                 <Scale className="w-6 h-6 text-orange-400" />
               </div>
               <h3 className="text-lg font-semibold mb-1">TRJPP Rules</h3>
-              <p className="text-3xl font-bold text-orange-400 mb-2">44</p>
+              <p className="text-3xl font-bold text-orange-400 mb-2">ALL</p>
               <p className="text-sm text-slate-400">
-                TN Rules of Juvenile Practice and Procedure, Parts 1-4
+                Complete Tennessee Rules of Juvenile Practice and Procedure
               </p>
             </div>
             <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl text-center">
@@ -157,9 +160,9 @@ export default function Home() {
                 <FileText className="w-6 h-6 text-green-400" />
               </div>
               <h3 className="text-lg font-semibold mb-1">DCS Policies</h3>
-              <p className="text-3xl font-bold text-green-400 mb-2">25</p>
+              <p className="text-3xl font-bold text-green-400 mb-2">ALL</p>
               <p className="text-sm text-slate-400">
-                Chapters 9, 14, and 16 — Confidentiality, CPS, and Foster Care
+                Complete DCS policies and procedures, plus county local rules on request
               </p>
             </div>
           </div>
