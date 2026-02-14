@@ -1,0 +1,221 @@
+/* Courtroom Mode Styles - Bench-optimized UI enhancements */
+
+/* Large Fonts - Increase base font sizes for tablet readability */
+.large-fonts {
+  font-size: 18px;
+}
+
+.large-fonts h1 {
+  font-size: 2.5rem;
+}
+
+.large-fonts h2 {
+  font-size: 2rem;
+}
+
+.large-fonts h3 {
+  font-size: 1.5rem;
+}
+
+.large-fonts .text-sm {
+  font-size: 1rem;
+}
+
+.large-fonts .text-xs {
+  font-size: 0.875rem;
+}
+
+/* Courtroom Mode - Enhanced touch targets and spacing */
+.courtroom-mode button {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 12px 24px;
+}
+
+.courtroom-mode input {
+  min-height: 48px;
+  font-size: 18px;
+  padding: 12px 16px;
+}
+
+.courtroom-mode .chat-message {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.courtroom-mode .sidebar-nav button {
+  padding: 16px 20px;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+/* Enhanced click targets for mobile */
+.courtroom-mode .clickable {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* Reduced spacing for focused content */
+.courtroom-mode .compact-spacing > * + * {
+  margin-top: 12px;
+}
+
+/* Voice-to-text indicator */
+.voice-recording {
+  position: relative;
+}
+
+.voice-recording::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Reduced Motion - Disable animations when enabled */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.reduce-motion {
+  scroll-behavior: auto !important;
+}
+
+/* High contrast mode for better visibility */
+.courtroom-mode {
+  --border-opacity: 0.3;
+  --hover-opacity: 0.1;
+}
+
+.courtroom-mode .border-slate-800 {
+  border-color: rgba(148, 163, 184, var(--border-opacity));
+}
+
+.courtroom-mode .hover\:bg-slate-800:hover {
+  background-color: rgba(148, 163, 184, var(--hover-opacity));
+}
+
+/* One-handed operation - Move important controls to bottom on mobile */
+@media (max-width: 768px) {
+  .courtroom-mode .mobile-bottom-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgb(15, 23, 42);
+    border-top: 1px solid rgb(30, 41, 59);
+    padding: 16px;
+    z-index: 50;
+  }
+
+  .courtroom-mode .main-content {
+    padding-bottom: 80px;
+  }
+}
+
+/* Tablet-specific optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .courtroom-mode .tablet-optimized {
+    padding: 24px;
+  }
+
+  .courtroom-mode .tablet-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+/* Focus management for keyboard navigation */
+.courtroom-mode *:focus {
+  outline: 2px solid rgb(245, 158, 11);
+  outline-offset: 2px;
+}
+
+/* Swipe navigation indicators */
+.courtroom-mode .swipe-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 40px;
+  background: rgb(245, 158, 11);
+  border-radius: 2px;
+  opacity: 0.3;
+}
+
+.courtroom-mode .swipe-indicator.left {
+  left: 8px;
+}
+
+.courtroom-mode .swipe-indicator.right {
+  right: 8px;
+}
+
+/* Enhanced loading states for slow connections */
+.courtroom-mode .loading-enhanced {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: rgb(148, 163, 184);
+}
+
+/* Chat-specific optimizations */
+.courtroom-mode .chat-container {
+  padding: 20px;
+}
+
+.courtroom-mode .chat-input {
+  font-size: 18px;
+  min-height: 56px;
+  padding: 16px;
+}
+
+.courtroom-mode .chat-send-button {
+  min-width: 56px;
+  min-height: 56px;
+  padding: 16px;
+}
+
+/* Search result optimizations */
+.courtroom-mode .search-result {
+  padding: 20px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+}
+
+.courtroom-mode .citation-badge {
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+/* Document viewer optimizations */
+.courtroom-mode .document-content {
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.courtroom-mode .document-section {
+  margin-bottom: 32px;
+  padding: 20px;
+}

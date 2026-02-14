@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/sidebar";
+import { PreferencesProvider } from "@/contexts/preferences-context";
+import "@/styles/courtroom-mode.css";
 
 export default async function DashboardLayout({
   children,
@@ -33,16 +35,18 @@ export default async function DashboardLayout({
     .slice(0, 2);
 
   return (
-    <div className="flex h-screen bg-slate-950">
-      <Sidebar
-        user={{
-          email: user.email || "",
-          fullName,
-          initials,
-          county: profile?.county,
-        }}
-      />
-      <main className="flex-1 overflow-auto">{children}</main>
-    </div>
+    <PreferencesProvider>
+      <div className="flex h-screen bg-slate-950">
+        <Sidebar
+          user={{
+            email: user.email || "",
+            fullName,
+            initials,
+            county: profile?.county,
+          }}
+        />
+        <main className="flex-1 overflow-auto">{children}</main>
+      </div>
+    </PreferencesProvider>
   );
 }

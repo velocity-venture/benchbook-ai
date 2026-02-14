@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { tcaSections } from "@/lib/tca-data";
+import ResearchPatterns from "@/components/research-patterns";
 
 interface RecentSession {
   id: string;
@@ -145,6 +146,9 @@ export default function DashboardPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Research Patterns */}
+      <ResearchPatterns />
 
       {/* Quick Start */}
       <div>

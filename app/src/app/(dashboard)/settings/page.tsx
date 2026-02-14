@@ -16,9 +16,13 @@ import {
   Mail,
   Phone,
   Loader2,
+  Monitor,
+  Smartphone,
+  Volume2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { usePreferences } from "@/contexts/preferences-context";
 
 const tabs = [
   { id: "profile", name: "Profile", icon: User },
@@ -42,6 +46,9 @@ export default function SettingsPage() {
     phone: "",
     organization: "",
   });
+
+  // Use preferences context
+  const { preferences, updatePreferences: updatePrefs } = usePreferences();
 
 
   const updateProfile = (field: string, value: string) =>
@@ -330,25 +337,25 @@ export default function SettingsPage() {
             )}
 
             {activeTab === "appearance" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Appearance</CardTitle>
-                  <CardDescription>Customize how BenchBook AI looks</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <label className="text-sm font-medium text-white mb-3 block">Theme</label>
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Theme</CardTitle>
+                    <CardDescription>Choose your preferred appearance</CardDescription>
+                  </CardHeader>
+                  <CardContent>
                     <div className="flex gap-3">
                       {[
-                        { name: "Dark", value: "dark", active: true },
-                        { name: "Light", value: "light", active: false },
-                        { name: "System", value: "system", active: false },
+                        { name: "Dark", value: "dark" },
+                        { name: "Light", value: "light" },
+                        { name: "System", value: "system" },
                       ].map((theme) => (
                         <button
                           key={theme.value}
+                          onClick={() => updatePrefs({ theme: theme.value as any })}
                           className={cn(
                             "px-4 py-2 rounded-lg border text-sm font-medium transition-colors",
-                            theme.active
+                            preferences.theme === theme.value
                               ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
                               : "border-slate-700 text-slate-400 hover:text-white hover:border-slate-600"
                           )}
@@ -357,9 +364,155 @@ export default function SettingsPage() {
                         </button>
                       ))}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Monitor className="w-5 h-5 text-amber-400" />
+                      Courtroom Mode
+                    </CardTitle>
+                    <CardDescription>
+                      Optimize the interface for bench use during hearings
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Main Courtroom Mode Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-slate-800">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
+                          <Smartphone className="w-5 h-5 text-amber-400" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-white">Enable Courtroom Mode</p>
+                          <p className="text-sm text-slate-400">
+                            Large fonts, simplified navigation, tablet-optimized
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => updatePrefs({ courtroomMode: !preferences.courtroomMode })}
+                        className={cn(
+                          "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                          preferences.courtroomMode ? "bg-amber-500" : "bg-slate-600"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                            preferences.courtroomMode ? "translate-x-6" : "translate-x-1"
+                          )}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Courtroom Mode Options */}
+                    {preferences.courtroomMode && (
+                      <div className="space-y-4 pl-4 border-l-2 border-amber-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-white text-sm">Large Fonts</p>
+                            <p className="text-xs text-slate-400">Increase text size for better readability</p>
+                          </div>
+                          <button
+                            onClick={() => updatePrefs({ largeFonts: !preferences.largeFonts })}
+                            className={cn(
+                              "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
+                              preferences.largeFonts ? "bg-amber-500" : "bg-slate-600"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "inline-block h-3 w-3 transform rounded-full bg-white transition-transform",
+                                preferences.largeFonts ? "translate-x-5" : "translate-x-1"
+                              )}
+                            />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-white text-sm">Voice-to-Text</p>
+                            <p className="text-xs text-slate-400">Enable voice search for hands-free operation</p>
+                          </div>
+                          <button
+                            onClick={() => updatePrefs({ voiceToText: !preferences.voiceToText })}
+                            className={cn(
+                              "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
+                              preferences.voiceToText ? "bg-amber-500" : "bg-slate-600"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "inline-block h-3 w-3 transform rounded-full bg-white transition-transform",
+                                preferences.voiceToText ? "translate-x-5" : "translate-x-1"
+                              )}
+                            />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-white text-sm">Reduced Motion</p>
+                            <p className="text-xs text-slate-400">Minimize animations for distraction-free use</p>
+                          </div>
+                          <button
+                            onClick={() => updatePrefs({ reducedMotion: !preferences.reducedMotion })}
+                            className={cn(
+                              "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
+                              preferences.reducedMotion ? "bg-amber-500" : "bg-slate-600"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "inline-block h-3 w-3 transform rounded-full bg-white transition-transform",
+                                preferences.reducedMotion ? "translate-x-5" : "translate-x-1"
+                              )}
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tips */}
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Volume2 className="w-5 h-5 text-amber-400 mt-0.5" />
+                        <div>
+                          <p className="text-amber-400 font-medium text-sm">Bench Optimization Tips</p>
+                          <ul className="text-amber-400/80 text-xs mt-2 space-y-1">
+                            <li>• Use voice search during hearings for hands-free research</li>
+                            <li>• Large fonts improve readability on tablets from arm's length</li>
+                            <li>• Reduced motion minimizes distractions in courtroom settings</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline" onClick={loadProfile}>
+                    Reset
+                  </Button>
+                  <Button onClick={handleSave} disabled={saving} className="gap-2">
+                    {saving ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : saved ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Saved
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Save Preferences
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
             )}
 
           </div>

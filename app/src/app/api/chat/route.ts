@@ -200,6 +200,14 @@ export async function POST(request: NextRequest) {
     // Step 2: Call OpenAI with context
     const response = await callOpenAI(query, context, messages);
 
+    // Step 3: Track research query for personal patterns
+    try {
+      await trackResearchQuery(user.id, query, sources);
+    } catch (trackingError) {
+      // Don't fail the request if tracking fails
+      console.error("Research tracking error:", trackingError);
+    }
+
     return NextResponse.json({
       response,
       sources,
@@ -443,4 +451,40 @@ For the most accurate information, I recommend:
 Would you like me to look up a specific statute or policy? Please provide more details about your question.`,
     sources: [],
   };
+}
+
+/**
+ * Track research query for personal patterns analysis
+ */
+async function trackResearchQuery(userId: string, query: string, sources: Source[]) {
+  const supabase = createClient();
+  
+  // Prepare sources data for storage
+  const sourcesData = sources.map(source => ({
+    title: source.title,
+    citation: source.citation,
+    type: source.type,
+    snippet: source.snippet.substring(0, 200) // Limit snippet length
+  }));
+
+  // Insert research query tracking
+  const { error } = await supabase
+    .from("research_queries")
+    .insert({
+      user_id: userId,
+      query: query.substring(0, 1000), // Limit query length for storage
+      query_type: 'chat',
+      response_sources: sourcesData,
+    });
+
+  if (error) {
+    console.error("Failed to track research query:", error);
+    throw error;
+  }
+
+  // Update research patterns (async, don't wait)
+  supabase
+    .rpc('update_user_research_patterns', { target_user_id: userId })
+    .then(() => console.log('Research patterns updated'))
+    .catch(err => console.error('Failed to update research patterns:', err));
 }
