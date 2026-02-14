@@ -59,10 +59,11 @@ schema_paths = []
 
 [db.seed]
 # If enabled, seeds the database after migrations during a db reset.
-enabled = true
+# Disabled by default because demo seed data expects an existing auth user.
+enabled = false
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
-sql_paths = ["./seed.sql"]
+sql_paths = ["./seed-demo-data.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.

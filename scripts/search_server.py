@@ -7,7 +7,7 @@ over HTTP as a fallback when Pinecone is not configured.
 Usage:
     python3 scripts/search_server.py
 
-Reads OPENAI_API_KEY from .env.local in the project root.
+Reads OPENAI_API_KEY from app/.env.local or .env.local in the project root.
 Listens on http://localhost:8765/search
 """
 
@@ -22,7 +22,10 @@ import numpy as np
 # Resolve paths relative to project root (parent of scripts/)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CHUNKS_PATH = PROJECT_ROOT / "legal-corpus" / "_processed" / "chunks_embedded.json"
-ENV_PATH = PROJECT_ROOT / ".env.local"
+ENV_PATHS = [
+    PROJECT_ROOT / "app" / ".env.local",
+    PROJECT_ROOT / ".env.local",
+]
 
 HOST = "127.0.0.1"
 PORT = 8765
@@ -32,7 +35,7 @@ EMBEDDING_DIM = 3072
 
 
 def load_env(path: Path) -> None:
-    """Load key=value pairs from .env.local into os.environ."""
+    """Load key=value pairs from a .env.local file into os.environ."""
     if not path.exists():
         return
     with open(path) as f:
@@ -43,6 +46,12 @@ def load_env(path: Path) -> None:
             if "=" in line:
                 key, _, value = line.partition("=")
                 os.environ.setdefault(key.strip(), value.strip())
+
+
+def load_env_paths(paths: list[Path]) -> None:
+    """Load key=value pairs from multiple env files (first wins)."""
+    for path in paths:
+        load_env(path)
 
 
 def load_chunks(path: Path):
@@ -179,7 +188,7 @@ class SearchHandler(BaseHTTPRequestHandler):
 
 
 def main():
-    load_env(ENV_PATH)
+    load_env_paths(ENV_PATHS)
 
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:

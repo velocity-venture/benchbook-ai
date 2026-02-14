@@ -35,8 +35,9 @@ from html.parser import HTMLParser
 # Configuration
 # ---------------------------------------------------------------------------
 
-CORPUS_DIR = Path(__file__).parent.parent / "legal-corpus"
-OUTPUT_DIR = Path(__file__).parent.parent / "legal-corpus" / "_processed"
+PROJECT_ROOT = Path(__file__).parent.parent
+CORPUS_DIR = PROJECT_ROOT / "legal-corpus"
+OUTPUT_DIR = PROJECT_ROOT / "legal-corpus" / "_processed"
 
 CHUNK_SIZE = 1500       # characters per chunk (target)
 CHUNK_OVERLAP = 200     # overlap for context continuity
@@ -56,6 +57,12 @@ SOURCE_MAP = {
     "local-rules": "LOCAL",
 }
 
+# Env files (app first, then root)
+ENV_PATHS = [
+    PROJECT_ROOT / "app" / ".env.local",
+    PROJECT_ROOT / ".env.local",
+]
+
 
 # ---------------------------------------------------------------------------
 # Data Models
@@ -74,6 +81,25 @@ class ChunkRecord:
     token_count: int
     version_date: str
     embedding: Optional[list] = None
+
+
+# ---------------------------------------------------------------------------
+# Env Helpers
+# ---------------------------------------------------------------------------
+
+def load_env_value(key: str) -> str:
+    """Load a single env var from app/.env.local or .env.local (first wins)."""
+    if os.environ.get(key):
+        return os.environ[key]
+    for path in ENV_PATHS:
+        if not path.exists():
+            continue
+        for line in path.read_text().splitlines():
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith(f"{key}="):
+                return line.split("=", 1)[1].strip()
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -641,14 +667,7 @@ def main():
         chunks = [ChunkRecord(**d, embedding=None) for d in data]
         print(f"\nLoaded {len(chunks)} chunks for embedding")
 
-        api_key = os.environ.get("OPENAI_API_KEY", "")
-        if not api_key:
-            # Try .env.local
-            env_path = Path(__file__).parent.parent / ".env.local"
-            if env_path.exists():
-                for line in env_path.read_text().splitlines():
-                    if line.startswith("OPENAI_API_KEY="):
-                        api_key = line.split("=", 1)[1].strip()
+        api_key = load_env_value("OPENAI_API_KEY")
         if not api_key:
             print("OPENAI_API_KEY not found. Set it in .env.local or environment.")
             sys.exit(1)
@@ -672,13 +691,7 @@ def main():
         chunks = [ChunkRecord(**d) for d in data]
         print(f"\nLoaded {len(chunks)} embedded chunks for Pinecone upload")
 
-        pinecone_key = os.environ.get("PINECONE_API_KEY", "")
-        if not pinecone_key:
-            env_path = Path(__file__).parent.parent / ".env.local"
-            if env_path.exists():
-                for line in env_path.read_text().splitlines():
-                    if line.startswith("PINECONE_API_KEY="):
-                        pinecone_key = line.split("=", 1)[1].strip()
+        pinecone_key = load_env_value("PINECONE_API_KEY")
         if not pinecone_key:
             print("PINECONE_API_KEY not found. Set it in .env.local or environment.")
             sys.exit(1)

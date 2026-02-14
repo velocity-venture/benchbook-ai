@@ -61,16 +61,16 @@ export default $config({
             {
               id: "archive-old-versions",
               enabled: true,
-              noncurrentVersionExpiration: {
-                noncurrentDays: 90,
-              },
+              noncurrentVersionExpirations: [
+                {
+                  days: 90,
+                },
+              ],
             },
             {
               id: "abort-incomplete-uploads",
               enabled: true,
-              abortIncompleteMultipartUpload: {
-                daysAfterInitiation: 7,
-              },
+              abortIncompleteMultipartUploadDays: 7,
             },
           ],
         },
@@ -132,29 +132,11 @@ export default $config({
     // =========================================================================
     // S3 EVENT TRIGGER: Auto-process uploaded PDFs
     // =========================================================================
-    documentBucket.subscribe(
-      {
-        function: pdfChunker,
-        events: ["s3:ObjectCreated:*"],
-        filterPrefix: "raw/", // Only trigger for uploads to /raw/ folder
-        filterSuffix: ".pdf",
-      },
-      {
-        transform: {
-          notification: {
-            // Prevent duplicate processing
-            filter: {
-              key: {
-                rules: [
-                  { name: "prefix", value: "raw/" },
-                  { name: "suffix", value: ".pdf" },
-                ],
-              },
-            },
-          },
-        },
-      }
-    );
+    documentBucket.subscribe(pdfChunker.arn, {
+      events: ["s3:ObjectCreated:*"],
+      filterPrefix: "raw/",
+      filterSuffix: ".pdf",
+    });
 
     // =========================================================================
     // LAMBDA: LangSmith Evaluation Runner (for Phase 1 testing)
@@ -197,7 +179,7 @@ export default $config({
     api.route("POST /evaluate", evaluationRunner.arn);
     api.route("GET /health", {
       handler: "packages/functions/src/health.handler",
-      runtime: "nodejs20.x",
+      runtime: "nodejs22.x",
     });
 
     // =========================================================================

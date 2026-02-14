@@ -75,15 +75,20 @@ export AWS_REGION=us-east-1
 
 ```bash
 # Pinecone
-sst secret set PineconeApiKey pc-xxxxxxxx
-sst secret set PineconeEnvironment us-east-1
-sst secret set PineconeIndex benchbook-legal
+npx sst secret set PineconeApiKey pc-xxxxxxxx
+npx sst secret set PineconeEnvironment us-east-1
+npx sst secret set PineconeIndex benchbook-legal
 
 # OpenAI
-sst secret set OpenAIApiKey sk-proj-xxxxxxxx
+npx sst secret set OpenAIApiKey sk-proj-xxxxxxxx
 
 # LangSmith
-sst secret set LangSmithApiKey lsv2_pt_xxxxxxxx
+npx sst secret set LangSmithApiKey lsv2_pt_xxxxxxxx
+```
+
+Or from the repo root:
+```bash
+PINECONE_API_KEY=pc-... OPENAI_API_KEY=sk-... ./scripts/deploy_infra.sh
 ```
 
 ### 4. Deploy to Development
@@ -100,6 +105,9 @@ npm run deploy:dev
 
 ```bash
 npm run deploy
+
+# Or from the repo root
+SST_STAGE=production ./scripts/deploy_infra.sh
 ```
 
 ---
@@ -248,7 +256,7 @@ memory: "5 GB"
 
 ```bash
 # Verify API key
-sst secret list
+npx sst secret list
 
 # Check index exists
 curl -X GET "https://api.pinecone.io/indexes" \
@@ -263,7 +271,7 @@ export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_PROJECT=benchbook-ai-production
 
 # Check API key
-sst secret get LangSmithApiKey
+npx sst secret get LangSmithApiKey
 ```
 
 ---

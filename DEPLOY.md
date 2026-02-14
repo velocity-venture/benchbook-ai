@@ -14,18 +14,31 @@
 3. Wait for project to provision (~2 minutes)
 
 ### Step 2: Run Database Migrations
+**Recommended (CLI):**
+```bash
+SUPABASE_PROJECT_REF=your-project-ref ./scripts/deploy_supabase.sh
+```
+
+**Manual (SQL Editor):**
 1. In Supabase Dashboard, go to **SQL Editor**
 2. Paste the contents of `supabase/migrations/20260204_initial_schema.sql` and click **Run**
 3. Paste the contents of `supabase/migrations/20260206_waitlist.sql` and click **Run**
+4. Paste the contents of `supabase/migrations/20260209003525_init_chat_persistence.sql` and click **Run**
 
 ### Step 3: Configure Environment
 Copy your Supabase credentials from Dashboard > Settings > API:
 
-Create `app/.env.local`:
+Create/update both `app/.env.local` and `.env.local`:
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...your-anon-key
-OPENAI_API_KEY=sk-proj-xtdSjPLkb85...  (already in .env.local at root)
+OPENAI_API_KEY=sk-proj-xtdSjPLkb85...
+```
+
+Optional automation:
+```bash
+BB_WRITE_ENV=1 NEXT_PUBLIC_SUPABASE_URL=... NEXT_PUBLIC_SUPABASE_ANON_KEY=... \
+  SUPABASE_PROJECT_REF=your-project-ref ./scripts/deploy_supabase.sh
 ```
 
 ### Step 4: Sign Up & Seed Demo Data
@@ -55,12 +68,16 @@ The chat works in 3 modes (automatic fallback):
 
 ### For the conference demo, Local Search mode is recommended:
 
-1. Start search server (loads 6,325 legal chunks):
+1. Verify embedded corpus (6,325 legal chunks):
+   ```bash
+   ./scripts/deploy_rag.sh
+   ```
+2. Start search server (loads 6,325 legal chunks):
    ```bash
    cd /path/to/benchbook-ai
    python3 scripts/search_server.py &
    ```
-2. Start the app:
+3. Start the app:
    ```bash
    cd app && npm run dev
    ```
@@ -81,8 +98,19 @@ The chat works in 3 modes (automatic fallback):
    ```
 5. Upload vectors:
    ```bash
-   python3 scripts/ingest_local.py --embed --pinecone
+   UPLOAD_TO_PINECONE=1 PINECONE_API_KEY=pcsk_... ./scripts/deploy_rag.sh
    ```
+
+---
+
+## SST Infrastructure (PDF → Pinecone Pipeline)
+
+This deploys the S3 bucket + PDF chunker Lambda + evaluation API.
+
+```bash
+PINECONE_API_KEY=pcsk_... OPENAI_API_KEY=sk-... LANGSMITH_API_KEY=lsv2_... \
+  ./scripts/deploy_infra.sh
+```
 
 ---
 
