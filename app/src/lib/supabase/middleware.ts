@@ -43,7 +43,6 @@ export async function updateSession(request: NextRequest) {
     "/dcs-policies",
     "/bench-cards",
     "/statutes",
-    "/documents",
   ];
 
   const isProtected = protectedPaths.some(

@@ -12,7 +12,6 @@ import {
   ArrowRight,
   Star,
   BarChart3,
-  FileUp,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -96,7 +95,7 @@ export default function DashboardPage() {
     { label: "New Research", href: "/chat?new=true", icon: MessageSquare, description: "Start an AI research session" },
     { label: "Search Statutes", href: "/statutes", icon: Search, description: "Search TCA, TRJPP, DCS" },
     { label: "Bench Cards", href: "/bench-cards", icon: BookOpen, description: "Browse bench card library" },
-    { label: "Upload Document", href: "/documents", icon: FileUp, description: "Analyze a court document" },
+    { label: "DCS Policies", href: "/dcs-policies", icon: FileText, description: "Browse DCS policies & procedures" },
   ];
 
   if (loading) {

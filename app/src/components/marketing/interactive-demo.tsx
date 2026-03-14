@@ -14,89 +14,89 @@ interface BenchCardResult {
 }
 
 const mockResults: Record<string, BenchCardResult> = {
-  "bond conditions": {
-    title: "Bond Conditions in Juvenile Proceedings",
+  "reasonable efforts": {
+    title: "Reasonable Efforts Requirement",
     type: "TCA",
-    citation: "T.C.A. § 37-1-114(c)",
+    citation: "T.C.A. § 37-1-166",
     summary:
-      "A child taken into custody shall be released to the child's parent, guardian, or custodian upon the written promise to bring the child before the court when requested, unless detention or shelter care is warranted under T.C.A. § 37-1-114(c).",
+      "The court shall determine whether reasonable efforts have been made by DCS to prevent removal, reunify the family, or finalize a permanency plan. DCS bears the burden of demonstrating reasonable efforts at each stage of the proceeding.",
     keyPoints: [
-      "Release to parent/guardian is the default",
-      "Written promise to appear is required",
-      "Detention only when immediate welfare at risk",
-      "Shelter care as an alternative to detention",
-      "Must consider least restrictive alternative",
+      "Required finding at every hearing where custody is at issue",
+      "DCS must document specific services offered or provided",
+      "Court may find NO reasonable efforts — triggers corrective action",
+      "Federal funding (Title IV-E) contingent on reasonable efforts finding",
+      "Failure to make reasonable efforts may delay or prevent TPR",
     ],
     relatedStatutes: [
-      "T.C.A. § 37-1-114(a) — Taking into custody",
-      "T.C.A. § 37-1-116 — Detention hearings",
-      "TRJPP Rule 5 — Detention procedures",
+      "T.C.A. § 37-1-166(a) — Reasonable efforts defined",
+      "T.C.A. § 37-2-403 — Permanency plan requirements",
+      "DCS Policy 16.32 — Foster Care Review and Progress Reports",
     ],
   },
-  "detention hearing": {
-    title: "Detention Hearing Requirements",
+  "permanency plan timeline": {
+    title: "Permanency Plan Filing & Review Timeline",
     type: "TCA",
-    citation: "T.C.A. § 37-1-117",
+    citation: "T.C.A. § 37-2-409",
     summary:
-      "A detention hearing must be held promptly, and no later than 72 hours (excluding weekends and holidays) after the child is placed in detention. The court must determine whether continued detention is necessary to protect the child or the community.",
+      "DCS must file the initial permanency plan within 30 days of custody. The court must conduct a permanency hearing no later than 12 months from the date the child enters foster care, and every 12 months thereafter. DCS must lodge the plan with the Clerk at least 10 days before ratification.",
     keyPoints: [
-      "Must be held within 72 hours of placement",
-      "Weekends and holidays excluded from calculation",
-      "Probable cause finding required",
-      "Right to counsel must be advised",
-      "Written findings required for continued detention",
+      "Initial plan due within 30 days of DCS custody",
+      "First permanency hearing within 12 months of entry into care",
+      "Subsequent reviews every 12 months minimum",
+      "Plan must be filed 10 days before ratification hearing (Local Rule 4.13)",
+      "ASFA 15-of-22 month rule for filing TPR petition",
     ],
     relatedStatutes: [
-      "T.C.A. § 37-1-114 — Taking into custody",
-      "T.C.A. § 37-1-116 — Place of detention",
-      "TRJPP Rule 5(b) — Detention hearing procedures",
+      "T.C.A. § 37-2-403 — Permanency plan content requirements",
+      "DCS Policy 16.6 — Permanency Planning",
+      "Local Rule 4.13 — Permanency Plan filing deadline",
     ],
   },
-  "termination of parental rights": {
-    title: "Grounds for Termination of Parental Rights",
-    type: "TCA",
-    citation: "T.C.A. § 36-1-113",
+  "dcs court preparation": {
+    title: "DCS Court Preparation & Attendance",
+    type: "DCS",
+    citation: "DCS Policy 16.32 / Court Attendance Protocol",
     summary:
-      "Parental rights may be terminated upon a finding by clear and convincing evidence that grounds exist under T.C.A. § 36-1-113(g) and that termination is in the best interest of the child. The petition may be filed by any party with standing under the statute.",
+      "DCS case managers must attend all court hearings with current progress reports, updated permanency plans, and documentation of services provided. Reports must be filed in advance, not on the day of the hearing.",
     keyPoints: [
-      "Clear and convincing evidence standard",
-      "21 statutory grounds enumerated in § 36-1-113(g)",
-      "Best interest analysis required (§ 36-1-113(i))",
-      "Right to counsel at all stages",
-      "Must consider statutory best interest factors",
+      "Progress reports must be filed BEFORE the hearing",
+      "Case manager must be present and prepared to testify",
+      "Documentation of all services offered and provided",
+      "Failure to appear prepared wastes court resources",
+      "Non-compliance may result in show cause proceedings",
     ],
     relatedStatutes: [
-      "T.C.A. § 36-1-113(g) — Enumerated grounds",
-      "T.C.A. § 36-1-113(i) — Best interest factors",
-      "T.C.A. § 37-2-403 — DCS permanency plan",
+      "DCS Court Preparation Protocol (Feb. 2022)",
+      "T.C.A. § 37-1-159 — Court-ordered assessments",
+      "Local Rule 2.05 — Court begins at 9:00 AM",
     ],
   },
-  "transfer to criminal court": {
-    title: "Transfer to Criminal Court",
-    type: "TCA",
-    citation: "T.C.A. § 37-1-134",
+  "casa notice requirements": {
+    title: "CASA/GAL Notice & Participation Requirements",
+    type: "TRJPP",
+    citation: "Local Rule 4.16 / TRJPP Rule 2.09",
     summary:
-      "After a full investigation and hearing, the juvenile court may transfer a child aged 16 or older charged with a felony to criminal court if reasonable grounds exist to believe the child committed the offense and the interests of the community require transfer.",
+      "CASA and Guardian ad Litem are deemed parties for notice purposes and must be notified of all hearings, staffings, CFTMs, and family meetings. DCS must include CASA on all scheduling communications and respond within 24-48 hours.",
     keyPoints: [
-      "Child must be 16 or older",
-      "Charged with a felony offense",
-      "Full investigation and hearing required",
-      "Kent factors must be considered",
-      "Written findings of fact required",
+      "CASA/GAL deemed a party — entitled to full notice",
+      "Must be notified of all CFTMs and family meetings",
+      "Certificate of Service required for all filings",
+      "24-48 hour response window to CASA communications",
+      "Failure to notify may result in sanctions under Local Rule 4.16",
     ],
     relatedStatutes: [
-      "T.C.A. § 37-1-134(a)(1) — Transfer criteria",
-      "T.C.A. § 37-1-134(b) — Mandatory transfer offenses",
-      "TRJPP Rule 27 — Transfer proceedings",
+      "TRJPP Rule 2.09 — Service and notice requirements",
+      "Local Rule 4.16 — CASA notification mandate",
+      "T.C.A. § 37-1-149 — CASA appointment authority",
     ],
   },
 };
 
 const suggestedQueries = [
-  "bond conditions",
-  "detention hearing",
-  "termination of parental rights",
-  "transfer to criminal court",
+  "reasonable efforts",
+  "permanency plan timeline",
+  "DCS court preparation",
+  "CASA notice requirements",
 ];
 
 const typeColors: Record<string, { bg: string; text: string; border: string }> = {
@@ -124,7 +124,7 @@ export function InteractiveDemo() {
       );
 
       setTimeout(() => {
-        setResult(matchKey ? mockResults[matchKey] : mockResults["bond conditions"]);
+        setResult(matchKey ? mockResults[matchKey] : mockResults["reasonable efforts"]);
         setIsSearching(false);
       }, 800);
     },
@@ -156,8 +156,8 @@ export function InteractiveDemo() {
             See It In Action
           </h2>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
-            Type a legal term or statute number. Watch as BenchBook.AI instantly
-            generates a formatted bench card with cited sources.
+            DCS says they made reasonable efforts. You need the exact statute
+            and policy number — right now, on the bench. Type a query below.
           </p>
         </motion.div>
 
@@ -178,7 +178,7 @@ export function InteractiveDemo() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder='Try "bond conditions" or "detention hearing"'
+                placeholder='Try "reasonable efforts" or "permanency plan timeline"'
                 className="w-full px-4 py-5 bg-transparent text-white placeholder-slate-500 outline-none text-lg"
               />
               <button

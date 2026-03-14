@@ -7,13 +7,13 @@ import Link from "next/link";
 const tiers = [
   {
     name: "Solo Judge",
-    price: "$199",
+    price: "$69",
     period: "/month",
-    description: "For individual judges who want instant access to Tennessee law on the bench.",
+    description: "For individual judges who want instant access to Tennessee juvenile law and DCS policy on the bench.",
     features: [
       "Unlimited AI-powered legal research",
       "Full TCA Title 36 & 37 access",
-      "Complete TRJPP rules",
+      "Complete TRJPP rules database",
       "All DCS policies & procedures",
       "Formatted bench cards",
       "Offline mode",
@@ -24,7 +24,7 @@ const tiers = [
   },
   {
     name: "Court Package",
-    price: "$499",
+    price: "$199",
     period: "/month",
     description: "For courts with multiple judges and support staff. Shared research library.",
     features: [
@@ -32,7 +32,6 @@ const tiers = [
       "Up to 10 user seats",
       "Shared bench card library",
       "County local rules integration",
-      "Document compliance analysis",
       "Usage analytics dashboard",
       "Priority support",
       "Custom onboarding",
@@ -54,7 +53,7 @@ const tiers = [
       "Dedicated success manager",
       "SLA guarantee",
       "On-site training",
-      "Custom data ingestion",
+      "Custom legal corpus ingestion",
     ],
     cta: "Contact Sales",
     highlighted: false,

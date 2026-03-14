@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
   BookOpen,
   Search,
-  FileUp,
+  FileText,
   StickyNote,
   Settings,
   LogOut,
@@ -33,7 +33,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, shortcut: "D" },
   { name: "Bench Cards", href: "/bench-cards", icon: BookOpen, shortcut: "B" },
   { name: "Statute Search", href: "/statutes", icon: Search, shortcut: "S" },
-  { name: "Document Analyzer", href: "/documents", icon: FileUp, shortcut: "A" },
+  { name: "DCS Policies", href: "/dcs-policies", icon: FileText, shortcut: "P" },
   { name: "Case Notes", href: "/chat", icon: StickyNote, shortcut: "N" },
 ];
 

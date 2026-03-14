@@ -103,10 +103,10 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight mb-8"
         >
-          The Bench Is Smarter
+          Stop Searching.
           <br />
           <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-            With AI Behind It
+            Start Deciding.
           </span>
         </motion.h1>
 

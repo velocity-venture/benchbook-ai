@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   BookOpen,
   Search,
-  FileCheck,
+  FileText,
   Scale,
   WifiOff,
   Globe,
@@ -28,10 +28,10 @@ const features = [
     gradient: "from-blue-500/10 to-blue-600/5",
   },
   {
-    icon: FileCheck,
-    title: "Document Standardization",
+    icon: FileText,
+    title: "DCS Policy Search",
     description:
-      "Upload any court form, get compliance analysis against AOC standards and corrected versions generated instantly.",
+      "Instantly search all DCS policies and procedures by number, keyword, or topic. Know exactly which policy DCS is violating and cite it on the record.",
     size: "small" as const,
     gradient: "from-emerald-500/10 to-emerald-600/5",
   },
@@ -64,7 +64,7 @@ const features = [
 const iconColors: Record<string, string> = {
   BookOpen: "text-amber-400",
   Search: "text-blue-400",
-  FileCheck: "text-emerald-400",
+  FileText: "text-emerald-400",
   Scale: "text-purple-400",
   WifiOff: "text-rose-400",
   Globe: "text-cyan-400",

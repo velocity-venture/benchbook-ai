@@ -3,30 +3,6 @@
 import { motion } from "framer-motion";
 import { Quote, Clock, Search, FileText } from "lucide-react";
 
-const testimonials = [
-  {
-    quote:
-      "I've spent 20 years on the bench. BenchBook.AI is the first tool that actually understands what juvenile court judges need — instant answers from the sources I trust.",
-    author: "M.O. Eckel III",
-    title: "Juvenile Court Judge",
-    location: "Tipton County, TN",
-  },
-  {
-    quote:
-      "Before BenchBook.AI, I'd spend my lunch break flipping through statute books. Now I have every statute, rule, and DCS policy at my fingertips before the hearing starts.",
-    author: "Placeholder",
-    title: "Juvenile Court Judge",
-    location: "Tennessee",
-  },
-  {
-    quote:
-      "The bench cards are game-changers. Walking into a TPR hearing with a formatted reference card that cites every relevant statute — that's the confidence this tool provides.",
-    author: "Placeholder",
-    title: "Juvenile Court Judge",
-    location: "Tennessee",
-  },
-];
-
 const dayInLife = [
   {
     icon: Clock,
@@ -39,17 +15,17 @@ const dayInLife = [
   {
     icon: Search,
     time: "10:30 AM",
-    title: "Mid-Hearing Statute Check",
-    without: "Recess called, 15 minutes searching for the right TCA section",
-    with: "30 seconds — type the issue, get the cited answer instantly",
+    title: "Mid-Hearing DCS Accountability Check",
+    without: "Recess called, 15 minutes searching for the right DCS policy number",
+    with: "30 seconds — type the issue, get the cited policy instantly",
     saved: "14 min saved",
   },
   {
     icon: FileText,
     time: "2:00 PM",
-    title: "TPR Hearing Preparation",
-    without: "2 hours cross-referencing grounds, best interest factors, and case law",
-    with: "10 minutes — complete bench card with all 21 grounds and factors",
+    title: "Permanency Hearing Preparation",
+    without: "2 hours cross-referencing reasonable efforts requirements and DCS timelines",
+    with: "10 minutes — complete bench card with all statutes and DCS policies",
     saved: "110 min saved",
   },
 ];
@@ -60,7 +36,7 @@ export function Testimonials() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a] via-[#0d1220] to-[#0a0e1a]" />
 
       <div className="relative max-w-6xl mx-auto px-6">
-        {/* Testimonials */}
+        {/* Single prominent testimonial */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -68,39 +44,43 @@ export function Testimonials() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-            Judges Trust BenchBook.AI
+            Built From the Bench
           </h2>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
-            Built by a sitting judge, refined by courtroom experience.
+            Created by a sitting juvenile court judge who got tired of not having
+            the right policy number at hand when it mattered most.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-32">
-          {testimonials.map((testimonial, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="relative group"
-            >
-              <div className="absolute -inset-px bg-gradient-to-b from-white/[0.08] to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative bg-[#111827]/60 backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 h-full flex flex-col">
-                <Quote className="w-8 h-8 text-amber-500/30 mb-4" />
-                <blockquote className="text-slate-300 leading-relaxed flex-1 mb-6">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </blockquote>
-                <div className="border-t border-white/5 pt-4">
-                  <p className="font-semibold text-sm">{testimonial.author}</p>
-                  <p className="text-slate-500 text-sm">
-                    {testimonial.title}, {testimonial.location}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-3xl mx-auto mb-32"
+        >
+          <div className="relative">
+            <div className="absolute -inset-px bg-gradient-to-b from-amber-500/10 to-transparent rounded-2xl" />
+            <div className="relative bg-[#111827]/80 backdrop-blur-sm border border-white/[0.08] rounded-2xl p-10 md:p-12">
+              <Quote className="w-10 h-10 text-amber-500/30 mb-6" />
+              <blockquote className="text-xl md:text-2xl font-medium text-slate-200 leading-relaxed mb-8">
+                &ldquo;I&apos;ve spent 20 years on the bench. BenchBook.AI is the first
+                tool that actually understands what juvenile court judges need
+                — instant answers from the sources I trust.&rdquo;
+              </blockquote>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-[#0a0e1a] font-bold text-sm">
+                  ME
+                </div>
+                <div>
+                  <p className="font-semibold text-white">M.O. Eckel III</p>
+                  <p className="text-sm text-slate-400">
+                    Juvenile Court Judge, Tipton County, TN
                   </p>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Day in the Life */}
         <motion.div
