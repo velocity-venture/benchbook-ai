@@ -483,8 +483,9 @@ async function trackResearchQuery(userId: string, query: string, sources: Source
   }
 
   // Update research patterns (async, don't wait)
-  supabase
-    .rpc('update_user_research_patterns', { target_user_id: userId })
+  Promise.resolve(
+    supabase.rpc('update_user_research_patterns', { target_user_id: userId })
+  )
     .then(() => console.log('Research patterns updated'))
     .catch(err => console.error('Failed to update research patterns:', err));
 }
