@@ -1,60 +1,76 @@
-import { redirect } from "next/navigation";
+"use client";
+
 import { DashboardShell } from "@/components/dashboard/shell";
 import { PreferencesProvider } from "@/contexts/preferences-context";
 import "@/styles/courtroom-mode.css";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const [user, setUser] = useState({
+    email: "demo@benchbook.ai",
+    fullName: "Judge Demo",
+    initials: "JD",
+    county: "Demo County" as string | undefined,
+  });
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  let fullName = "Judge Demo";
-  let initials = "JD";
-  let email = "demo@benchbook.ai";
-  let county: string | undefined = "Demo County";
+  useEffect(() => {
+    const loadUser = async () => {
+      const supabase = createClient();
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
 
-  if (supabaseUrl && supabaseKey) {
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      if (authUser) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, county, title")
+          .eq("id", authUser.id)
+          .single();
 
-    if (!user) {
-      redirect("/login");
-    }
+        const fullName =
+          profile?.full_name ||
+          authUser.user_metadata?.full_name ||
+          authUser.email?.split("@")[0] ||
+          "User";
+        const initials = fullName
+          .split(" ")
+          .map((n: string) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2);
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name, county, title")
-      .eq("id", user.id)
-      .single();
+        setUser({
+          email: authUser.email || "",
+          fullName,
+          initials,
+          county: profile?.county,
+        });
+      }
+      // In demo mode (no Supabase), keep defaults
+      setLoading(false);
+    };
+    loadUser();
+  }, [router]);
 
-    fullName =
-      profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
-    initials = fullName
-      .split(" ")
-      .map((n: string) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-    email = user.email || "";
-    county = profile?.county;
+  if (loading) {
+    return (
+      <div className="flex h-screen bg-[#0a0e1a] items-center justify-center">
+        <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
     <PreferencesProvider>
-      <DashboardShell
-        user={{
-          email,
-          fullName,
-          initials,
-          county,
-        }}
-      >
+      <DashboardShell user={user}>
         {children}
       </DashboardShell>
     </PreferencesProvider>

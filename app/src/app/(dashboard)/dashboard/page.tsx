@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
         if (sessions) {
           setRecentSessions(
-            sessions.map((s) => ({
+            sessions.map((s: { id: string; title: string; updated_at: string }) => ({
               id: s.id,
               title: s.title || "Untitled Research",
               updatedAt: formatRelativeDate(s.updated_at),

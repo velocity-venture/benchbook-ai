@@ -107,14 +107,14 @@ export default function ChatPage() {
 
     if (data) {
       // Load feedback for all messages in this session
-      const messageIds = data.map((m) => m.id);
+      const messageIds = data.map((m: { id: string }) => m.id);
       const { data: feedbackData } = await getSupabase()
         .from("chat_feedback")
         .select("message_id, feedback_type")
         .in("message_id", messageIds);
 
       const feedbackMap = new Map<string, Set<string>>();
-      feedbackData?.forEach((f) => {
+      feedbackData?.forEach((f: { message_id: string; feedback_type: string }) => {
         if (!feedbackMap.has(f.message_id)) {
           feedbackMap.set(f.message_id, new Set());
         }
@@ -122,7 +122,7 @@ export default function ChatPage() {
       });
 
       setMessages(
-        data.map((m) => ({
+        data.map((m: { id: string; role: string; content: string; sources?: Source[]; created_at: string }) => ({
           id: m.id,
           role: m.role as "user" | "assistant",
           content: m.content,

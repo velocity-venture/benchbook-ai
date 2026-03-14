@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
+  images: {
+    unoptimized: true,
+  },
+  // Exclude dashboard and API routes from static export
+  // These will be enabled when we move to full-stack deployment
+  experimental: {},
   async headers() {
     return [
       {
