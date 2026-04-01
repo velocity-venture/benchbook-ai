@@ -115,6 +115,93 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="py-24 px-6 bg-slate-900/50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-4">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-slate-400 text-center mb-12 max-w-xl mx-auto">
+            Purpose-built for Tennessee juvenile court. No per-query fees, no surprises.
+          </p>
+          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            {/* Solo Judge */}
+            <div className="p-8 bg-slate-950 border border-slate-800 rounded-2xl flex flex-col">
+              <h3 className="text-lg font-semibold text-white mb-1">Solo Judge</h3>
+              <p className="text-slate-400 text-sm mb-4">For individual judges and magistrates</p>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-white">$69</span>
+                <span className="text-slate-400">/mo</span>
+              </div>
+              <ul className="space-y-3 text-sm text-slate-300 mb-8 flex-1">
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Unlimited AI legal research queries
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Full TCA Title 36 &amp; 37 corpus
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Complete TRJPP &amp; DCS policies
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Research session history
+                </li>
+              </ul>
+              <Link
+                href="/login"
+                className="block text-center px-6 py-3 border border-amber-500 text-amber-400 rounded-xl font-semibold hover:bg-amber-500/10 transition"
+              >
+                Get Started
+              </Link>
+            </div>
+            {/* Court Package */}
+            <div className="p-8 bg-slate-950 border-2 border-amber-500 rounded-2xl flex flex-col relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-amber-500 text-slate-950 text-xs font-bold rounded-full">
+                POPULAR
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-1">Court Package</h3>
+              <p className="text-slate-400 text-sm mb-4">For courts with multiple judges &amp; staff</p>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-white">$199</span>
+                <span className="text-slate-400">/mo</span>
+              </div>
+              <ul className="space-y-3 text-sm text-slate-300 mb-8 flex-1">
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Everything in Solo Judge
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Up to 5 user seats
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  County-specific local rules
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Research pattern analytics
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">&#10003;</span>
+                  Priority support
+                </li>
+              </ul>
+              <Link
+                href="/login"
+                className="block text-center px-6 py-3 bg-amber-500 text-slate-950 rounded-xl font-semibold hover:bg-amber-400 transition"
+              >
+                Get Started
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Social Proof */}
       <section className="py-24 px-6 bg-slate-900/50">
         <div className="max-w-3xl mx-auto text-center">

@@ -37,12 +37,13 @@ export async function updateSession(request: NextRequest) {
     "/tca",
     "/trjpp",
     "/dcs-policies",
+    "/onboarding",
   ];
 
+  const pathname = request.nextUrl.pathname;
+
   const isProtected = protectedPaths.some(
-    (path) =>
-      request.nextUrl.pathname === path ||
-      request.nextUrl.pathname.startsWith(path + "/")
+    (path) => pathname === path || pathname.startsWith(path + "/")
   );
 
   if (!user && isProtected) {
@@ -52,10 +53,26 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Redirect authenticated users away from login
-  if (user && request.nextUrl.pathname === "/login") {
+  if (user && pathname === "/login") {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
+  }
+
+  // Onboarding redirect: if user is authenticated and accessing a protected
+  // route (other than onboarding itself), check if profile is complete
+  if (user && isProtected && !pathname.startsWith("/onboarding")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, county")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.full_name || !profile?.county) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/onboarding";
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

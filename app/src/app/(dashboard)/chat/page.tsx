@@ -60,6 +60,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingContent, setStreamingContent] = useState("");
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -80,7 +81,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingContent]);
 
   // Load sessions on mount
   useEffect(() => {
@@ -106,7 +107,6 @@ export default function ChatPage() {
       .order("created_at", { ascending: true });
 
     if (data) {
-      // Load feedback for all messages in this session
       const messageIds = data.map((m) => m.id);
       const { data: feedbackData } = await getSupabase()
         .from("chat_feedback")
@@ -233,6 +233,7 @@ export default function ChatPage() {
     const query = input.trim();
     setInput("");
     setIsLoading(true);
+    setStreamingContent("");
 
     try {
       // Create session if needed
@@ -252,7 +253,7 @@ export default function ChatPage() {
       };
       setMessages((prev) => [...prev, userMessage]);
 
-      // Call chat API
+      // Call chat API with streaming
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -266,33 +267,100 @@ export default function ChatPage() {
         }),
       });
 
-      const data = await response.json();
-      const assistantContent =
-        data.response || "I apologize, but I couldn't generate a response.";
-      const sources: Source[] = data.sources || [];
+      // Check if response is streaming (SSE) or JSON (mock/error)
+      const contentType = response.headers.get('content-type') || '';
 
-      // Save assistant message
-      const assistantMsgId = await saveMessage(
-        sessionId,
-        "assistant",
-        assistantContent,
-        sources
-      );
+      if (contentType.includes('text/event-stream')) {
+        // Streaming response — read SSE events
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let fullContent = "";
 
-      const assistantMessage: Message = {
-        id: assistantMsgId,
-        role: "assistant",
-        content: assistantContent,
-        sources,
-        timestamp: new Date(),
-        feedback: new Set(),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
+        if (reader) {
+          let buffer = "";
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-      // Refresh session list
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            // Keep the last potentially incomplete line in the buffer
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue;
+              const jsonStr = line.slice(6);
+              if (!jsonStr) continue;
+
+              try {
+                const event = JSON.parse(jsonStr);
+
+                if (event.type === 'delta') {
+                  fullContent += event.text;
+                  setStreamingContent(fullContent);
+                } else if (event.type === 'error') {
+                  fullContent = event.message || "Failed to generate response.";
+                }
+                // 'done' event contains metadata — we don't need to act on it in the UI
+              } catch {
+                // Skip malformed JSON lines
+              }
+            }
+          }
+        }
+
+        const assistantContent = fullContent || "I apologize, but I couldn't generate a response.";
+        setStreamingContent("");
+
+        // Extract sources from the response text (same as server-side)
+        const sources = extractSourcesFromResponse(assistantContent);
+
+        // Save assistant message
+        const assistantMsgId = await saveMessage(
+          sessionId,
+          "assistant",
+          assistantContent,
+          sources
+        );
+
+        const assistantMessage: Message = {
+          id: assistantMsgId,
+          role: "assistant",
+          content: assistantContent,
+          sources,
+          timestamp: new Date(),
+          feedback: new Set(),
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      } else {
+        // JSON response (mock mode or error)
+        const data = await response.json();
+        const assistantContent =
+          data.response || "I apologize, but I couldn't generate a response.";
+        const sources: Source[] = data.sources || [];
+
+        const assistantMsgId = await saveMessage(
+          sessionId,
+          "assistant",
+          assistantContent,
+          sources
+        );
+
+        const assistantMessage: Message = {
+          id: assistantMsgId,
+          role: "assistant",
+          content: assistantContent,
+          sources,
+          timestamp: new Date(),
+          feedback: new Set(),
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
+
       loadSessions();
     } catch (error) {
       console.error("Chat error:", error);
+      setStreamingContent("");
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
@@ -408,7 +476,7 @@ export default function ChatPage() {
 
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
-          {messages.length === 0 ? (
+          {messages.length === 0 && !streamingContent ? (
             /* Empty State */
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
@@ -621,8 +689,26 @@ export default function ChatPage() {
                 </div>
               ))}
 
-              {/* Loading Indicator */}
-              {isLoading && (
+              {/* Streaming Indicator */}
+              {isLoading && streamingContent && (
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Scale className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-4">
+                        <div className="prose prose-invert prose-sm max-w-none text-slate-200">
+                          <ReactMarkdown>{streamingContent}</ReactMarkdown>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Loading Indicator (before streaming starts) */}
+              {isLoading && !streamingContent && (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Scale className="w-4 h-4 text-amber-400" />
@@ -691,4 +777,70 @@ export default function ChatPage() {
       </div>
     </div>
   );
+}
+
+/**
+ * Extract source citations from response text (client-side)
+ */
+function extractSourcesFromResponse(response: string): Source[] {
+  const sources: Source[] = [];
+  const seen = new Set<string>();
+
+  // Extract TCA citations
+  const tcaCitations = response.match(/T\.C\.A\.?\s*§?\s*(\d+-\d+-\d+)/gi) || [];
+  for (const citation of tcaCitations) {
+    const cleanCitation = citation.replace(/T\.C\.A\.?\s*§?\s*/i, '').trim();
+    const key = `TCA-${cleanCitation}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    sources.push({
+      title: `T.C.A. § ${cleanCitation}`,
+      citation: `T.C.A. § ${cleanCitation}`,
+      type: "TCA",
+      snippet: extractSnippet(response, citation),
+    });
+  }
+
+  // Extract TRJPP citations
+  const trjppCitations = response.match(/(?:TRJPP\s+)?Rule\s+(\d+)/gi) || [];
+  for (const citation of trjppCitations) {
+    const ruleNumber = citation.match(/(\d+)/)?.[1];
+    if (!ruleNumber) continue;
+    const key = `TRJPP-${ruleNumber}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    sources.push({
+      title: `TRJPP Rule ${ruleNumber}`,
+      citation: `TRJPP Rule ${ruleNumber}`,
+      type: "TRJPP",
+      snippet: extractSnippet(response, citation),
+    });
+  }
+
+  // Extract DCS policy citations
+  const dcsCitations = response.match(/DCS\s+Policy\s+([0-9.]+)/gi) || [];
+  for (const citation of dcsCitations) {
+    const key = `DCS-${citation}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    sources.push({
+      title: citation,
+      citation: citation,
+      type: "DCS",
+      snippet: extractSnippet(response, citation),
+    });
+  }
+
+  return sources;
+}
+
+function extractSnippet(response: string, citation: string): string {
+  const idx = response.indexOf(citation);
+  if (idx === -1) return '';
+  const start = Math.max(0, idx - 75);
+  const end = Math.min(response.length, idx + 125);
+  return response.slice(start, end).trim();
 }
