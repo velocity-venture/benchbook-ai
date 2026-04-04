@@ -61,7 +61,7 @@ BenchBook.AI transforms judicial operations through intelligent automation and d
 | Frontend | Next.js 14 (TypeScript) |
 | Backend | Node.js + Express |
 | Database | PostgreSQL (Supabase) |
-| AI/ML | OpenAI GPT-4 + Custom Models |
+| AI/ML | Claude Sonnet 4.6 / Haiku 4.5 (Anthropic) |
 | Authentication | Supabase Auth + SAML SSO |
 | Deployment | Vercel / Cloudflare |
 | Monitoring | Sentry + Custom Analytics |

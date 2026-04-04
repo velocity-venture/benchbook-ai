@@ -1,0 +1,23 @@
+# BenchBook.AI — Cloudflare Pages Configuration
+# Deploy with: npx wrangler pages deploy .vercel/output/static
+
+name = "benchbook-ai"
+compatibility_date = "2026-04-04"
+compatibility_flags = ["nodejs_compat"]
+
+pages_build_output_dir = ".vercel/output/static"
+
+# Build command (run by Cloudflare Pages CI or locally before deploy)
+# npx @cloudflare/next-on-pages
+
+# Environment variables are set via:
+#   wrangler pages secret put ANTHROPIC_API_KEY
+#   wrangler pages secret put NEXT_PUBLIC_SUPABASE_URL
+#   wrangler pages secret put NEXT_PUBLIC_SUPABASE_ANON_KEY
+#
+# Non-secret env vars can be set in Cloudflare Dashboard:
+#   Pages > benchbook-ai > Settings > Environment variables
+
+[vars]
+USE_CLAUDE_API = "true"
+ENABLE_PROMPT_CACHING = "true"

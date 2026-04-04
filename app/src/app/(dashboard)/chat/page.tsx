@@ -38,6 +38,7 @@ interface Source {
   citation: string;
   type: "TCA" | "DCS" | "TRJPP" | "LOCAL" | "CASELAW";
   snippet: string;
+  verified?: boolean;
 }
 
 interface ChatSession {
@@ -275,6 +276,7 @@ export default function ChatPage() {
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let fullContent = "";
+        let backendSources: Source[] = [];
 
         if (reader) {
           let buffer = "";
@@ -300,8 +302,9 @@ export default function ChatPage() {
                   setStreamingContent(fullContent);
                 } else if (event.type === 'error') {
                   fullContent = event.message || "Failed to generate response.";
+                } else if (event.type === 'sources') {
+                  backendSources = event.sources || [];
                 }
-                // 'done' event contains metadata — we don't need to act on it in the UI
               } catch {
                 // Skip malformed JSON lines
               }
@@ -312,8 +315,10 @@ export default function ChatPage() {
         const assistantContent = fullContent || "I apologize, but I couldn't generate a response.";
         setStreamingContent("");
 
-        // Extract sources from the response text (same as server-side)
-        const sources = extractSourcesFromResponse(assistantContent);
+        // Prefer backend-verified sources; fall back to client-side extraction
+        const sources = backendSources.length > 0
+          ? backendSources
+          : extractSourcesFromResponse(assistantContent);
 
         // Save assistant message
         const assistantMsgId = await saveMessage(
@@ -594,23 +599,29 @@ export default function ChatPage() {
                                           variant="outline"
                                           className={cn(
                                             "text-xs flex-shrink-0",
-                                            source.type === "TCA" &&
-                                              "border-blue-500 text-blue-400",
-                                            source.type === "DCS" &&
-                                              "border-green-500 text-green-400",
-                                            source.type === "CASELAW" &&
-                                              "border-purple-500 text-purple-400",
-                                            source.type === "TRJPP" &&
-                                              "border-orange-500 text-orange-400",
-                                            source.type === "LOCAL" &&
-                                              "border-cyan-500 text-cyan-400"
+                                            source.verified === false
+                                              ? "border-yellow-500 text-yellow-400"
+                                              : source.type === "TCA"
+                                              ? "border-blue-500 text-blue-400"
+                                              : source.type === "DCS"
+                                              ? "border-green-500 text-green-400"
+                                              : source.type === "CASELAW"
+                                              ? "border-purple-500 text-purple-400"
+                                              : source.type === "TRJPP"
+                                              ? "border-orange-500 text-orange-400"
+                                              : source.type === "LOCAL"
+                                              ? "border-cyan-500 text-cyan-400"
+                                              : ""
                                           )}
                                         >
                                           {source.type}
                                         </Badge>
                                         <div className="flex-1 min-w-0">
-                                          <p className="text-xs font-medium text-white">
+                                          <p className="text-xs font-medium text-white flex items-center gap-1">
                                             {source.citation}
+                                            {source.verified === false && (
+                                              <span className="text-yellow-400 text-[10px]">(unverified)</span>
+                                            )}
                                           </p>
                                           <p className="text-xs text-slate-500 truncate">
                                             {source.snippet}

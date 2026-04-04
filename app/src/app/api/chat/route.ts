@@ -1,8 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { promises as fs } from "fs";
-import path from "path";
+import { buildCitationIndex, verifyCitations, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
+
+// Cloudflare Workers compatibility: use pre-built corpus JSON when filesystem is unavailable.
+// The prebuild-corpus.js script generates this file at build time.
+let prebuiltCorpus: { tcaTitle37: string; tcaTitle36: string; trjppRules: string; dcsText: string } | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  prebuiltCorpus = require("@/lib/legal-corpus-data.json");
+} catch {
+  // Pre-built corpus not available — will fall back to filesystem loading
+}
+
+// Dynamic imports for Node.js-only modules (unavailable in edge/Workers runtime)
+let fsPromises: typeof import("fs").promises | null = null;
+let pathModule: typeof import("path") | null = null;
+let pdfParse: ((buffer: Buffer) => Promise<{ text: string }>) | null = null;
+
+async function loadNodeModules() {
+  if (fsPromises) return;
+  try {
+    const fs = await import("fs");
+    fsPromises = fs.promises;
+    pathModule = await import("path");
+    // pdf-parse v2 exports PDFParse class, not a function
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pdfModule = require("pdf-parse");
+    if (typeof pdfModule === "function") {
+      pdfParse = pdfModule;
+    }
+  } catch {
+    // Running in edge/Workers — filesystem not available
+  }
+}
 
 // Types
 interface Message {
@@ -22,26 +53,43 @@ const MAX_QUERY_LENGTH = 2000;
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 4000;
 
-// Simple in-memory rate limiter (per-user, 20 requests per minute)
+// Rate limiting: in-memory fast path + Supabase-backed persistence
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 20;
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
-function checkRateLimit(userId: string): boolean {
+async function checkRateLimit(userId: string): Promise<boolean> {
   const now = Date.now();
   const entry = rateLimitMap.get(userId);
 
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
+  // Fast path: in-memory check
+  if (entry && now <= entry.resetAt && entry.count >= RATE_LIMIT_MAX) {
     return false;
   }
 
-  entry.count++;
-  return true;
+  // Update in-memory counter
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+  } else {
+    entry.count++;
+  }
+
+  // Authoritative check via Supabase (handles restarts and multi-instance)
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc('check_rate_limit', {
+      p_user_id: userId,
+      p_max_requests: RATE_LIMIT_MAX,
+    });
+    if (error) {
+      console.error('Supabase rate limit check failed, allowing request:', error);
+      return true; // Fail open
+    }
+    return data as boolean;
+  } catch (err) {
+    console.error('Rate limit RPC error, allowing request:', err);
+    return true; // Fail open
+  }
 }
 
 // Environment variables
@@ -64,6 +112,7 @@ interface CorpusCache {
   tcaTitle37?: string;
   trjppRules?: string;
   dcsRelevant?: string;
+  citationIndex?: CitationIndex;
   lastUpdated: number;
 }
 
@@ -83,6 +132,12 @@ You have direct access to the complete Tennessee legal corpus including:
 - Local court rules
 - Relevant Tennessee case law
 
+CRITICAL CITATION RULES:
+- ONLY cite statutes, rules, and policies whose text appears in the legal corpus provided below
+- If a statute, rule, or policy is NOT found in the provided corpus, explicitly state: "This provision is not included in the available legal corpus"
+- Never invent, guess, or approximate citation numbers — accuracy is paramount for judicial use
+- Do not cite case law unless it appears in the corpus
+
 Guidelines:
 1. Always cite specific statutes, rules, or policies when possible (e.g., "T.C.A. § 37-1-114")
 2. Be precise and accurate - these are legal matters affecting children and families
@@ -90,7 +145,6 @@ Guidelines:
 4. Format responses clearly with headers and bullet points for readability
 5. Include procedural requirements and deadlines when relevant
 6. Note any recent changes or amendments to the law
-7. Extract exact citations and verify they exist in the provided legal corpus
 
 When discussing detention:
 - T.C.A. § 37-1-114 governs detention criteria
@@ -124,7 +178,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate limiting
-    if (!checkRateLimit(user.id)) {
+    if (!(await checkRateLimit(user.id))) {
       return NextResponse.json(
         { error: "Rate limit exceeded. Please wait before making more requests." },
         { status: 429 }
@@ -214,19 +268,27 @@ export async function POST(request: NextRequest) {
     // Step 2: Load relevant legal corpus into context
     const legalCorpus = await loadRelevantCorpus(query);
 
-    // Step 3: Stream Claude response
+    // Step 3: Stream Claude response with citation verification
     const stream = await streamClaude(
       query,
       legalCorpus,
       messages,
       modelToUse,
-      ENABLE_PROMPT_CACHING
+      ENABLE_PROMPT_CACHING,
+      corpusCache.citationIndex,
+      (verifiedSources) => {
+        // Track research query with real verified sources
+        const sources: Source[] = verifiedSources.map(s => ({
+          title: s.title,
+          citation: s.citation,
+          type: s.type,
+          snippet: s.snippet.substring(0, 200),
+        }));
+        trackResearchQuery(user.id, query, sources).catch((err) => {
+          console.error("Research tracking error:", err);
+        });
+      }
     );
-
-    // Track research query asynchronously (fire-and-forget)
-    trackResearchQuery(user.id, query, []).catch((err) => {
-      console.error("Research tracking error:", err);
-    });
 
     // Return streaming response
     return new Response(stream, {
@@ -306,8 +368,13 @@ async function loadRelevantCorpus(query: string): Promise<string> {
     corpus += `=== TENNESSEE RULES OF JUVENILE PRACTICE AND PROCEDURE ===\n\n${corpusCache.trjppRules}\n\n`;
   }
 
-  if (queryLower.includes('dcs') || queryLower.includes('department') ||
-      queryLower.includes('investigation') || queryLower.includes('removal')) {
+  const dcsKeywords = [
+    'dcs', 'department', 'investigation', 'removal', 'policy',
+    'foster', 'placement', 'caseworker', 'substantiated',
+    'home study', 'cftm', 'trial home visit', 'child protective',
+    'abuse', 'neglect', 'safety plan', 'case plan'
+  ];
+  if (dcsKeywords.some(kw => queryLower.includes(kw))) {
     if (corpusCache.dcsRelevant) {
       corpus += `=== DEPARTMENT OF CHILDREN'S SERVICES POLICIES ===\n\n${corpusCache.dcsRelevant}\n\n`;
     }
@@ -317,50 +384,99 @@ async function loadRelevantCorpus(query: string): Promise<string> {
 }
 
 /**
- * Refresh legal corpus cache from files
+ * Refresh legal corpus cache from files or pre-built JSON
  */
 async function refreshCorpusCache(): Promise<void> {
-  const corpusPath = path.join(process.cwd(), 'legal-corpus');
+  // Try pre-built corpus first (Cloudflare Workers / edge runtime)
+  if (prebuiltCorpus) {
+    corpusCache.tcaTitle37 = prebuiltCorpus.tcaTitle37 || undefined;
+    corpusCache.tcaTitle36 = prebuiltCorpus.tcaTitle36 || undefined;
+    corpusCache.trjppRules = prebuiltCorpus.trjppRules || undefined;
+    corpusCache.dcsRelevant = prebuiltCorpus.dcsText || undefined;
+    console.log('Loaded corpus from pre-built JSON');
+
+    corpusCache.citationIndex = buildCitationIndex(
+      corpusCache.tcaTitle37,
+      corpusCache.tcaTitle36,
+      corpusCache.trjppRules,
+      corpusCache.dcsRelevant
+    );
+    console.log(`Citation index built: ${corpusCache.citationIndex.tcaSections.size} TCA sections, ${corpusCache.citationIndex.trjppRules.size} TRJPP rules, ${corpusCache.citationIndex.dcsPolicies.size} DCS policies`);
+    return;
+  }
+
+  // Fall back to filesystem loading (local dev / Node.js runtime)
+  await loadNodeModules();
+  if (!fsPromises || !pathModule) {
+    console.error('No corpus source available: pre-built JSON missing and filesystem unavailable');
+    return;
+  }
+
+  const corpusPath = pathModule.join(process.cwd(), 'legal-corpus');
 
   try {
     try {
-      const tcaTitle37Path = path.join(corpusPath, 'tca', 'title-37.html');
-      const tcaTitle37Html = await fs.readFile(tcaTitle37Path, 'utf-8');
+      const tcaTitle37Path = pathModule.join(corpusPath, 'tca', 'title-37.html');
+      const tcaTitle37Html = await fsPromises.readFile(tcaTitle37Path, 'utf-8');
       corpusCache.tcaTitle37 = extractTextFromHtml(tcaTitle37Html);
     } catch (error) {
       console.error('Failed to load TCA Title 37:', error);
     }
 
     try {
-      const tcaTitle36Path = path.join(corpusPath, 'tca', 'title-36.html');
-      const tcaTitle36Html = await fs.readFile(tcaTitle36Path, 'utf-8');
+      const tcaTitle36Path = pathModule.join(corpusPath, 'tca', 'title-36.html');
+      const tcaTitle36Html = await fsPromises.readFile(tcaTitle36Path, 'utf-8');
       corpusCache.tcaTitle36 = extractTextFromHtml(tcaTitle36Html);
     } catch (error) {
       console.error('Failed to load TCA Title 36:', error);
     }
 
     try {
-      const trjppPath = path.join(corpusPath, 'trjpp', 'all-rules.txt');
-      corpusCache.trjppRules = await fs.readFile(trjppPath, 'utf-8');
+      const trjppPath = pathModule.join(corpusPath, 'trjpp', 'all-rules.txt');
+      corpusCache.trjppRules = await fsPromises.readFile(trjppPath, 'utf-8');
     } catch (error) {
       console.error('Failed to load TRJPP rules:', error);
     }
 
     try {
-      const dcsPath = path.join(corpusPath, 'dcs');
-      const dcsFiles = await fs.readdir(dcsPath);
-      const relevantDcsFiles = dcsFiles.filter(f =>
-        f.includes('14.12') || f.includes('14.1') || f.includes('14.2')
-      ).slice(0, 3);
+      const dcsPath = pathModule.join(corpusPath, 'dcs');
+      const dcsFiles = await fsPromises.readdir(dcsPath);
+      const pdfFiles = dcsFiles.filter(f => f.endsWith('.pdf'));
 
       let dcsContent = '';
-      for (const file of relevantDcsFiles) {
-        dcsContent += `[DCS Policy ${file} - PDF content would be extracted here]\n\n`;
+      if (pdfParse) {
+        for (const file of pdfFiles) {
+          try {
+            const pdfBuffer = await fsPromises.readFile(pathModule.join(dcsPath, file));
+            const pdfData = await pdfParse(pdfBuffer);
+            const text = (pdfData.text || '').trim();
+
+            if (text.length < 100) {
+              console.warn(`DCS PDF "${file}" returned near-empty text (${text.length} chars) — may be a scanned image`);
+            }
+
+            if (text.length > 0) {
+              dcsContent += `=== DCS Policy: ${file} ===\n${text}\n\n`;
+            }
+          } catch (err) {
+            console.error(`Failed to parse DCS PDF "${file}":`, err);
+          }
+        }
       }
       corpusCache.dcsRelevant = dcsContent;
+      console.log(`DCS corpus loaded: ${pdfFiles.length} PDFs, ${Math.round(dcsContent.length / 1024)}KB text`);
     } catch (error) {
       console.error('Failed to load DCS policies:', error);
     }
+
+    // Build citation index from loaded corpus
+    corpusCache.citationIndex = buildCitationIndex(
+      corpusCache.tcaTitle37,
+      corpusCache.tcaTitle36,
+      corpusCache.trjppRules,
+      corpusCache.dcsRelevant
+    );
+    console.log(`Citation index built: ${corpusCache.citationIndex.tcaSections.size} TCA sections, ${corpusCache.citationIndex.trjppRules.size} TRJPP rules, ${corpusCache.citationIndex.dcsPolicies.size} DCS policies`);
 
   } catch (error) {
     console.error('Failed to refresh corpus cache:', error);
@@ -393,7 +509,9 @@ async function streamClaude(
   legalCorpus: string,
   previousMessages: Message[],
   model: string,
-  useCache: boolean
+  useCache: boolean,
+  citationIndex?: CitationIndex,
+  onComplete?: (sources: VerifiedCitation[]) => void
 ): Promise<ReadableStream> {
   if (!anthropic) {
     throw new Error('Anthropic client not initialized');
@@ -412,7 +530,7 @@ async function streamClaude(
   if (legalCorpus) {
     systemBlocks.push({
       type: 'text' as const,
-      text: `You have access to the following Tennessee legal corpus for this query:\n\n${legalCorpus}\n\nPlease answer the user's question based on this legal information, citing specific statutes and rules where applicable.`,
+      text: `You have access to the following Tennessee legal corpus for this query:\n\n${legalCorpus}\n\nIMPORTANT: Only cite legal provisions whose text appears in the corpus above. If a user asks about a statute or rule not found in this corpus, explicitly state that it is not available in the current legal database rather than citing from memory. Answer the user's question based on this legal information, citing specific statutes and rules where applicable.`,
       ...(useCache ? { cache_control: { type: 'ephemeral' as const } } : {}),
     });
   }
@@ -442,8 +560,9 @@ async function streamClaude(
           messages,
         });
 
+        let fullResponse = '';
         stream.on('text', (text) => {
-          // Send each text delta as an SSE event
+          fullResponse += text;
           const data = JSON.stringify({ type: 'delta', text });
           controller.enqueue(encoder.encode(`data: ${data}\n\n`));
         });
@@ -467,7 +586,26 @@ async function streamClaude(
           model_used: model.includes('haiku') ? 'haiku' : 'sonnet',
         });
         controller.enqueue(encoder.encode(`data: ${meta}\n\n`));
+
+        // Verify citations against corpus and send sources event
+        const verifiedSources = citationIndex
+          ? verifyCitations(fullResponse, citationIndex, legalCorpus)
+          : [];
+
+        if (verifiedSources.length > 0) {
+          const sourcesEvent = JSON.stringify({
+            type: 'sources',
+            sources: verifiedSources,
+          });
+          controller.enqueue(encoder.encode(`data: ${sourcesEvent}\n\n`));
+        }
+
         controller.close();
+
+        // Fire completion callback for research tracking
+        if (onComplete) {
+          onComplete(verifiedSources);
+        }
       } catch (error) {
         console.error('Claude streaming error:', error);
         const errData = JSON.stringify({ type: 'error', message: 'Failed to generate response' });
