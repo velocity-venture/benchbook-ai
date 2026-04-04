@@ -4,6 +4,8 @@ import { Sidebar } from "@/components/sidebar";
 import { PreferencesProvider } from "@/contexts/preferences-context";
 import "@/styles/courtroom-mode.css";
 
+export const runtime = 'edge';
+
 export default async function DashboardLayout({
   children,
 }: {

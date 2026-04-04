@@ -3,37 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildCitationIndex, verifyCitations, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
 
-// Cloudflare Workers compatibility: use pre-built corpus JSON when filesystem is unavailable.
-// The prebuild-corpus.js script generates this file at build time.
-let prebuiltCorpus: { tcaTitle37: string; tcaTitle36: string; trjppRules: string; dcsText: string } | null = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  prebuiltCorpus = require("@/lib/legal-corpus-data.json");
-} catch {
-  // Pre-built corpus not available — will fall back to filesystem loading
-}
+export const runtime = 'edge';
 
-// Dynamic imports for Node.js-only modules (unavailable in edge/Workers runtime)
-let fsPromises: typeof import("fs").promises | null = null;
-let pathModule: typeof import("path") | null = null;
-let pdfParse: ((buffer: Buffer) => Promise<{ text: string }>) | null = null;
-
-async function loadNodeModules() {
-  if (fsPromises) return;
-  try {
-    const fs = await import("fs");
-    fsPromises = fs.promises;
-    pathModule = await import("path");
-    // pdf-parse v2 exports PDFParse class, not a function
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdfModule = require("pdf-parse");
-    if (typeof pdfModule === "function") {
-      pdfParse = pdfModule;
-    }
-  } catch {
-    // Running in edge/Workers — filesystem not available
-  }
-}
+// Cloudflare Workers / Edge runtime: legal corpus is pre-built at build time into a JSON file.
+// This eliminates all filesystem access at runtime.
+import prebuiltCorpus from "@/lib/legal-corpus-data.json";
 
 // Types
 interface Message {
@@ -384,121 +358,20 @@ async function loadRelevantCorpus(query: string): Promise<string> {
 }
 
 /**
- * Refresh legal corpus cache from files or pre-built JSON
+ * Refresh legal corpus cache from pre-built JSON (edge runtime compatible)
  */
 async function refreshCorpusCache(): Promise<void> {
-  // Try pre-built corpus first (Cloudflare Workers / edge runtime)
-  if (prebuiltCorpus) {
-    corpusCache.tcaTitle37 = prebuiltCorpus.tcaTitle37 || undefined;
-    corpusCache.tcaTitle36 = prebuiltCorpus.tcaTitle36 || undefined;
-    corpusCache.trjppRules = prebuiltCorpus.trjppRules || undefined;
-    corpusCache.dcsRelevant = prebuiltCorpus.dcsText || undefined;
-    console.log('Loaded corpus from pre-built JSON');
+  corpusCache.tcaTitle37 = prebuiltCorpus.tcaTitle37 || undefined;
+  corpusCache.tcaTitle36 = prebuiltCorpus.tcaTitle36 || undefined;
+  corpusCache.trjppRules = prebuiltCorpus.trjppRules || undefined;
+  corpusCache.dcsRelevant = prebuiltCorpus.dcsText || undefined;
 
-    corpusCache.citationIndex = buildCitationIndex(
-      corpusCache.tcaTitle37,
-      corpusCache.tcaTitle36,
-      corpusCache.trjppRules,
-      corpusCache.dcsRelevant
-    );
-    console.log(`Citation index built: ${corpusCache.citationIndex.tcaSections.size} TCA sections, ${corpusCache.citationIndex.trjppRules.size} TRJPP rules, ${corpusCache.citationIndex.dcsPolicies.size} DCS policies`);
-    return;
-  }
-
-  // Fall back to filesystem loading (local dev / Node.js runtime)
-  await loadNodeModules();
-  if (!fsPromises || !pathModule) {
-    console.error('No corpus source available: pre-built JSON missing and filesystem unavailable');
-    return;
-  }
-
-  const corpusPath = pathModule.join(process.cwd(), 'legal-corpus');
-
-  try {
-    try {
-      const tcaTitle37Path = pathModule.join(corpusPath, 'tca', 'title-37.html');
-      const tcaTitle37Html = await fsPromises.readFile(tcaTitle37Path, 'utf-8');
-      corpusCache.tcaTitle37 = extractTextFromHtml(tcaTitle37Html);
-    } catch (error) {
-      console.error('Failed to load TCA Title 37:', error);
-    }
-
-    try {
-      const tcaTitle36Path = pathModule.join(corpusPath, 'tca', 'title-36.html');
-      const tcaTitle36Html = await fsPromises.readFile(tcaTitle36Path, 'utf-8');
-      corpusCache.tcaTitle36 = extractTextFromHtml(tcaTitle36Html);
-    } catch (error) {
-      console.error('Failed to load TCA Title 36:', error);
-    }
-
-    try {
-      const trjppPath = pathModule.join(corpusPath, 'trjpp', 'all-rules.txt');
-      corpusCache.trjppRules = await fsPromises.readFile(trjppPath, 'utf-8');
-    } catch (error) {
-      console.error('Failed to load TRJPP rules:', error);
-    }
-
-    try {
-      const dcsPath = pathModule.join(corpusPath, 'dcs');
-      const dcsFiles = await fsPromises.readdir(dcsPath);
-      const pdfFiles = dcsFiles.filter(f => f.endsWith('.pdf'));
-
-      let dcsContent = '';
-      if (pdfParse) {
-        for (const file of pdfFiles) {
-          try {
-            const pdfBuffer = await fsPromises.readFile(pathModule.join(dcsPath, file));
-            const pdfData = await pdfParse(pdfBuffer);
-            const text = (pdfData.text || '').trim();
-
-            if (text.length < 100) {
-              console.warn(`DCS PDF "${file}" returned near-empty text (${text.length} chars) — may be a scanned image`);
-            }
-
-            if (text.length > 0) {
-              dcsContent += `=== DCS Policy: ${file} ===\n${text}\n\n`;
-            }
-          } catch (err) {
-            console.error(`Failed to parse DCS PDF "${file}":`, err);
-          }
-        }
-      }
-      corpusCache.dcsRelevant = dcsContent;
-      console.log(`DCS corpus loaded: ${pdfFiles.length} PDFs, ${Math.round(dcsContent.length / 1024)}KB text`);
-    } catch (error) {
-      console.error('Failed to load DCS policies:', error);
-    }
-
-    // Build citation index from loaded corpus
-    corpusCache.citationIndex = buildCitationIndex(
-      corpusCache.tcaTitle37,
-      corpusCache.tcaTitle36,
-      corpusCache.trjppRules,
-      corpusCache.dcsRelevant
-    );
-    console.log(`Citation index built: ${corpusCache.citationIndex.tcaSections.size} TCA sections, ${corpusCache.citationIndex.trjppRules.size} TRJPP rules, ${corpusCache.citationIndex.dcsPolicies.size} DCS policies`);
-
-  } catch (error) {
-    console.error('Failed to refresh corpus cache:', error);
-  }
-}
-
-/**
- * Extract clean text from HTML content
- */
-function extractTextFromHtml(html: string): string {
-  return html
-    .replace(/<script[^>]*>.*?<\/script>/gis, '')
-    .replace(/<style[^>]*>.*?<\/style>/gis, '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
+  corpusCache.citationIndex = buildCitationIndex(
+    corpusCache.tcaTitle37,
+    corpusCache.tcaTitle36,
+    corpusCache.trjppRules,
+    corpusCache.dcsRelevant
+  );
 }
 
 /**
