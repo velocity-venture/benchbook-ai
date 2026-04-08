@@ -12,6 +12,7 @@ import {
   FileText,
   Clock,
   Copy,
+  Check,
   ThumbsUp,
   ThumbsDown,
   Bookmark,
@@ -19,16 +20,27 @@ import {
   MessageSquare,
   Trash2,
   ChevronLeft,
+  ShieldCheck,
+  ShieldAlert,
+  AlertTriangle,
+  Gavel,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+
+interface ConfidenceInfo {
+  level: "HIGH" | "MEDIUM" | "LOW";
+  reason: string;
+  warnings: string[];
+}
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   sources?: Source[];
+  confidence?: ConfidenceInfo;
   timestamp: Date;
   feedback?: Set<string>;
 }
@@ -57,6 +69,45 @@ const suggestedQueries = [
   "FERPA requirements for juvenile records",
 ];
 
+const benchCards = [
+  {
+    category: "Detention",
+    icon: Gavel,
+    queries: [
+      "What are the detention criteria under T.C.A. § 37-1-114?",
+      "What are the time limits for a detention hearing?",
+      "What less restrictive alternatives must be considered before detention?",
+    ],
+  },
+  {
+    category: "Sentencing & Disposition",
+    icon: Scale,
+    queries: [
+      "What dispositions are available for a delinquent child under T.C.A. § 37-1-129?",
+      "What are the factors for transfer to criminal court?",
+      "What are probation conditions for juvenile offenders?",
+    ],
+  },
+  {
+    category: "DCS & Removal",
+    icon: ShieldCheck,
+    queries: [
+      "What reasonable efforts must DCS document before removal?",
+      "What is the process for an emergency removal?",
+      "What are the requirements for a foster care placement?",
+    ],
+  },
+  {
+    category: "Procedure",
+    icon: FileText,
+    queries: [
+      "When is a child entitled to appointed counsel under TRJPP?",
+      "What are the notice requirements for a juvenile hearing?",
+      "What are the rules for sealing juvenile records?",
+    ],
+  },
+];
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -65,6 +116,8 @@ export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showBenchCards, setShowBenchCards] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const supabaseRef = useRef(null as ReturnType<typeof createClient> | null);
@@ -277,6 +330,7 @@ export default function ChatPage() {
         const decoder = new TextDecoder();
         let fullContent = "";
         let backendSources: Source[] = [];
+        let confidenceInfo: ConfidenceInfo | undefined;
 
         if (reader) {
           let buffer = "";
@@ -286,7 +340,6 @@ export default function ChatPage() {
 
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
-            // Keep the last potentially incomplete line in the buffer
             buffer = lines.pop() || "";
 
             for (const line of lines) {
@@ -304,6 +357,12 @@ export default function ChatPage() {
                   fullContent = event.message || "Failed to generate response.";
                 } else if (event.type === 'sources') {
                   backendSources = event.sources || [];
+                } else if (event.type === 'confidence') {
+                  confidenceInfo = {
+                    level: event.level,
+                    reason: event.reason,
+                    warnings: event.warnings || [],
+                  };
                 }
               } catch {
                 // Skip malformed JSON lines
@@ -333,6 +392,7 @@ export default function ChatPage() {
           role: "assistant",
           content: assistantContent,
           sources,
+          confidence: confidenceInfo,
           timestamp: new Date(),
           feedback: new Set(),
         };
@@ -384,8 +444,18 @@ export default function ChatPage() {
     textareaRef.current?.focus();
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const copyToClipboard = (text: string, messageId?: string) => {
+    // Strip markdown for clean clipboard text
+    const cleanText = text
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/`{1,3}[^`]*`{1,3}/g, (m) => m.replace(/`/g, ''));
+    navigator.clipboard.writeText(cleanText);
+    if (messageId) {
+      setCopiedId(messageId);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
   };
 
   return (
@@ -471,6 +541,18 @@ export default function ChatPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowBenchCards(!showBenchCards)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                  showBenchCards
+                    ? "bg-amber-500/20 text-amber-400"
+                    : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                )}
+              >
+                <Gavel className="w-4 h-4" />
+                Bench Cards
+              </button>
               <Badge variant="outline" className="gap-1">
                 <Scale className="w-3 h-3" />
                 TN Juvenile Law
@@ -478,6 +560,35 @@ export default function ChatPage() {
             </div>
           </div>
         </div>
+
+        {/* Bench Cards Panel */}
+        {showBenchCards && (
+          <div className="flex-shrink-0 border-b border-slate-800 bg-slate-900/50 px-6 py-4">
+            <div className="max-w-3xl mx-auto grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {benchCards.map((card) => (
+                <div key={card.category} className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                    <card.icon className="w-3.5 h-3.5 text-amber-400" />
+                    {card.category}
+                  </div>
+                  {card.queries.map((query, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setInput(query);
+                        setShowBenchCards(false);
+                        textareaRef.current?.focus();
+                      }}
+                      className="block w-full text-left text-xs text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 rounded px-2.5 py-1.5 transition-colors"
+                    >
+                      {query}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
@@ -585,9 +696,14 @@ export default function ChatPage() {
                             {message.sources &&
                               message.sources.length > 0 && (
                                 <div className="mt-4 pt-4 border-t border-slate-800">
-                                  <p className="text-xs text-slate-500 mb-2 flex items-center gap-1">
+                                  <p className="text-xs text-slate-500 mb-2 flex items-center gap-2">
                                     <BookOpen className="w-3 h-3" />
-                                    Sources
+                                    <span>Sources</span>
+                                    {message.sources.every(s => s.verified !== false) && (
+                                      <span className="text-green-400 flex items-center gap-0.5">
+                                        <ShieldCheck className="w-3 h-3" /> All verified
+                                      </span>
+                                    )}
                                   </p>
                                   <div className="space-y-2">
                                     {message.sources.map((source, i) => (
@@ -634,14 +750,58 @@ export default function ChatPage() {
                               )}
                           </div>
 
+                          {/* Confidence Badge */}
+                          {message.confidence && (
+                            <div className={cn(
+                              "mt-3 pt-3 border-t border-slate-800 flex items-center gap-2 text-xs",
+                              message.confidence.level === 'HIGH' ? "text-green-400" :
+                              message.confidence.level === 'MEDIUM' ? "text-yellow-400" :
+                              "text-red-400"
+                            )}>
+                              {message.confidence.level === 'HIGH' ? (
+                                <ShieldCheck className="w-4 h-4" />
+                              ) : message.confidence.level === 'MEDIUM' ? (
+                                <AlertTriangle className="w-4 h-4" />
+                              ) : (
+                                <ShieldAlert className="w-4 h-4" />
+                              )}
+                              <span className="font-medium">
+                                {message.confidence.level} Confidence
+                              </span>
+                              <span className="text-slate-500">
+                                — {message.confidence.reason}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Warnings */}
+                          {message.confidence?.warnings && message.confidence.warnings.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {message.confidence.warnings.map((warning, i) => (
+                                <p key={i} className="text-xs text-yellow-400/80 bg-yellow-500/5 rounded px-2 py-1">
+                                  {warning}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+
                           {/* Actions */}
                           <div className="flex items-center gap-2 mt-2 px-2">
                             <button
-                              onClick={() => copyToClipboard(message.content)}
-                              className="text-slate-500 hover:text-white p-1"
-                              title="Copy"
+                              onClick={() => copyToClipboard(message.content, message.id)}
+                              className={cn(
+                                "p-1 transition-colors",
+                                copiedId === message.id
+                                  ? "text-green-400"
+                                  : "text-slate-500 hover:text-white"
+                              )}
+                              title={copiedId === message.id ? "Copied!" : "Copy"}
                             >
-                              <Copy className="w-4 h-4" />
+                              {copiedId === message.id ? (
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                <Copy className="w-4 h-4" />
+                              )}
                             </button>
                             <button
                               onClick={() =>
