@@ -1,10 +1,42 @@
+# Environment files
 .env
 .env.*
 !.env.example
 .envrc
+
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+.vercel/
+
+# Key and certificate files
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
 
 # Legal corpus (large generated/downloaded files)
 legal-corpus/_processed/
 legal-corpus/tca/*.html
 legal-corpus/dcs/*.pdf
 legal-corpus/trjpp/all-rules.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
