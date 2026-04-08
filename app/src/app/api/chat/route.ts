@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { buildCitationIndex, verifyCitations, computeConfidence, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
+import { buildCitationIndex, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
 import { runHallucinationGuard, HALLUCINATION_GUARDRAILS } from "@/lib/hallucination-guard";
 
 export const runtime = 'edge';
