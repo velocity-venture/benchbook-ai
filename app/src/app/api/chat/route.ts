@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { buildCitationIndex, verifyCitations, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
+import { buildCitationIndex, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
+import { runHallucinationGuard, HALLUCINATION_GUARDRAILS } from "@/lib/hallucination-guard";
+import { classifyQueryComplexity } from "@/lib/query-router";
 
 export const runtime = 'edge';
 
@@ -96,43 +98,33 @@ const corpusCache: CorpusCache = {
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-// System prompt for legal research
-const SYSTEM_PROMPT = `You are BenchBook AI, a specialized legal research assistant for Tennessee Juvenile Court Judges.
+// System prompt for legal research — bench-ready judicial responses
+const SYSTEM_PROMPT = `You are BenchBook.AI, a judicial research assistant for Tennessee state court judges. Responses must be concise, authoritative, and immediately actionable from the bench.
 
-You have direct access to the complete Tennessee legal corpus including:
+You have direct access to the Tennessee legal corpus including:
 - Tennessee Code Annotated (T.C.A.) Titles 36 and 37
 - Department of Children's Services (DCS) policies
 - Tennessee Rules of Juvenile Practice and Procedure (TRJPP)
-- Local court rules
-- Relevant Tennessee case law
 
-CRITICAL CITATION RULES:
-- ONLY cite statutes, rules, and policies whose text appears in the legal corpus provided below
-- If a statute, rule, or policy is NOT found in the provided corpus, explicitly state: "This provision is not included in the available legal corpus"
-- Never invent, guess, or approximate citation numbers — accuracy is paramount for judicial use
-- Do not cite case law unless it appears in the corpus
+RESPONSE FORMAT — Structure every answer as follows:
+1. Direct answer in 1-2 sentences
+2. Applicable statute with section number (T.C.A. § [title]-[chapter]-[section])
+3. Key procedural requirements or elements
+4. Practical notes for bench application
 
-Guidelines:
-1. Always cite specific statutes, rules, or policies when possible (e.g., "T.C.A. § 37-1-114")
-2. Be precise and accurate - these are legal matters affecting children and families
-3. If you're uncertain about something, say so explicitly
-4. Format responses clearly with headers and bullet points for readability
-5. Include procedural requirements and deadlines when relevant
-6. Note any recent changes or amendments to the law
+Do not write academic or law-review-style analysis unless asked. Judges need answers they can act on during a hearing.
 
-When discussing detention:
-- T.C.A. § 37-1-114 governs detention criteria
-- Detention hearing within 48 hours (excluding non-judicial days)
-- Consider less restrictive alternatives per TRJPP
+For questions with multiple approaches, present numbered options with the most common practice first.
 
-When discussing dispositions:
-- T.C.A. § 37-1-129 lists available dispositions
-- Consider child's best interests and family preservation
-- Document reasonable efforts per DCS policy
+${HALLUCINATION_GUARDRAILS}
 
-Always prioritize child safety, due process, and family preservation when possible.
+KEY PROCEDURAL REFERENCES:
+- Detention criteria: T.C.A. § 37-1-114, hearing within 48 hours (excluding non-judicial days)
+- Dispositions: T.C.A. § 37-1-129, consider child's best interests and family preservation
+- Reasonable efforts: Document per DCS policy before any removal
+- Less restrictive alternatives: Always consider per TRJPP before detention
 
-IMPORTANT: You must extract and verify all legal citations from your response. Return them in the sources array with exact statute/rule numbers, titles, and relevant text snippets.`;
+Never speculate. Either cite the specific provision or state the topic is not in your available corpus.`;
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -284,35 +276,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Classify query complexity for smart model routing
- */
-function classifyQueryComplexity(query: string): 'simple' | 'complex' {
-  const queryLower = query.toLowerCase();
-
-  const simpleIndicators = [
-    query.length < 50,
-    /t\.?c\.?a\.?\s*§?\s*\d+/.test(queryLower),
-    /rule\s*\d+/.test(queryLower),
-    /what\s+is\s+the\s+statute/i.test(query),
-    /define|definition/i.test(query),
-    /deadline|time\s*limit|days/i.test(query)
-  ];
-
-  const complexIndicators = [
-    /analyz|compar|evaluat|assess/i.test(query),
-    /what\s+factors?|how\s+should\s+i|what\s+are\s+my\s+options/i.test(query),
-    /multiple|several|various/i.test(query),
-    query.length > 150,
-    (query.match(/\?/g) || []).length > 1,
-    /consider|weigh|balance/i.test(query)
-  ];
-
-  const simpleScore = simpleIndicators.filter(Boolean).length;
-  const complexScore = complexIndicators.filter(Boolean).length;
-
-  return complexScore > simpleScore ? 'complex' : 'simple';
-}
+// classifyQueryComplexity is in lib/query-router.ts for testability
 
 /**
  * Load relevant legal corpus sections based on query content
@@ -460,17 +424,29 @@ async function streamClaude(
         });
         controller.enqueue(encoder.encode(`data: ${meta}\n\n`));
 
-        // Verify citations against corpus and send sources event
-        const verifiedSources = citationIndex
-          ? verifyCitations(fullResponse, citationIndex, legalCorpus)
-          : [];
+        // Run hallucination guard: verify citations and compute confidence
+        let verifiedSources: VerifiedCitation[] = [];
+        if (citationIndex) {
+          const guardResult = runHallucinationGuard(fullResponse, citationIndex, legalCorpus);
+          verifiedSources = guardResult.citations;
 
-        if (verifiedSources.length > 0) {
-          const sourcesEvent = JSON.stringify({
-            type: 'sources',
-            sources: verifiedSources,
+          // Send sources event
+          if (verifiedSources.length > 0) {
+            const sourcesEvent = JSON.stringify({
+              type: 'sources',
+              sources: verifiedSources,
+            });
+            controller.enqueue(encoder.encode(`data: ${sourcesEvent}\n\n`));
+          }
+
+          // Send confidence event
+          const confidenceEvent = JSON.stringify({
+            type: 'confidence',
+            level: guardResult.confidence,
+            reason: guardResult.confidenceReason,
+            warnings: guardResult.warnings,
           });
-          controller.enqueue(encoder.encode(`data: ${sourcesEvent}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${confidenceEvent}\n\n`));
         }
 
         controller.close();

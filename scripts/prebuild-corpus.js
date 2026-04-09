@@ -8,9 +8,9 @@
  *
  * Output: app/src/lib/legal-corpus-data.json
  *
- * Approach: Only load query-relevant sections at runtime (smart loading).
- * The full TCA Title 36 (5.9MB) is too large to bundle entirely, so we
- * store it split by chapter for selective loading.
+ * This script dynamically discovers all corpus files — adding a new .html,
+ * .txt, or .md file to the corpus directory will automatically include it
+ * in the next build.
  */
 
 const fs = require("fs");
@@ -34,6 +34,25 @@ function extractTextFromHtml(html) {
     .trim();
 }
 
+/**
+ * Recursively find all files matching extensions in a directory.
+ */
+function findFiles(dir, extensions) {
+  const results = [];
+  if (!fs.existsSync(dir)) return results;
+
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...findFiles(fullPath, extensions));
+    } else if (extensions.some(ext => entry.name.endsWith(ext))) {
+      results.push(fullPath);
+    }
+  }
+  return results;
+}
+
 async function main() {
   console.log("Pre-building legal corpus for Cloudflare Workers...\n");
 
@@ -45,7 +64,7 @@ async function main() {
     buildDate: new Date().toISOString(),
   };
 
-  // TCA Title 37 (Juveniles) — 2.2MB, always loaded
+  // TCA Title 37 (Juveniles) — always loaded
   try {
     const html = fs.readFileSync(path.join(CORPUS_DIR, "tca", "title-37.html"), "utf-8");
     corpus.tcaTitle37 = extractTextFromHtml(html);
@@ -54,7 +73,7 @@ async function main() {
     console.error("  Failed to load TCA Title 37:", e.message);
   }
 
-  // TCA Title 36 (Domestic Relations) — 5.9MB
+  // TCA Title 36 (Domestic Relations)
   try {
     const html = fs.readFileSync(path.join(CORPUS_DIR, "tca", "title-36.html"), "utf-8");
     corpus.tcaTitle36 = extractTextFromHtml(html);
@@ -63,36 +82,90 @@ async function main() {
     console.error("  Failed to load TCA Title 36:", e.message);
   }
 
-  // TRJPP Rules
+  // Dynamically load any additional TCA titles (.html, .txt, or .md in tca/)
+  const tcaDir = path.join(CORPUS_DIR, "tca");
+  const additionalTca = findFiles(tcaDir, [".html", ".txt", ".md"])
+    .filter(f => !f.endsWith("title-37.html") && !f.endsWith("title-36.html"));
+
+  for (const file of additionalTca) {
+    try {
+      const content = fs.readFileSync(file, "utf-8");
+      const text = file.endsWith(".html") ? extractTextFromHtml(content) : content.trim();
+      if (text.length > 100) { // Skip placeholder stubs
+        const name = path.basename(file);
+        corpus.tcaTitle36 += `\n\n=== Additional TCA: ${name} ===\n${text}`;
+        console.log(`  Additional TCA (${name}): ${Math.round(text.length / 1024)}KB`);
+      }
+    } catch (e) {
+      console.error(`  Failed to load ${file}:`, e.message);
+    }
+  }
+
+  // TRJPP Rules — load all-rules.txt or dynamically discover individual rule files
   try {
-    corpus.trjppRules = fs.readFileSync(path.join(CORPUS_DIR, "trjpp", "all-rules.txt"), "utf-8");
-    console.log(`  TRJPP Rules: ${Math.round(corpus.trjppRules.length / 1024)}KB`);
+    const allRulesPath = path.join(CORPUS_DIR, "trjpp", "all-rules.txt");
+    if (fs.existsSync(allRulesPath)) {
+      corpus.trjppRules = fs.readFileSync(allRulesPath, "utf-8");
+      console.log(`  TRJPP Rules: ${Math.round(corpus.trjppRules.length / 1024)}KB`);
+    } else {
+      // Fall back to loading individual rule files
+      const ruleFiles = findFiles(path.join(CORPUS_DIR, "trjpp"), [".txt", ".md"]);
+      let rulesContent = "";
+      for (const file of ruleFiles.sort()) {
+        rulesContent += fs.readFileSync(file, "utf-8") + "\n\n";
+      }
+      corpus.trjppRules = rulesContent.trim();
+      console.log(`  TRJPP Rules: ${Math.round(corpus.trjppRules.length / 1024)}KB (${ruleFiles.length} files)`);
+    }
   } catch (e) {
     console.error("  Failed to load TRJPP:", e.message);
   }
 
-  // DCS Policies — PDFs require runtime parsing or pre-extracted text files.
-  // pdf-parse v2 has a different API; for now, check if pre-extracted text exists.
+  // DCS Policies — load .txt files (PDFs require pre-extraction)
   try {
     const dcsDir = path.join(CORPUS_DIR, "dcs");
-    const textFiles = fs.readdirSync(dcsDir).filter((f) => f.endsWith(".txt"));
+    const textFiles = findFiles(dcsDir, [".txt", ".md"]);
     let dcsContent = "";
 
-    if (textFiles.length > 0) {
-      for (const file of textFiles) {
-        const text = fs.readFileSync(path.join(dcsDir, file), "utf-8").trim();
-        if (text.length > 0) {
-          dcsContent += `=== DCS Policy: ${file} ===\n${text}\n\n`;
-        }
+    for (const file of textFiles) {
+      const text = fs.readFileSync(file, "utf-8").trim();
+      if (text.length > 0) {
+        const name = path.basename(file);
+        dcsContent += `=== DCS Policy: ${name} ===\n${text}\n\n`;
       }
+    }
+
+    if (dcsContent.length > 0) {
       console.log(`  DCS Policies: ${Math.round(dcsContent.length / 1024)}KB (${textFiles.length} text files)`);
     } else {
-      console.log("  DCS Policies: Skipped (PDFs will be parsed at runtime or via R2)");
+      console.log("  DCS Policies: Skipped (PDFs need pre-extraction to .txt format)");
     }
 
     corpus.dcsText = dcsContent;
   } catch (e) {
     console.error("  Failed to load DCS policies:", e.message);
+  }
+
+  // Dynamically load any files in additional corpus directories
+  const additionalDirs = fs.readdirSync(CORPUS_DIR, { withFileTypes: true })
+    .filter(d => d.isDirectory() && !["tca", "trjpp", "dcs", "local-rules", "_processed"].includes(d.name));
+
+  for (const dir of additionalDirs) {
+    const dirPath = path.join(CORPUS_DIR, dir.name);
+    const files = findFiles(dirPath, [".html", ".txt", ".md"]);
+    for (const file of files) {
+      try {
+        const content = fs.readFileSync(file, "utf-8");
+        const text = file.endsWith(".html") ? extractTextFromHtml(content) : content.trim();
+        if (text.length > 100) {
+          const name = path.basename(file);
+          corpus.dcsText += `\n\n=== ${dir.name}: ${name} ===\n${text}`;
+          console.log(`  ${dir.name}/${name}: ${Math.round(text.length / 1024)}KB`);
+        }
+      } catch (e) {
+        console.error(`  Failed to load ${file}:`, e.message);
+      }
+    }
   }
 
   // Write output
@@ -101,8 +174,7 @@ async function main() {
   console.log(`\nCorpus written to: ${OUTPUT_PATH}`);
   console.log(`Total size: ${Math.round(json.length / 1024)}KB`);
 
-  // Check if it fits within Cloudflare Workers limits
-  // Workers have a 25MB script size limit (compressed), 128MB memory
+  // Size check for Cloudflare Workers limits
   const sizeMB = json.length / (1024 * 1024);
   if (sizeMB > 20) {
     console.warn(`\nWARNING: Corpus is ${sizeMB.toFixed(1)}MB — may approach Workers limits.`);
