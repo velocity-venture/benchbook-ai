@@ -106,6 +106,30 @@ describe('verifyCitations', () => {
     expect(citations.some(c => c.citation === 'T.C.A. § 36-1-102' && c.verified)).toBe(true);
   });
 
+  it('handles Tenn. Code Ann. format', () => {
+    const response = 'Pursuant to Tenn. Code Ann. § 37-1-102, a "child" means...';
+    const citations = verifyCitations(response, index, corpus);
+    const tca = citations.find(c => c.citation === 'T.C.A. § 37-1-102');
+    expect(tca).toBeDefined();
+    expect(tca!.verified).toBe(true);
+  });
+
+  it('matches all four TCA format variants', () => {
+    const formats = [
+      'T.C.A. § 37-1-102',
+      'T.C.A. 37-1-102',
+      'Tenn. Code Ann. § 37-1-102',
+      'TCA 37-1-102',
+    ];
+    for (const fmt of formats) {
+      const response = `See ${fmt} for the definition.`;
+      const citations = verifyCitations(response, index, corpus);
+      const tca = citations.find(c => c.citation === 'T.C.A. § 37-1-102');
+      expect(tca, `Format "${fmt}" should be matched`).toBeDefined();
+      expect(tca!.verified, `Format "${fmt}" should be verified`).toBe(true);
+    }
+  });
+
   it('handles subsection references like T.C.A. § 37-1-114(a)', () => {
     const response = 'Under T.C.A. § 37-1-114(a), detention requires...';
     const citations = verifyCitations(response, index, corpus);

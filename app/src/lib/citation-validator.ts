@@ -119,8 +119,9 @@ export function buildCitationIndex(
  *   TCA § 37-1-114
  *   TCA 37-1-114
  *   T.C.A. §37-1-114(a)
+ *   Tenn. Code Ann. § 37-1-114
  */
-const TCA_PATTERN = /T\.?C\.?A\.?\s*§?\s*(?:section\s+)?(\d+-\d+-\d+)(?:\([a-z0-9]+\))?/gi;
+const TCA_PATTERN = /(?:T\.?C\.?A\.?|Tenn\.?\s*Code\s*Ann\.?)\s*§?\s*(?:section\s+)?(\d+-\d+-\d+)(?:\([a-z0-9]+\))?/gi;
 
 /**
  * TRJPP rule patterns:
