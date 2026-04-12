@@ -14,19 +14,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     const supabase = createClient();
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -34,6 +36,20 @@ export default function LoginPage() {
           },
         });
         if (error) throw error;
+
+        // If Supabase email confirmation is enabled, signUp succeeds but
+        // returns no session. Show a confirmation message instead of
+        // redirecting (middleware would bounce back to /login anyway).
+        // To skip email confirmation for MVP, disable "Confirm email" in
+        // Supabase Dashboard → Authentication → Providers → Email.
+        if (data.session) {
+          router.push("/dashboard");
+          router.refresh();
+        } else {
+          setSuccess("Check your email for a confirmation link.");
+          setLoading(false);
+        }
+        return;
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -46,6 +62,7 @@ export default function LoginPage() {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Authentication failed";
+      console.error("Auth error:", err);
       setError(message);
     } finally {
       setLoading(false);
@@ -78,6 +95,15 @@ export default function LoginPage() {
           {error && (
             <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
               {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm flex items-center gap-2">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {success}
             </div>
           )}
 

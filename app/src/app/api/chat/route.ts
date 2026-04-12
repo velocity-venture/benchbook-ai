@@ -221,10 +221,18 @@ export async function POST(request: NextRequest) {
       messages = rawMessages as Message[];
     }
 
-    // Check if Claude API is enabled and configured
-    if (!USE_CLAUDE_API || !anthropic) {
-      console.log('Claude API disabled or not configured, using mock response');
-      return NextResponse.json(mockResponse(query, startTime));
+    // Require Claude API to be enabled and configured
+    if (!USE_CLAUDE_API) {
+      return NextResponse.json(
+        { error: "Claude API is not enabled. Set USE_CLAUDE_API=true in environment." },
+        { status: 500 }
+      );
+    }
+    if (!anthropic) {
+      return NextResponse.json(
+        { error: "Anthropic API key not configured. Set ANTHROPIC_API_KEY in environment." },
+        { status: 500 }
+      );
     }
 
     // Step 1: Classify query complexity for model routing
@@ -499,63 +507,3 @@ async function trackResearchQuery(userId: string, query: string, sources: Source
     .catch((err: unknown) => { console.error('Failed to update research patterns:', err); });
 }
 
-/**
- * Mock response for development/demo mode when Claude API unavailable
- */
-function mockResponse(query: string, startTime: number) {
-  const queryLower = query.toLowerCase();
-
-  if (queryLower.includes("detention")) {
-    return {
-      response: `Under **T.C.A. § 37-1-114(a)**, a child may be detained only if:
-
-1. **Immediate endangerment** — Detention is necessary to protect the child or others from immediate harm
-2. **Flight risk** — There is reason to believe the child may flee the jurisdiction
-3. **No parent/guardian available** — The child has no parent, guardian, or custodian able to provide supervision
-4. **Serious offense** — The child is charged with an offense that would be a felony if committed by an adult
-
-**Key Procedural Requirements:**
-- A detention hearing must be held within **48 hours** (excluding weekends and holidays) of the child being taken into custody
-- The court must consider **less restrictive alternatives** before ordering detention
-- Written findings are required explaining why detention is necessary
-
-**DCS Policy 14.12** also requires caseworkers to document reasonable efforts to prevent removal before requesting court-ordered detention.`,
-      sources: [
-        {
-          title: "Criteria for detention of child",
-          citation: "T.C.A. § 37-1-114",
-          type: "TCA",
-          snippet: "A child may be held in detention prior to adjudication only if...",
-        },
-        {
-          title: "DCS Investigation Policy",
-          citation: "DCS Policy 14.12",
-          type: "DCS",
-          snippet: "Prior to any home removal, the investigator shall...",
-        },
-      ],
-      model_used: 'sonnet',
-      tokens_used: 1250,
-      cache_hit: false,
-      processing_time_ms: Date.now() - startTime
-    };
-  }
-
-  return {
-    response: `I can help you research Tennessee juvenile law on that topic.
-
-For the most accurate information, I recommend:
-- Searching the **T.C.A. Title 37** (Juveniles) or **Title 36** (Domestic Relations)
-- Reviewing relevant **DCS policies**
-- Checking the **Tennessee Rules of Juvenile Practice and Procedure**
-
-Would you like me to look up a specific statute or policy? Please provide more details about your question.
-
-*Note: This is a demo response. Enable Claude API for full functionality.*`,
-    sources: [],
-    model_used: 'haiku',
-    tokens_used: 450,
-    cache_hit: false,
-    processing_time_ms: Date.now() - startTime
-  };
-}

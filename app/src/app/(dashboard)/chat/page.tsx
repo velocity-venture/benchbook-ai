@@ -321,7 +321,19 @@ export default function ChatPage() {
         }),
       });
 
-      // Check if response is streaming (SSE) or JSON (mock/error)
+      // Handle HTTP errors before reading the body
+      if (!response.ok) {
+        let errMsg = "Failed to get response from server.";
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errMsg;
+        } catch {
+          // response wasn't JSON
+        }
+        throw new Error(errMsg);
+      }
+
+      // Check if response is streaming (SSE) or JSON
       const contentType = response.headers.get('content-type') || '';
 
       if (contentType.includes('text/event-stream')) {
