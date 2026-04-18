@@ -352,7 +352,7 @@ export default function SettingsPage() {
                       ].map((theme) => (
                         <button
                           key={theme.value}
-                          onClick={() => updatePrefs({ theme: theme.value as any })}
+                          onClick={() => updatePrefs({ theme: theme.value as "dark" | "light" | "system" })}
                           className={cn(
                             "px-4 py-2 rounded-lg border text-sm font-medium transition-colors",
                             preferences.theme === theme.value
