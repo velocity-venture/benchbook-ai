@@ -136,3 +136,51 @@ Test coverage:
 5. **Live testing with real queries**: Test the hallucination guard and confidence scoring with real judicial questions
 6. **Monitor routing decisions**: Review console logs to verify complex queries are hitting Sonnet
 7. **API key rotation**: While no secrets were found leaked, it's good practice to rotate the Anthropic API key periodically
+
+---
+
+## Overnight Session: 2026-04-18 (Sat, 2:00 AM CDT)
+
+### Summary
+
+Continuation of code cleanup and hygiene pass. Three items from prior session resolved.
+
+### Completed This Session
+
+**1. DCS PDF Extraction (RESOLVED)**
+
+Extracted all 25 DCS administrative policy PDFs to `.txt` format using `pdftotext -layout`.
+All 25 files now indexed by the prebuild script.
+
+- Before: "DCS Policies: Skipped (PDFs need pre-extraction)"
+- After: "DCS Policies: 537KB (25 text files)"
+- Total corpus grew from ~5.9MB to 6.5MB
+- Committed: `feat: extract DCS policy PDFs to text (25 files, 537KB added to legal corpus)`
+
+**2. TCA Stub Files Updated**
+
+Added clear acquisition instructions and priority section lists to all three stub files.
+Now includes URLs, size estimates, and court-specific priorities for Title 39, 40, and 55.
+
+**3. Lint Warnings Resolved (RESOLVED)**
+
+All three pre-existing lint warnings eliminated:
+
+- `settings/page.tsx`: Replaced `as any` with explicit `"dark" | "light" | "system"` type
+- `voice-input.tsx`: Created `src/types/speech-recognition.d.ts` with full Web Speech API type declarations; replaced all `any` with proper types
+- `research-patterns/route.ts`: Prefixed unused `request` params with `_` convention
+
+`npx next lint --quiet` now returns: `No ESLint warnings or errors`
+
+### Commits This Session
+
+| SHA | Message |
+|-----|---------|
+| `9bd85b9` | feat: extract DCS policy PDFs to text (25 files, 537KB added to legal corpus) |
+| `c6c1af1` | docs: update TCA stub files with acquisition instructions and priority sections |
+| `c3b79ff` | chore: resolve lint warnings (any types, unused params, SpeechRecognition types) |
+
+### Remaining Items
+
+1. **TCA Title 39/40/55**: Content cannot be scraped (Cloudflare-protected sources). Judge needs to download from TN General Assembly or Westlaw/Lexis subscription. Instructions now in stub files.
+2. **Deploy to Cloudflare staging**: Linted, corpus complete, no known blockers. Ready whenever Judge wants to test live.
