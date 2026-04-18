@@ -7,11 +7,11 @@ Premium judicial productivity platform designed by Judge M.O. Eckel III for mode
 BenchBook.AI provides instant, bench-ready legal research using Claude AI with direct access to the Tennessee legal corpus. Ask a question about Tennessee law and get a concise, citation-verified answer you can act on during a hearing.
 
 **Key capabilities:**
-- **AI Legal Research** — Ask questions about TCA, TRJPP rules, DCS policies
-- **Citation Verification** — Every statute citation is cross-referenced against the loaded legal corpus
-- **Hallucination Guard** — Confidence scoring (HIGH/MEDIUM/LOW) flags unverified citations and case law
-- **Smart Model Routing** — Complex queries use Claude Sonnet; simple lookups use Haiku for cost efficiency
-- **Bench Cards** — One-click common queries for detention, sentencing, DCS removal, and procedure
+- **AI Legal Research** : Ask questions about TCA, TRJPP rules, DCS policies
+- **Citation Verification** : Every statute citation is cross-referenced against the loaded legal corpus
+- **Hallucination Guard** : Confidence scoring (HIGH/MEDIUM/LOW) flags unverified citations and case law
+- **Smart Model Routing** : Complex queries use Claude Sonnet; simple lookups use Haiku for cost efficiency
+- **Bench Cards** : One-click common queries for detention, sentencing, DCS removal, and procedure
 
 ## Architecture
 
@@ -22,7 +22,7 @@ BenchBook.AI provides instant, bench-ready legal research using Claude AI with d
 | Database | PostgreSQL (Supabase) |
 | Auth | Supabase Auth |
 | Deployment | Cloudflare Pages (edge runtime) |
-| Legal Corpus | TCA Title 36/37, TRJPP, DCS — loaded directly into 1M token context |
+| Legal Corpus | TCA Title 36/37, TRJPP, DCS (loaded directly into 1M token context) |
 
 ### AI Pipeline
 
