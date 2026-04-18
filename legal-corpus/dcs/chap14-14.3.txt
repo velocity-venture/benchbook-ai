@@ -1,0 +1,332 @@
+            State of Tennessee
+            Department of Children’s Services
+
+
+
+ Administrative Policies and Procedures: 14.3
+
+Subject:            Child Protective Services Intake Analyst Responsibilities
+
+Authority:          TCA: 37-5-105, 37-5-106
+
+
+Standards:          None
+
+
+Application: All Department of Children’s Services Child Abuse Hotline Intake Analyst Staff
+Policy Statement:
+The Child Abuse Hotline (CAH) Intake Analyst staff facilitate the assignment of reports of alleged child
+abuse and neglect from the CAH by reviewing screening decisions and assigning to the appropriate CPS
+staff.
+
+Purpose:
+To provide direction and guidelines to Intake Analyst staff who ensure that the Multiple Response System is
+supported through screening and proper assignment of reports of child abuse and neglect.
+
+Procedures:
+A. DCS Screening             1. The Intake Analyst reviews intakes submitted by the Child Abuse Hotline
+   Policy Assessment            (CAH) to determine quality case assignments or if a reconsideration request
+                                is warranted.
+                             2. The Intake Analyst assesses this decision based on screening criteria found
+                                in the Structured Decision Making Tool (SDM) along with the designated
+                                screening DCS Policies (14.1, Child Abuse Hotline and Work Aid 1: CPS
+                                Categories and Definitions of Abuse/Neglect, 14.2, Screening, Priority
+                                Response and Assignment of Child Protective Services Cases, 14.9,
+                                DCS Response to Allegations Involving Drug Exposed Children, 14.10,
+                                Special Investigations Unit Child Protective Services Investigations, and
+                                14.17, Resource Linkage).
+                             3. The Intake Analyst will utilize any other designated screening tool protocols
+                                and procedures that aid in the determination of child safety case
+                                assignments.
+
+
+
+
+Original Effective Date: 14.3, 12/01/23
+Current Effective Date: 12/01/23                                                                   Page 1 of 7
+Supersedes: Work Aid 8, 02/20
+CS-0001
+RDA SW22
+   Subject: Child Protective Services Intake Analyst Responsibilities                                    14.3
+
+B. History Searches            1. The Intake Analyst conducts a historical search in both the Intake and
+                                  Person Search tabs in TFACTS to find any open cases, duplicate intakes,
+                                  and previously investigated cases to ensure that a comprehensive decision
+                                  can be made regarding child safety and priority response. This is for the
+                                  purpose of quality case assignment determinations. Research activities
+                                  include querying TFACTS for the following:
+                                           All alleged child victims (ACV);
+                                           All siblings identified in the report;
+                                           All parents/caregivers identified in the report;
+                                           All alleged perpetrators (AP); and
+                                           All other relevant participants listed in the report that can provide
+                                            historical information pertaining to quality case assignment.
+                               2. Based on the results of the history search, the Intake Analyst can assign the
+                                  intake or request a reconsideration.
+                               3. The Intake Analyst provides email notifications to Case Managers and their
+                                  supervisors regarding new intakes relevant to their open cases. This
+                                  includes Child Protective Services (CPS), Special Investigations Unit (SIU),
+                                  Custodial, and Non-Custodial open cases.
+                               4. It is the responsibility of the Intake Analyst to facilitate discussions between
+                                  Field Supervision within CPS, Custodial, and Non-Custodial units in an effort
+                                  to reduce recidivism, provide continuity of care to families and to ensure that
+                                  there are not multiple Case Managers in one home/case unless mandated by
+                                  policy.
+
+C. Reconsiderations            1. If the Intake Analyst is to reconsider a new intake screening decision based
+                                  on DCS screening policies, work aids or tools, the Intake Analyst is
+                                  responsible for thoroughly documenting the specific policies or criteria used
+                                  to make the determination. These reconsiderations are based on the
+                                  following criteria:
+                                   a) The information provided does not meet criteria per DCS Policy 14.1,
+                                      Child Abuse Hotline for case assignment. This is based on the age of
+                                      ACV, relationship of AP, location, and/or an allegation of harm per Work
+                                      Aid 1: CPS Categories and Definitions of Abuse/Neglect. This can
+                                      be based on the original concerns in the intake, or through additional
+                                      information obtained by the Intake Analyst/Field Staff.
+                                   b) The information provided meets criteria for case assignment, but the
+                                      assigned track is incorrect per the Structured Decision Making (SDM)
+                                      Tool.
+                                   c) The information provided can be screened out and referred to the current
+                                      open CPS, Custodial, or Non-Custodial case for follow up per DCS Policy
+                                      14.2, Screening, Priority Response and Assignment of Child
+                                      Protective Services Cases.
+
+Original Effective Date: 14.3, 12/01/23
+Current Effective Date: 12/01/23                                                                          Page 2 of 7
+Supersedes: Work Aid 8, 02/20
+CS-0001
+RDA SW22
+   Subject: Child Protective Services Intake Analyst Responsibilities                                    14.3
+                                   d) The information provided meets criteria for case assignment, but the
+                                      jurisdiction is incorrect per DCS Policy 14.2, Screening, Priority
+                                      Response and Assignment of Child Protective Services Cases. This
+                                      can be based on the original county assignment, or through additional
+                                      information obtained by the Intake Analyst/Field Staff.
+                                   e) The information provided meets criteria for case assignment, but the
+                                      priority response needs to be changed due to the current safety or risk of
+                                      harm to the child. This can be based on the original priority response
+                                      assignment, or through additional information obtained by the Intake
+                                      Analyst/Field Staff.
+                               2. If the Intake Analyst is to reconsider an intake based on the results of the
+                                  designated history search, the Intake Analyst is responsible for thoroughly
+                                  documenting the historical information used to make the determination to
+                                  support a request for change in the screening decision for the intake.
+                                  Historical information used for reconsideration purposes includes the
+                                  following:
+                                           Case ID numbers and the date of assignment and/or closure; and
+                                           Specifics on how the open, duplicate, or prior case is the reason for
+                                            the screening decision change.
+                               3. A request for reconsideration can be made based on an agreement by
+                                  supervisory staff from CPS, Custodial, and Non-Custodial programs. The
+                                  Intake Analyst initiates the discussions between programs, if necessary, to
+                                  make a quality case assignment decision for the new intake. The Intake
+                                  Analyst documents in the reconsideration tab within the intake the names
+                                  and positions of the supervisory staff involved in the agreement, along with
+                                  the agreement decision for the new intake. These reconsiderations are
+                                  based on the following criteria:
+                                   a) Request for Track Changes - When the CAH screens a referral as an
+                                      Investigation (to include Special Investigation Unit Investigations) or
+                                      Assessment and the Intake Analyst or Field Supervisors disagree with
+                                      the track assignment per the SDM tool.
+                                   b) Request for Screen-Out and Refer to Open CPS – When a CPS case has
+                                      been opened for less than thirty (30) calendar days and does not have an
+                                      approved classification and new allegations assigned to a different track
+                                      are received, the Intake Analyst can refer to the CPS Field Supervisors to
+                                      discuss the allegations and jointly decide if two (2) separate cases should
+                                      remain open or if the open case can absorb the new allegations.
+                                   c) Request for Screen out and Refer to Open Custodial/Non-Custodial
+                                      Case. When there is an open Custodial/Non-Custodial Case and
+                                      additional allegations are reported to the CAH, the Intake Analyst can
+                                      refer to the CPS and Custodial/Non-Custodial Case Field Supervisors to
+                                      discuss the allegations and jointly decide if two (2) separate cases (CPS
+                                      and Custodial/Non-Custodial) can remain open or if the open
+                                      Custodial/Non-Custodial case can absorb the new allegations. This
+
+
+Original Effective Date: 14.3, 12/01/23
+Current Effective Date: 12/01/23                                                                         Page 3 of 7
+Supersedes: Work Aid 8, 02/20
+CS-0001
+RDA SW22
+   Subject: Child Protective Services Intake Analyst Responsibilities                                   14.3
+                                          process is only for non-severe allegations. Severe abuse allegations will
+                                          not be combined with any open Custodial/Non-Custodial Case.
+                                   d) Request for Jurisdiction Change – When the CAH submits to a specific
+                                      county of jurisdiction and the Intake Analyst and/or Field Supervisors do
+                                      not agree with the assignment per DCS screening policy 14.2 for
+                                      jurisdiction and requests a change in jurisdiction.
+                               4. If an agreement cannot be reached among Field Supervisors involved in any
+                                  of the designated reasons for reconsideration of an intake, the Intake Analyst
+                                  can reconsider the intake back to CAH for reconsideration with the notation
+                                  of a disagreement from Field Supervisors on the intake decision. CAH
+                                  Supervisors then make a decision based on the reconsideration reason
+                                  provided by the Intake Analyst and based on DCS screening policies.
+                                   a) CAH makes a decision for the reconsidered intake that could include a
+                                      screen out or return back to the Intake Analyst for assignment.
+
+                                   b) If the Intake Analyst or Field Supervisors disagree again with the returned
+                                      decision made by the CAH, the Intake Analyst or Field Supervisor can
+                                      reconsider the intake to CAH via a Second Tier Review process. The
+                                      Second Tier Review process is an escalation to CAH Core Leadership for
+                                      review and final decision on the intake. These review requests are sent
+                                      via email to the CAH Director and Team Coordinators.
+                               5. Request for reconsideration for Child Death or Preliminary Near Death (PND)
+                                  intakes can only be initiated by Regional Directors and/or Office of Child
+                                  Safety Executive Leadership. These requests are made via email or phone
+                                  call to the CAH Director. The CAH Director then discusses the
+                                  reconsideration change requests with the Office of Child Safety Deputy
+                                  Commissioner (or designee). The CAH Director notifies the appropriate
+                                  Intake Analyst/Field Staff/ Regional Director regarding the approved
+                                  reconsideration.
+
+                               1. The Intake Analyst is responsible for making the case assignment decisions.
+D. Assignment
+                                  Intake Analysts consults with field supervision as needed to ensure best
+                                  practice with case assignments.
+
+                               2. The Intake Analyst performs an internet search of the provided address in the
+                                  intake to confirm jurisdiction and validity of the address prior to assignment.
+                               3. When assigning cases, the Intake Analyst uses a staffing rotation and case
+                                  assignment process provided by the Regional Director or Team Coordinators.
+                                  Intake Analyst maintains communication with field supervision regarding case
+                                  assignment rotations based on staff leave and attendance availability. The
+                                  Intake Analyst partners with field supervision to ensure assignments are
+                                  rotated in an equitable manner.
+                               4. If a new referral is received within thirty (30) days of closure of the previous
+                                  case and it meets the same screening/assignment criteria, it is assigned to
+
+
+
+Original Effective Date: 14.3, 12/01/23
+Current Effective Date: 12/01/23                                                                         Page 4 of 7
+Supersedes: Work Aid 8, 02/20
+CS-0001
+RDA SW22
+   Subject: Child Protective Services Intake Analyst Responsibilities                                    14.3
+                                  the previously assigned CPS Worker unless CPS supervisor directs
+                                  assignment to a new CPS worker.
+                               5. CPS Intake Analyst assign cases to CPS staff by the following guidelines:
+                                  a) Track
+                                      The following cases are tracked as an Investigation:
+                                        • All Severe Abuse cases;
+                                             •   All cases with at least one child who is between the ages of 0
+                                                 through 3 months with an allegation of Drug Exposed Child.
+
+                                           All non-severe cases, except those meeting a requirement in subpart
+                                            a will be tracked as an Assessment.
+                                  b) Team Jurisdiction
+                                      The CPIT team accepts all Severe Abuse cases that are screened in
+                                        by all areas of the Structured Decision Making (SDM) Tool.
+                                           In regions where there are Drug Teams, that team accepts all cases
+                                            with at least one child who is between the ages of 0 through 3 months
+                                            with an allegation of Drug Exposed Child. In regions where there are
+                                            no Drug Teams, these cases are assigned to the CPIT Team.
+                                           In regions where there are Rapid Response teams, that team accepts
+                                            all non-severe cases; otherwise the FPP team accepts these cases.
+
+                               6. When an additional Severe Abuse allegation is received it will be assigned to
+                                  the CPIT team if it would otherwise have been assigned to any other team
+                                  except the Drug Team.
+                               7. When an additional report with an infant 0 through 3 months with an allegation
+                                  of Drug Exposed Child is received, it is assigned to the Drug Team.
+                               8. When an additional report with any other non-severe allegations is received, it
+                                  is assigned to the current Case Manager with the open case.
+                                           If a new case is assigned to a team that does not already have the
+                                            open case (i.e. Severe Abuse case is assigned to CPIT when CPS
+                                            has a Non-Severe case), then the Team Leaders will communicate to
+                                            determine whether the Non-Severe case is transferred or closed with
+                                            the allegations incorporated into the new case. At no point will a case
+                                            be closed absent this communication occurring and being documented
+                                            in Administrative Reviews in both cases.
+
+                              Note: When there is a case that overlaps with the CPIT and Drug Team
+                                    jurisdictions, the Drug Team is assigned the case.
+
+                              Note: The Intake Analyst provides an email notification on all new open case
+                                    assignments to the assigned CM and supervisor. The notification email
+                                    provided details regarding the assigned intake.
+
+E. Transfers, Out of           1. Transfers from other Regions (with Team Coordinator approval)
+   State Courtesy                 a) Transfers of Severe cases are assigned to the CPIT team.
+
+Original Effective Date: 14.3, 12/01/23
+Current Effective Date: 12/01/23                                                                         Page 5 of 7
+Supersedes: Work Aid 8, 02/20
+CS-0001
+RDA SW22
+   Subject: Child Protective Services Intake Analyst Responsibilities                                14.3
+  Requests and                    b) Transfers of Non-Severe cases are assigned to the Rapid Response or
+  Orders of Reference                FPP team.
+                                  c) Cases with an allegation of Drug Exposed Child involving a child 0
+                                     through 3 months old: Drug Team in those regions that have one.
+                                     Otherwise, the cases are assigned based on their severity.
+                               2. Out of State Courtesy Requests
+                                  a) Severe Out of State Courtesy Requests are assigned to the CPIT team.
+                                  b) Non-Severe Out of State Courtesy Requests are assigned to the FPP
+                                     team.
+
+                              3. When the court issues an order of reference alleging abuse or neglect, the
+                                 request is referred to the Child Abuse Hotline (CAH).
+                                       The court liaison can refer the OR to CAH directly or provide to the
+                                        Regional Intake Analyst via email.
+                                       The Intake Analyst will perform a TFACTS historical search. If an open
+                                        CPS case is found, the OR will not be referred for a new intake to the
+                                        CAH. The OR will be assigned via email to the open case worker and
+                                        supervisor to include in open case.
+                                       If no open case is found, the Intake Analyst will refer the OR to CAH to
+                                        be entered into TFACTS for a new intake.
+
+F. Additional Intake           1. Intake Analyst may be assigned additional tasks or responsibilities as
+   Analyst Tasks and              necessary for the needs of the region as approved by the CAH Director or
+   Responsibilities               CAH Intake Analyst Team Coordinators.
+                               2. Field Supervision must obtain approval from the CAH Director and Team
+                                  Coordinators prior to any additional tasks or requests added to the Intake
+                                  Analyst expectations for the Region.
+                               3. Intake Analyst will participate in designated mandatory and voluntary overtime
+                                  shifts as approved by the CAH Director that may include completing daily
+                                  workload case assignment tasks, availability afterhours to field calls and
+                                  respond to emails regarding case assignment tasks, back up assistance for
+                                  the Hotline with completing non-phone referrals, on call assistance during
+                                  Hotline Business Resumption events, and other such teaming tasks that
+                                  assist with serving the CAH or the Intake Analyst’s assigned region.
+                               4. Additional tasks are secondary to Intake Analyst intake and case assignment
+                                  responsibilities.
+
+
+
+
+Original Effective Date: 14.3, 12/01/23
+Current Effective Date: 12/01/23                                                                     Page 6 of 7
+Supersedes: Work Aid 8, 02/20
+CS-0001
+RDA SW22
+   Subject: Child Protective Services Intake Analyst Responsibilities                           14.3
+
+Forms:                        None
+
+
+Collateral                   14.1, Child Abuse Hotline
+documents:                   14.2, Screening, Priority Response and Assignment of Child Protective
+                             Services Cases
+                             14.9, DCS Response to Allegations Involving Drug Exposed Children
+                             14.10, Special Investigations Unit Child Protective Services Investigations
+                             14.17, Resource Linkage
+                             14.20, Orders of Reference
+                             Work Aid 1: CPS Categories and Definitions of Abuse/Neglect
+
+
+Glossary:
+Term                         Definition
+
+                             None
+
+
+
+
+Original Effective Date: 14.3, 12/01/23
+Current Effective Date: 12/01/23                                                                Page 7 of 7
+Supersedes: Work Aid 8, 02/20
+CS-0001
+RDA SW22
+

@@ -1,0 +1,364 @@
+             State of Tennessee
+             Department of Children’s Services
+
+
+Administrative Policies and Procedures: 14.11
+
+Subject:             Child Protective Services Case File Organization, Documentation
+                     and Disposition
+
+Authority:           TCA: 37-5-105 (3); 37-5-106
+
+
+Standards:           COA: PA-RPM 6.01; 6.02; PA-RPM 7, PA-CFS 9.04
+
+
+Application:         To All Department of Children’s Services Child Protective Services and Special
+                     Investigations Unit Employees
+
+Policy Statement:
+All child protective services case records shall be maintained in a standardized confidential manner and shall
+be safeguarded from unauthorized and improper disclosure of information.
+
+Purpose:
+The TFACTS record serves as the official record and a reference tool for case DCS and private provider
+Case Manager, for collection of data and preparation of required documents, forms, and assessments on
+children and families served. The procedures in this policy provide guidelines for the manner in which
+information is composed, maintained and expunged to ensure a systematic method for the creation of CPS
+case records. Emphasis is placed on being purposeful, specific, factual, and focus on the investigative,
+assessment and/or treatment process. The case record will summarize case work activity, including family
+strengths, efforts to address safety and risk issues, a summary of the activities of any treatment agents
+and/or family support teams. The record will also include the family’s involvement in and reaction to services
+provided.
+
+Procedures:
+A. Confidentiality           1. All case records are confidential (refer to Policy 14.15, Confidentiality of
+                                Child Protective Services Cases). When a hard copy is created, it must be
+                                marked “CONFIDENTIAL” on the front of the folder and must be stored out of
+                                public view.
+                             2. When writing case recordings, staff shall be mindful of the right to
+                                confidentiality and shall not include information about persons unrelated to the
+                                case, except where those persons that have a direct effect on the client
+                                child/youth and family (in which case, only relevant information shall be
+                                documented).
+                             3. When writing case recordings, without sacrificing accuracy and completeness,
+                                staff shall be sensitive to the emotional well-being of the client child/youth and
+                                family in the choice of terminology used (being mindful that the client
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                      Page 1 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+ Subject: CPS Case File Organization, Documentation and Disposition                               # 14.11
+                                 child/youth and family may be voluntarily or involuntarily exposed to the
+                                 documentation in the future).
+                             4. The release of confidential case file information must be in accordance with
+                                Federal and State laws, statutes, rules and regulations, DCS policies 9.4,
+                                Confidential Child-Specific Information, 9.5, Access and Release of
+                                Confidential Child-Specific Information, 14.15, Confidentiality of Child
+                                Protective Services Cases and DCS Health Insurance Portability and
+                                Accountability Act of 1996 (HIPAA) policies and procedures as applicable.
+
+B. General Case              1. CPS General Case recording guidelines will include:
+   Documentation for
+                                a) Content - Includes a summary of the interactions, discussions, agreements,
+   Case Recordings
+                                   decisions, evidence of facts or issues that were discussed either face to
+   Guidelines
+                                   face or by other contact means. Include discussions around the use of
+                                   assessments and how they are being utilized in planning. Discuss how the
+                                   family is engaged in exploring all factors or elements impacting their current
+                                   global situation. When applicable, indicate whether or not the child/youth
+                                   had 1:1 time with the Case Manager and a brief description of that
+                                   interaction. The individual conversation with the child(ren) always includes
+                                   discussion and assessment of safety. Specifically address the strengths
+                                   and needs identified in all family case plans. Whatever purpose of contact
+                                   was identified (i.e., safety, permanency, well-being or service planning,
+                                   etc.), the narrative needs to reflect what was discussed and how it relates to
+                                   the long term view of the family case and/or in the resolution of the issues
+                                   or concerns that brought them to the attention of the Department.
+                                b) Observation–describe in observable/measurable terms: individual
+                                   behaviors witnessed; observations regarding the appearance of the children
+                                   in relation to appropriate dress for current conditions, whether or not they
+                                   appear well-nourished, any evidence of developmental delays, illness or
+                                   need for medical care; the interactions among parties present including
+                                   interaction with Case Manager; significant environmental factors; safety and
+                                   risk factors including observed strengths/needs; and the family’s response
+                                   to interventions or services being implemented.
+                                c) Next Steps - State what is to be done next as a result of this contact, or as
+                                   a natural progression of the case management process.
+                                d) Transfer summary: details case activity if case is to be transitioned.
+                                e) Closing summary: a narrative description of reason for opening, current
+                                   safety, risk and well-being status of child and family, classification decision
+                                   and the justification, the case plan including any referrals made and the
+                                   family’s reaction to case closure that forms the basis of the CPS Case
+                                   Summary and Classification Decision of Child Abuse/Neglect Referral,
+                                   CS-0740 on the appropriate screens in TFACTS.
+                             Note: When substantiating an allegation, the Work Aid 1 definition of that
+                                   allegation is included in case recordings such as a CPIT and/or Notation.
+
+
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                      Page 2 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+ Subject: CPS Case File Organization, Documentation and Disposition                               # 14.11
+                             2. Case recordings must:
+                                     Be relevant, reliable and written in clear and complete sentences, and
+                                     Not include slang language or subjective/personal value judgments.
+                             3. Abbreviations and acronyms used must be commonly understood and
+                                acceptable.
+                             4. E-mails will not be pasted directly into case recordings. Staff will note in the
+                                narrative section that contact was made with an individual through email and
+                                noting only information pertaining to the case. Discussion of topics
+                                unrelated to the case will not be contained within the narrative.
+                             5. Handwritten notes will not be maintained as part of the case record.
+                             Note: Documentation is entered throughout the life of the case.
+                                   Documentation may be added after a case is closed upon consultation
+                                   with a CPS supervisor when there is a legitimate business reason including
+                                   but not limited to receipt of additional records from an external partner,
+                                   documentation of case tasks that were completed but not timely entered,
+                                   post closure reviews or court hearings that took place after the case was
+                                   closed.
+
+C. Case Record               TFACTS serves as the official DCS record. Documents or information including
+   Composition               case recordings, assessments and service plans that are located in TFACTS are
+                             not to be printed for the purpose of sharing with other program areas or case
+                             records. Additional records not automated by TFACTS are to be uploaded into
+                             the TFACTS case record as technology allows. Additional information, pertinent
+                             to the record but not automated by TFACTS, is to be uploaded into the TFACTS
+                             case record as technology allows. Information relative to case evidence that
+                             cannot be uploaded into the TFACTS case record is maintained in a
+                             supplementary hard copy record (i.e.; DVDs, large medical records, birth
+                             certificates).
+                             Composition for any created hard copy files is maintained per the following
+                             guidelines:
+                              1. Each family shall have one (1) record.
+                              2. All documents will be filed in a classification folder with two (2) dividers and
+                                 the case record contents will be filed according to CS-0726, Child
+                                 Protective/Non-Custodial Case File Documentation and Organization
+                                 Checklist. The CPS tab pages will be printed on blue copy paper. The Family
+                                 Crisis Intervention Program (FCIP) tab pages will be printed on yellow copy
+                                 paper.
+                              3. The inside cover of each folder will be reserved for the Records Disposition
+                                 Authority (RDA) information to be recorded.
+                              4. The case record contents including forms will be filed in ascending ( ) order
+                                 (most recent on top).
+
+
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                      Page 3 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+ Subject: CPS Case File Organization, Documentation and Disposition                                # 14.11
+                              5. The case record will be labeled on the tab portion of the folder with the
+                                 mother’s or primary caregiver’s last name listed first separated by a comma
+                                 followed by the mother’s or primary caregiver’s first name.
+
+                             1. Case Summary (Case summary of all contacts, dates of contacts and activities
+D. Case Recording
+   Guidelines-                  completed in one recording)
+   Investigation and
+   Assessment-                   a) Family/Household Composition:
+   Monthly Summary
+   Documentation                         Name(s), DOB(s), relationships
+                                         Address
+                                         Phone number(s)
+                                         Email
+                                         Non-custodial parent name, DOB, relationship
+                                         Non-custodial parent address
+                                         Non-custodial parent phone number
+                                         Non-custodial parent email
+                                b) Engagement reflected in the following interviews:
+                                      Caretaker interview(s)
+                                      Sibling interview(s)
+                                      Home Visit(s)
+                                      Referent Contact including contact to gather more information
+                             2. If other issues outside of the initial allegation were identified, how did the Case
+                                Manager address these issues
+                             3. Notice to juvenile court at assignment/classification and notice to District
+                                Attorney/CPIT on severe abuse, per local protocols.
+                             4. A separate case recording is entered for:
+                                         Initial Alleged Child Victim (ACV) contacts;
+                                         Good Faith Efforts;
+                                         Subsequent contacts with ACV(s);
+                                         CPIT (if applicable); and
+                                         Administrative Reviews by Supervisor as a separate case recording
+                                          (Refer to DCS Policy 4.4, Performance and Case Supervision
+                                          Practice Guidelines and Criteria).
+
+                             5. The CS-0740/Summary Tab serves as the Closing Summary.
+
+
+
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                       Page 4 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+ Subject: CPS Case File Organization, Documentation and Disposition                              # 14.11
+
+
+                             6. Timeframes for entry of case recordings are as follows:
+                                 a) Face to Face contacts with the ACV are entered into TFACTS within ten
+                                    (10) business days of the contact.
+                                 b) Case Summaries are entered by the end of the calendar month during
+                                    which the contacts and activities took place.
+                                 c) All other case recordings, including contacts and events taking place in a
+                                    calendar month and not included in the Case Summary, are entered within
+                                    thirty (30) calendar days of the contact or event.
+
+E. Extended Case             1. The following CPS cases require extended documentation:
+   Recording
+                                      Cases with allegations of Child Death/Near Death;
+   Guidelines-
+   Investigation and                  Cases with any allegation being Substantiated;
+   Assessment                         Cases with a classification of Services Needed, Court Ordered; and/or
+                                      Court action resulting in removal into state custody or a transfer of
+                                       custody to a third party.
+                             2. Extended Documentation includes the following:
+                                 a) A description of each case contact must be made in the case record.
+                                 b) Face to Face contacts with the ACV are entered into TFACTS within ten
+                                    (10) business days of the contact.
+                             3. Each contact will be documented in TFACTS case recordings within thirty (30)
+                                days from the date of the contact.
+                             4. The format of case recordings may include the following:
+                                      The full date (month, day, year) and time of contact;
+                                      Contact Type;
+                                      Contact Method;
+                                      Name of person making the contact (DCS employee);
+                                      Names of persons present during the contact;
+                                      Summary of facts and issues discussed;
+                                      Observations of safety/risk factors including strengths and needs;
+                                      Observations of the child/family; and
+                                      List of the evidence that supports the facts.
+
+
+
+
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                     Page 5 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+ Subject: CPS Case File Organization, Documentation and Disposition                                # 14.11
+                              5. The narrative of case recordings includes:
+                                      The name of person contacted and relationship to child;
+                                      Summary of facts and issues discussed;
+                                      Observations of safety/risk factors including strengths and needs;
+                                      Observations of the child/family; and
+                                      List of the evidence that supports the facts.
+                                      Statements of future plan, actions or next steps.
+                             Note: Documentation content for case recordings for Child Protective Services
+                                   case files are in accordance with OCS Quality Documentation Guide.
+
+F. Case Recording             This documentation is acceptable for cases classified as AUPU, No Services
+  Guidelines-                 Needed, Services Recommended and Services Needed.
+  Investigation and
+  Assessment-
+                               Note: This should not be used for Child Death, Preliminary Near Death, any
+  Condensed
+  Documentation                      substantiated or court action case.
+                              1. A separate case recording is entered for:
+                                     Initial Alleged Child Victim (ACV) contacts;
+                                     Good Faith Efforts;
+                                     Subsequent contacts with ACV(s);
+                                     CPIT (if applicable); and
+                                     Administrative Reviews (Refer to Policy 4.4, Performance and Case
+                                       Supervision Practice Guidelines and Criteria).
+                                      Family/Household Composition:
+                                        Name(s), DOB(s), relationship(s)
+                                        Address
+                                        Phone number(s)
+                                        Email
+                                        Non-custodial parent name, DOB, relationship
+                                        Non-custodial parent address
+                                        Non-custodial parent phone number
+                                        Non-custodial parent email
+
+                              2. All other documentation is completed on the CS-0740 TFACTS Summary Tab
+                                 to include:
+                                  a) A summary of the child(ren) interviews to include information about the
+                                     allegations, their health, safety, school, services, visitation with
+                                     noncustodial parent (if applicable), discipline, independent living/skills and
+                                     an observation of their appearance. This can include sibling information if
+                                     they were not ACV’s. A brief description about the home visit, conditions,
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                       Page 6 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+ Subject: CPS Case File Organization, Documentation and Disposition                                # 14.11
+                                      and safe sleep (if applicable).
+                                  b) A summary of any collateral contacts, records reviewed, or additional
+                                     information obtained during the case. This could be the information
+                                     obtained from the parent/caretaker if they are not the perpetrator. Be sure
+                                     to include information to support the global assessment of the household
+                                     and the allegations.
+                                  c) A summary of the perpetrators report of the incident.
+                                  d) A brief summary of why DCS received a report of harm- does not need to
+                                     be a cut and paste of the referral.
+                                  e) A summary of the findings of the interviews and investigation to support,
+                                     or oppose the allegations, any services in place, services offered,
+                                     presentation to CPIT (if applicable). If transferring to FSS, note that. This
+                                     section must include a statement for notice to Juvenile Court per local
+                                     practice for case assignment and classification/closure.
+
+G. Supervisory                When supervisory staff gives directions to case management staff regarding a
+   Responsibility             specific action to be taken (or not taken) related to a case, that conversation will
+                              be entered by the supervisor in TFACTS per DCS Policy 4.4, Performance and
+                              Case Supervision Practice Guidelines and Criteria.
+
+H. Contact with DCS          1. Case consultation between DCS staff and DCS Legal Counsel may be
+   Legal Counsel                documented on the appropriate screens or case recordings in TFACTS but
+                                must be limited only to the date, time, person(s) contacted, and purpose of
+                                contact.
+                             2. Specific content of the discussion is considered attorney-client privilege and
+                                should not be included in the case notes.
+
+I. Identification of         Closed CPS records will be destroyed in accordance with the appropriate Records
+  Closed Files               Disposition Authority (RDA):
+                              RDA 2993-Closed Child Safety Case Management Files
+
+J. Methods of Record         Approved methods for destroying Child Protective Services confidential paper
+   Disposal                  record information will be as outlined in DCS policy 9.4, Confidential Child-
+                             Specific Information.
+
+K. Disposal                  Form GS-0989, Certificate of Record Destruction, must be completed in
+   Documentation             accordance with DCS Policy 9.4, Confidential Child-Specific Information.
+
+
+Forms:                  CS-0726, Child Protective Services/Non-Custodial Case File Documentation and
+                        Organization Checklist
+                        GS-0989, Certificate of Record Destruction (non-DCS form)
+                        CS-0740, Child Protective Services Case Summary and Classification Decision
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                       Page 7 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+ Subject: CPS Case File Organization, Documentation and Disposition                          # 14.11
+                        of Child Abuse/Neglect Referral
+
+
+Collateral              9.4, Confidential Child-Specific Information
+documents:              9.5, Access and Release of Confidential Child-Specific Information
+                        14.15, Confidentiality of Child Protective Services Cases
+                        OCS Quality Documentation Guide
+
+
+Glossary:
+Term                    Definition
+Expunge:                To destroy or mark for deletion.
+
+
+
+
+ Original Effective Date: DCS 14.11, 12/01/23
+ Current Effective Date: 12/01/23                                                                Page 8 of 8
+ Supersedes: DCS 14.16, 8/06/21
+ CS-0001
+ RDA SW22
+

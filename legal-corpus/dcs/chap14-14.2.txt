@@ -1,0 +1,307 @@
+             State of Tennessee
+             Department of Children’s Services
+
+
+ Administrative Policies and Procedures: 14.2
+
+Subject:             Screening, Priority Response and Assignment of Child
+                     Protective Services Cases
+
+Authority:           TCA 37-1-401 et seq.; 37-5-105 (3); 37-5-106; 37-5-107; 37-1-601 et seq
+
+
+Standards:           COA: PA CFS 4.01-4.02, PA CFS 4.04-4.06, PA-CFS 5.01,PA-CFS 5.03, PA-CFS 5.09
+                     5.10 ACF-IM-16-05
+
+Application: All Department of Children’s Services (DCS) Child Protective Services (CPS) Child Abuse
+                     Hotline (CAH), and Special Investigation Unit (SIU) Employees
+
+Policy Statement:
+The Child Abuse Hotline receives reports of suspected abuse and neglect. These reports are screened to
+determine the need for a timely investigation, assessment, or resource linkage case within the appropriate
+jurisdiction.
+
+Purpose:
+To ensure reports of abuse and/or neglect are consistently processed for accurate screening decisions, track
+assignment and timely response.
+
+Procedures:
+A. Screening and              Using the Structured Decision Making (SDM) Child Abuse/Neglect Intake
+   Assignment                 Assessment Tool, Child Abuse Hotline staff determines if the information
+                              reported meets the criteria for abuse and/or neglect per TCA within twenty-four
+                              (24) hours.
+                              1. Reports which meet the criteria for abuse or neglect and the Alleged Child
+                                 Victim (ACV) resides in Tennessee are “screened in” and assigned to the
+                                 appropriate program area and county.
+                                  a) New allegation(s) on a CPS case open for thirty (30) days or more, or less
+                                     than thirty (30) days when the open CPS case has an approved
+                                     classification, is screened in as a new CPS case and assigned according
+                                     to the SDM screening decision for track and priority response.
+                                  b) When an additional report with any other non-severe allegations is
+                                     received, it is assigned to the current Case Manager.
+                                  c) If the new allegation is a death or preliminary near death but not related to
+                                     the incident that initiated the already open CPS case, a new case is
+                                     opened, regardless of the timeframe of the already open case.
+
+
+
+
+Original Effective Date: 14.2, 12/01/23
+Current Effective Date: 12/01/23                                                                      Page 1 of 6
+Supersedes: DCS 14.3: 10/29/18
+CS-0001
+RDA SW22
+Subject: Screening, Priority Response and Assignment of CPS Cases                                       # 14.2
+
+                                  d) If the alleged child victim is hospitalized, a notation will be inserted into the
+                                     referral that indicates the CPS worker or supervisor will contact the hospital
+                                     within twenty-four (24) hours of the intake. The Child Abuse Hotline (CAH)
+                                     will page the county on weekends and holidays to ensure timely notification
+                                     is provided regarding drug exposed child referrals with a P1 response.
+
+                               2. Reports which do not meet the criteria for abuse or neglect are screened out
+                                  and documented in TFACTS (Refer to Work Aid 1: CPS Categories and
+                                  Definitions of Child Abuse/Neglect).
+                                  a) Duplicate reports containing the same information, regardless of the
+                                     reporter are screened out and processed. Notification is sent to the
+                                     assigned CPS worker via email and documented on the intake narrative
+                                     box in TFACTS.
+                                  b) New allegation(s) in a CPS case open for less than thirty (30) days (without
+                                     an approved classification) is screened out and processed when the open
+                                     CPS case is the same track assignment as the new allegations, as
+                                     determined by the SDM tool. The assigned worker documents the
+                                     information from the screened out report and adds the new allegation(s) to
+                                     the open CPS case in TFACTS. Face to face contact with the ACV is
+                                     completed based on the suggested priority response of the screened out
+                                     report unless waived by the CPS supervisor due to recent contact or other
+                                     mitigating factors which must be documented in TFACTS.
+                                       Notification of the new allegation(s) and suggested priority response is
+                                        sent to the appropriate CPS supervisor and assigned worker via email
+                                        and documented by the CAH on the intake narrative box in TFACTS.
+                                  c) If the abuse and/or neglect occurred in Tennessee and the ACV resides
+                                     outside of Tennessee or will not return within the timeframe to complete a
+                                     CPS case or offer services to the child, regardless of the alleged
+                                     perpetrators’ access to the ACV, allegations are screened out. The
+                                     allegations are referred to local law enforcement and the child welfare
+                                     agency where the child is located.
+                                  d) If a report is screened out, but involves other investigative or licensure
+                                     agencies (e.g., law enforcement, DHS daycare, DMH/DIDD licensed
+                                     facilities, DCS licensure) Hotline staff notifies the appropriate agency no
+                                     later than the next business day. The name of the agency notified is
+                                     documented on the appropriate screens in TFACTS.
+                                  e) When a report is screened out but a new request is made by law
+                                     enforcement/hospital personnel for immediate assistance, the CAH uses
+                                     the SDM to determine the appropriate CPS track assignment if the report
+                                     had been screened in. The CAH will then email or page the responsible
+                                     county for a Case Manager to contact the referent.
+                                  Note: If the worker obtains information that would require the referral to be
+                                        screened in, they must contact the CAH with the information so the
+                                        original referral can be re-entered into TFACTS with the new
+                                        information. The referral is then assigned to the responsible county.
+
+
+Original Effective Date: DCS 14.2, 12/01/23
+Current Effective Date: 12/01/23                                                                         Page 2 of 6
+Supersedes: DCS 14.3, 10/29/18
+CS-0001
+RDA SW22
+Subject: Screening, Priority Response and Assignment of CPS Cases                                     # 14.2
+
+B. Priority Response          Priority responses are assigned to reports to determine the timeframe in which the
+                              ACV must be seen.
+                                   Priority response for all reports begins at intake creation date/time.
+                              Central Time Zone vs. Eastern Time Zone: The responding case worker records
+                              the response time in TFACTS using local time regardless of the Time Zone to
+                              which the report is assigned.
+                              1. Priority-1 (P-1): Cases assigned this priority are initiated by a face-to-face
+                                 contact with the ACV no later than twenty-four (24) hours, but immediately
+                                 if the CPS supervisor deems it necessary. Priority 1 reports allege that
+                                 children may be in imminent danger.
+                              2. Priority-2 (P-2): Cases assigned this priority are initiated by face-to-face
+                                 contact with the ACV within two (2) business days. Priority-2 reports allege
+                                 injuries or risk of injuries that are not imminent, life threatening or do not
+                                 require immediate medical care where a two (2) business day delay will not
+                                 compromise the investigative effort or reduce the chances for identifying the
+                                 level of risk to the child.
+                              3. Priority-3 (P-3): Cases assigned this priority are initiated by face-to-face
+                                 contact with the ACV within three (3) business days. Priority-3 reports allege
+                                 situations/incidents considered to pose low risk of harm to the child where
+                                 three (3) business days will not compromise the investigative effort or reduce
+                                 the chances for identifying the level of risk to the child.
+                              4. When a report is determined to be a P-1, Hotline staff notifies the CPS
+                                 supervisor by e-mail, page, or phone of the emergency report.
+
+C. Reconsideration            Track and priority response assignments may be reconsidered for alternate
+   Procedures                 assignments (refer to Policy 14.3, Child Protective Services Intake Analyst
+                              Responsibilities).
+                                   During the priority response process, the original priority response must be
+                                    met if the reconsideration is denied by the CAH.
+                                   After hours P-1 reconsideration requests to the CAH are sent via email to
+                                    the Hotline Supervisory Email group.
+
+D. Case Assignment            1. Reports alleging severe abuse are assigned as follows:
+   Based on
+                                  a) To an Case Manager in the county where the alleged abuse occurred; or
+   Jurisdiction
+                                  b) To an Case Manager in the county where the child resides if it is not clear
+                                     where the alleged abuse occurred.
+                              2. Reports alleging non-severe abuse are assigned to the county where the child
+                                 resides.
+                                Note: See definition of Residence of Child at bottom, especially if youth is not
+                                      at their residence at the time of report.
+                              3. If the report involves abuse or neglect that allegedly occurred in another state,
+                                 including allegations of severe abuse or neglect, and the alleged victim is
+                                 physically present in the state of Tennessee at the time the report is received,
+
+Original Effective Date: DCS 14.2, 12/01/23
+Current Effective Date: 12/01/23                                                                       Page 3 of 6
+Supersedes: DCS 14.3, 10/29/18
+CS-0001
+RDA SW22
+Subject: Screening, Priority Response and Assignment of CPS Cases                                      # 14.2
+                                  the case is assigned in the county where the child is visiting/residing in
+                                  Tennessee.
+                              4. Requests for courtesy response by an out of state agency are processed by
+                                 the CAH and assigned to the appropriate jurisdiction. CAH staff obtains the
+                                 child’s name, address and all information relative to the request for courtesy
+                                 case work activities. Courtesy case responses are documented in TFACTS.
+                              5. Allegations of child abuse or neglect involving non-custodial children under the
+                                 supervision or care of an individual or individuals functioning in an official
+                                 employment or volunteer capacity at the time of the incident are assigned to
+                                 SIU. Examples include but are not limited to:
+                                  a) Licensed day care facilities
+                                  b) Licensed child care agencies
+                                  c) Unlicensed daycare facilities that should be licensed (such as a daycare
+                                     with more than four (4) children unrelated to the daycare provider)
+                                  d) Schools
+                                  e) Religious Organizations
+                                  f)   Youth Groups
+                                        SIU investigates allegations of child abuse or neglect of biological,
+                                         foster, or adoptive children residing in a foster home. Reports to SIU are
+                                         handled as outlined in DCS Policy 14.10, Special Investigations Unit
+                                         Child Protective Services Investigations.
+                                        SIU investigates allegations of abuse and/or neglect of children where
+                                         the DCS employee is named as the alleged perpetrator or the alleged
+                                         perpetrator resides in a home of the DCS employee. At the discretion of
+                                         the Director of Investigations and the General Counsel, or their
+                                         designees, a SIU investigator and legal counsel may be used from
+                                         another region to conduct the investigation.
+                              6. Regional CPS is responsible for investigating allegations when the alleged
+                                 abuse or neglect was committed by an alleged perpetrator who was not
+                                 functioning in their official or volunteer capacity. Examples include:
+                                  a) When a teacher/daycare employee abuses their biological child;
+                                  b) The custodial child is on a home visit when the alleged abuse and/or
+                                     neglect occurred and the alleged perpetrator is not in an official capacity;
+                                  c) The custodial child is in a trial home placement when the alleged abuse
+                                     and/or neglect occurred and the alleged perpetrator is not in an official
+                                     capacity;
+                                  d) The custodial child is on runaway; or
+                                  e) The abuse/neglect occurred prior to the child entering custody.
+                                  Exception: The Special Investigations Unit (SIU) investigates all child
+                                              death and near death allegations involving custodial
+                                              children.
+
+
+Original Effective Date: DCS 14.2, 12/01/23
+Current Effective Date: 12/01/23                                                                       Page 4 of 6
+Supersedes: DCS 14.3, 10/29/18
+CS-0001
+RDA SW22
+Subject: Screening, Priority Response and Assignment of CPS Cases                                     # 14.2
+
+E. Allegations of Sexual 1. Assigned allegations of sexual abuse involving two or more children who are
+   Abuse Only               twelve (12) years old or under and are from different families are separated by
+   Involving Children       family with each child listed as an Alleged Child Victim and the alleged
+                            perpetrator listed as unknown in companion referrals.
+                                  a) Children twelve (12) years old or under who are alleged to have used
+                                     force, threat or coercion during the incident, or attempted to prevent
+                                     communication of the incident may be identified as an alleged perpetrator.
+                                  b) A child who is thirteen (13) or older and has a developmental or intellectual
+                                     disability should not be initially identified as an alleged perpetrator until
+                                     further information is collected regarding their disability.
+
+                              2. The CAH includes any information that suggests a child as an aggressor in the
+                                 reported allegation.
+                                   During the course of an investigation, a child may be identified as an
+                                    alleged perpetrator based on information collected.
+
+F. Companion Referrals 1. When a referral that meets criteria for assignment has more than one ACV and
+                          those ACVs have different mothers or custodial caretakers (if mother is
+                          deceased), a companion referral is to be created to separate the ACVs and
+                          their families.
+                              2. Companion referrals are screened individually per SDM and can have different
+                                 tracks, priority responses, and jurisdiction.
+                              3. SIU referrals will not be split into companion intakes. All ACVs will remain
+                                 together on the same assigned intake.
+                                      Exception is Custodial Child Deaths and Preliminary Near Deaths. Each
+                                       custodial ACV must have their own separate Child Death or Preliminary
+                                       Near-Death intake. Unless ACVs are a sibling group.
+                              4. Referrals that do not meet criteria for assignment remain as one intake.
+
+
+Forms:
+                              CS-0680, Child Protective Services Intake
+
+
+
+Collateral Documents:
+                              14.3, Child Protective Services Intake Analyst Responsibilities
+
+                              14.4, CPS: Locating Child and Family
+
+                              14.10, Special Investigations Unit Child Protective Services Investigations
+
+                              20.27, Child Death-Near Death Rapid Response
+
+                              Work Aid 1: CPS Categories and Definitions of Child Abuse/Neglect
+
+                              Work Aid 3: Child Abuse Hotline Tasks and Responsibilities for Referrals
+
+Original Effective Date: DCS 14.2, 12/01/23
+Current Effective Date: 12/01/23                                                                      Page 5 of 6
+Supersedes: DCS 14.3, 10/29/18
+CS-0001
+RDA SW22
+Subject: Screening, Priority Response and Assignment of CPS Cases                                      # 14.2
+                              Concerning a Child Death and Preliminary Near Death
+
+                              Protocol for Working with Hospitals
+
+
+Glossary:
+Term                          Definition
+
+Initiated                     The act of contacting or meeting with the victim or family for a face-to-face
+                              interview (CPS).
+
+Multiple Reports              New allegations received by the CAH on open CPS cases.
+
+Priority Response             Priority response is assigned to reports of alleged abuse/neglect to determine the
+                              timeframe in which an investigation or assessment is initiated. (See Section B
+                              above for definitions and time requirements for initiating a face-to-face contact
+                              with the alleged victim.)
+
+Structured Decision           The SDM Intake Assessment Tool guides CAH staff on making a determination
+Making (SDM) Child            of whether a report meets DCS policy for a child abuse/neglect investigation,
+Abuse/Neglect                 assessment or resource linkage and the timeframe in which to respond to those
+Screening Criteria            reports that are assigned as an investigation or assessment. Decisions are made
+                              immediately upon receipt of all available information pertaining to a report, but no
+                              later than within twenty-four (24) hours of receipt of a report, unless the CAH
+                              Director or Team Coordinator decides that more time is needed to gather
+                              information.
+
+Residence of the Child The location of the primary caretaker. If the family is homeless, there is a joint
+                       custody arrangement between the parents, or the primary residence cannot be
+                       determined, the residence may be the last known location of the child, the current
+                       location at the time the report was made, or a temporary living arrangement (e.g.
+                       hotel, or motel).
+
+
+
+
+Original Effective Date: DCS 14.2, 12/01/23
+Current Effective Date: 12/01/23                                                                       Page 6 of 6
+Supersedes: DCS 14.3, 10/29/18
+CS-0001
+RDA SW22
+
