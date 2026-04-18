@@ -1,4 +1,4 @@
-# BenchBook.AI — Launch Checklist
+# BenchBook.AI. Launch Checklist
 
 ## Supabase (Database)
 - [ ] Supabase project created in US East region

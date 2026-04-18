@@ -28,22 +28,22 @@ This directory contains the authoritative legal source materials loaded into Ben
 |------|-------------|
 | `local-rules/` | Court-specific local rules (currently empty) |
 
-## What's Missing — Priority Expansion
+## What's Missing. Priority Expansion
 
 ### HIGH PRIORITY (Criminal/General Sessions)
-- **TCA Title 39: Criminal Offenses** — assault (39-13), theft/property (39-14), public safety/drugs (39-17), DUI (39-17-418)
-- **TCA Title 40: Criminal Procedure** — bond/bail (Ch. 11), sentencing (Ch. 35), probation (Ch. 36)
-- **TCA Title 55: Motor Vehicles** — DUI (55-10-401+), driving on revoked (55-50-504)
-- **Tennessee Rules of Criminal Procedure** — arraignment, discovery, trial, sentencing
+- **TCA Title 39: Criminal Offenses**: assault (39-13), theft/property (39-14), public safety/drugs (39-17), DUI (39-17-418)
+- **TCA Title 40: Criminal Procedure**: bond/bail (Ch. 11), sentencing (Ch. 35), probation (Ch. 36)
+- **TCA Title 55: Motor Vehicles**: DUI (55-10-401+), driving on revoked (55-50-504)
+- **Tennessee Rules of Criminal Procedure**: arraignment, discovery, trial, sentencing
 
 ### MEDIUM PRIORITY
-- **TCA Title 29: Mental Health** — involuntary commitments, judicial review
-- **TCA Title 33: Mental Health/Substance Abuse** — commitment procedures
-- **Tennessee Rules of Evidence** — admissibility, hearsay, privileges
+- **TCA Title 29: Mental Health**: involuntary commitments, judicial review
+- **TCA Title 33: Mental Health/Substance Abuse**: commitment procedures
+- **Tennessee Rules of Evidence**: admissibility, hearsay, privileges
 
 ### LOWER PRIORITY
-- **TCA Title 16: Courts** — jurisdiction, administrative procedures
-- **TCA Title 24: Witnesses** — competency, privileges
+- **TCA Title 16: Courts**: jurisdiction, administrative procedures
+- **TCA Title 24: Witnesses**: competency, privileges
 - Federal constitutional references commonly applied in TN courts
 
 ## How to Add New Corpus Files

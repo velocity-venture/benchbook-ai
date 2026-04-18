@@ -1,4 +1,4 @@
-# BenchBook AI — Deployment Guide
+# BenchBook AI. Deployment Guide
 **Platform: Cloudflare Pages**
 
 ---
@@ -43,13 +43,13 @@ ENABLE_PROMPT_CACHING=true
 ### Step 4: Sign Up & Seed Demo Data
 1. Start the app: `cd app && npm run dev`
 2. Go to http://localhost:3000/login
-3. Click "Create Account" — use your real email
+3. Click "Create Account", use your real email
 4. Check email for verification link, click it
 5. In Supabase SQL Editor, paste `supabase/seed-demo-data.sql` and click **Run**
 
 ### Step 5: Verify
 - Landing page: Waitlist signup, pricing, demo query
-- Chat: Ask "What are detention criteria?" — should return AI response with TCA citations
+- Chat: Ask "What are detention criteria?", should return AI response with TCA citations
 - Sources: Verified citations from T.C.A., TRJPP, and DCS
 
 ---
@@ -61,7 +61,7 @@ The chat uses **Claude Sonnet 4.6** with direct legal corpus loading (no vector 
 | Component | Details |
 |-----------|---------|
 | **LLM** | Claude Sonnet 4.6 (complex) / Haiku 4.5 (simple lookups) |
-| **Legal Corpus** | TCA Title 36 & 37, TRJPP rules, DCS policies — loaded directly into 1M token context |
+| **Legal Corpus** | TCA Title 36 & 37, TRJPP rules, DCS policies, loaded directly into 1M token context |
 | **Prompt Caching** | 90% cost reduction on repeated corpus access |
 | **Citation Verification** | Post-processing validates all T.C.A., TRJPP, and DCS references against corpus |
 | **Rate Limiting** | In-memory + Supabase-backed, 20 requests/minute per user |
@@ -180,9 +180,9 @@ User Query → Landing Page or Chat UI
 Repository: `github.com/velocity-venture/benchbook-ai`
 
 Key files:
-- `app/` — Next.js 14 app (frontend + API routes)
-- `app/wrangler.toml` — Cloudflare Pages configuration
-- `scripts/prebuild-corpus.js` — Legal corpus pre-processor
-- `scripts/deploy-production.sh` — Deployment documentation script
-- `legal-corpus/` — Source legal documents (server-side only)
-- `supabase/` — Database migrations and seed data
+- `app/`: Next.js 14 app (frontend + API routes)
+- `app/wrangler.toml`: Cloudflare Pages configuration
+- `scripts/prebuild-corpus.js`: Legal corpus pre-processor
+- `scripts/deploy-production.sh`: Deployment documentation script
+- `legal-corpus/`: Source legal documents (server-side only)
+- `supabase/`: Database migrations and seed data

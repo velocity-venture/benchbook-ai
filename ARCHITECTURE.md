@@ -28,8 +28,8 @@ User Query
   │   └─ Streaming SSE response
   │
   ├─ runHallucinationGuard()
-  │   ├─ verifyCitations() — cross-reference against corpus index
-  │   ├─ computeConfidence() — HIGH/MEDIUM/LOW scoring
+  │   ├─ verifyCitations(), cross-reference against corpus index
+  │   ├─ computeConfidence(). HIGH/MEDIUM/LOW scoring
   │   └─ Flag unverified statutes and case law
   │
   └─ SSE Events → Client
@@ -51,7 +51,7 @@ User Query
 - Analysis/comparison requests
 - Multiple questions in one query
 
-**Haiku (simple) — only when:**
+**Haiku (simple), only when:**
 - Single statute lookup, under 100 characters
 - Definition or deadline questions
 - Clarification of previous response
@@ -68,7 +68,7 @@ Supported patterns:
 - TCA: `T.C.A. § 37-1-114`, `TCA 37-1-114`, `T.C.A. section 37-1-114(a)`
 - TRJPP: `Rule 114`, `TRJPP Rule 206`
 - DCS: `DCS Policy 14.12`
-- Case law: `Smith v. Jones`, `123 S.W.3d 456` — always flagged as unverified
+- Case law: `Smith v. Jones`, `123 S.W.3d 456`: always flagged as unverified
 
 ### Hallucination Prevention
 
@@ -83,7 +83,7 @@ The `hallucination-guard.ts` module provides:
 
 ### Legal Corpus
 
-Pre-built at build time by `scripts/prebuild-corpus.js` into `app/src/lib/legal-corpus-data.json`. This JSON is statically imported (no filesystem access needed at runtime — compatible with Cloudflare Workers edge runtime).
+Pre-built at build time by `scripts/prebuild-corpus.js` into `app/src/lib/legal-corpus-data.json`. This JSON is statically imported (no filesystem access needed at runtime, compatible with Cloudflare Workers edge runtime).
 
 Current corpus (~5.9MB compressed):
 - TCA Title 37 (Juveniles): 1.5MB
@@ -108,7 +108,7 @@ Current corpus (~5.9MB compressed):
 
 | File | Purpose |
 |------|---------|
-| `app/src/app/api/chat/route.ts` | Main chat API — routing, corpus loading, streaming, validation |
+| `app/src/app/api/chat/route.ts` | Main chat API, routing, corpus loading, streaming, validation |
 | `app/src/lib/citation-validator.ts` | Citation extraction, verification, confidence scoring |
 | `app/src/lib/hallucination-guard.ts` | Hallucination prevention guardrails |
 | `app/src/lib/legal-corpus-data.json` | Pre-built corpus (generated at build time) |
@@ -117,11 +117,11 @@ Current corpus (~5.9MB compressed):
 
 ### Database Schema (Supabase)
 
-- `chat_sessions` — User chat sessions with titles
-- `chat_messages` — Individual messages with role, content, sources
-- `chat_feedback` — Thumbs up/down, bookmarks per message
-- `research_queries` — Query tracking for usage analytics
-- `waitlist` — Landing page waitlist signups
+- `chat_sessions`: User chat sessions with titles
+- `chat_messages`: Individual messages with role, content, sources
+- `chat_feedback`: Thumbs up/down, bookmarks per message
+- `research_queries`: Query tracking for usage analytics
+- `waitlist`: Landing page waitlist signups
 
 ### Cost Model
 

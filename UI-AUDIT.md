@@ -90,9 +90,9 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 - Navigate back to landing page via logo link
 
 **Issues:**
-- No "Forgot Password" flow — judge locked out if password forgotten
-- No OAuth options (Google, Microsoft) — many court systems use Microsoft 365
-- Password minimum length is 6 characters — may want to enforce stronger requirements for judicial accounts
+- No "Forgot Password" flow, judge locked out if password forgotten
+- No OAuth options (Google, Microsoft), many court systems use Microsoft 365
+- Password minimum length is 6 characters, may want to enforce stronger requirements for judicial accounts
 
 ---
 
@@ -120,8 +120,8 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 - Ring focus states with amber accent
 
 **Issues:**
-- Native `<select>` dropdowns look different across browsers — the 95-county dropdown may be unwieldy on mobile without a searchable combobox
-- No way to skip onboarding — judge must fill all required fields
+- Native `<select>` dropdowns look different across browsers, the 95-county dropdown may be unwieldy on mobile without a searchable combobox
+- No way to skip onboarding, judge must fill all required fields
 - No validation feedback beyond the generic error message
 
 ---
@@ -131,7 +131,7 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 **What the judge sees:**
 - Full-height flex layout: sidebar on left, main content on right
 - `bg-slate-950` background
-- Server-side auth check — redirects to `/login` if not authenticated
+- Server-side auth check, redirects to `/login` if not authenticated
 - Fetches profile data for sidebar user info
 
 **Architecture notes:**
@@ -147,12 +147,12 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 - Left-rail navigation, `w-64` (collapsible to `w-16`)
 - Logo: amber square with scale icon + "BenchBook AI" text
 - Navigation items (top to bottom):
-  1. Home (`/dashboard`) — Home icon
-  2. Research (`/chat`) — MessageSquare icon
-  3. TN Code (`/tca`) — BookOpen icon
-  4. TRJPP Rules (`/trjpp`) — Scale icon
-  5. DCS Policies (`/dcs-policies`) — FileText icon
-  6. Settings (`/settings`) — Settings icon
+  1. Home (`/dashboard`). Home icon
+  2. Research (`/chat`). MessageSquare icon
+  3. TN Code (`/tca`). BookOpen icon
+  4. TRJPP Rules (`/trjpp`). Scale icon
+  5. DCS Policies (`/dcs-policies`). FileText icon
+  6. Settings (`/settings`). Settings icon
 - Active state: amber background tint, amber text, amber border
 - Inactive state: slate-400 text, hover to white with slate-800 bg
 - Bottom section:
@@ -172,8 +172,8 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 - Good hover states
 
 **Mobile responsiveness:**
-- Sidebar has no mobile drawer/hamburger — it's always rendered
-- **Issue:** On mobile, the sidebar takes permanent space. The chat page handles this with its own show/hide sidebar, but other pages (dashboard, TCA, TRJPP, DCS, settings) don't — the sidebar will compress content on narrow screens.
+- Sidebar has no mobile drawer/hamburger, it's always rendered
+- **Issue:** On mobile, the sidebar takes permanent space. The chat page handles this with its own show/hide sidebar, but other pages (dashboard, TCA, TRJPP, DCS, settings) don't, the sidebar will compress content on narrow screens.
 
 ---
 
@@ -206,12 +206,12 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 - Empty states: italic placeholder text
 
 **Issues:**
-- Research patterns click navigation uses `window.location.href = '/dashboard/chat?q=...'` but the chat page is at `/chat`, not `/dashboard/chat` — **broken navigation link**
-- Similarly, citation clicks go to `/dashboard/${docType}?section=...` which doesn't match actual routes (`/tca`, `/trjpp`, etc.) — **broken navigation links**
+- Research patterns click navigation uses `window.location.href = '/dashboard/chat?q=...'` but the chat page is at `/chat`, not `/dashboard/chat`: **broken navigation link**
+- Similarly, citation clicks go to `/dashboard/${docType}?section=...` which doesn't match actual routes (`/tca`, `/trjpp`, etc.), **broken navigation links**
 
 ---
 
-### 7. Chat UI (`src/app/(dashboard)/chat/page.tsx`) — Core Product
+### 7. Chat UI (`src/app/(dashboard)/chat/page.tsx`). Core Product
 
 **What the judge sees:**
 
@@ -287,7 +287,7 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 
 **Issues found:**
 - **Voice input not integrated:** The `VoiceInput` and `VoiceEnabledInput` components exist in `src/components/voice-input.tsx` but are **not imported or used anywhere in the chat page**. The voice preference toggle exists in settings, but enabling it does nothing in chat. The component checks `window.__benchbook_voice_enabled` but the chat page never reads this value.
-- **Client-side fallback extraction:** `extractSourcesFromResponse()` at line 956 falls back to client-side regex if the backend doesn't return sources — but this regex uses `T\.C\.A\.?` which doesn't match "Tenn. Code Ann." (same gap that was fixed server-side). This fallback pattern should be updated to match.
+- **Client-side fallback extraction:** `extractSourcesFromResponse()` at line 956 falls back to client-side regex if the backend doesn't return sources, but this regex uses `T\.C\.A\.?` which doesn't match "Tenn. Code Ann." (same gap that was fixed server-side). This fallback pattern should be updated to match.
 - **No "scroll to bottom" button:** When the user scrolls up to review earlier messages and a new response comes in, auto-scroll fires but there's no manual "scroll to bottom" indicator.
 
 ---
@@ -310,11 +310,11 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 - Copy button (copies citation text, green checkmark feedback)
 - Chevron expand/collapse toggle
 
-**External resources:** Lexis Tennessee Code, TN Courts Self-Help, DCS Policies, TRJPP Rules — open in new tabs
+**External resources:** Lexis Tennessee Code, TN Courts Self-Help, DCS Policies, TRJPP Rules, open in new tabs
 
 **Issues:**
-- No pagination — all sections render at once. With a large corpus this could be slow, though the current dataset is manageable.
-- Tag pills set the search query but don't scroll to the search bar — user may not notice the search has changed.
+- No pagination, all sections render at once. With a large corpus this could be slow, though the current dataset is manageable.
+- Tag pills set the search query but don't scroll to the search bar, user may not notice the search has changed.
 
 ---
 
@@ -334,8 +334,8 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 
 **What the judge sees:**
 - Three tabs: Profile, Security, Appearance
-- **Profile tab:** Full Name, Title (dropdown), County, Organization, Email, Phone — with Save button
-- **Security tab:** "Not yet configured" placeholder for 2FA/MFA — no functional security settings
+- **Profile tab:** Full Name, Title (dropdown), County, Organization, Email, Phone, with Save button
+- **Security tab:** "Not yet configured" placeholder for 2FA/MFA, no functional security settings
 - **Appearance tab:** Theme selector (Dark, Light, System), Courtroom Mode toggle, Large Fonts toggle, Reduced Motion toggle, Voice-to-Text toggle
 
 **Actions:**
@@ -344,8 +344,8 @@ The landing page uses a warm, professional aesthetic aimed at first-impression c
 - Sign Out (at bottom of page, uses Supabase signOut)
 
 **Issues:**
-- Security tab shows "Not yet configured" — this is a placeholder with no functionality
-- Light theme and System theme options exist in the UI but the root layout hardcodes `className="dark"` and `bg-slate-950` — selecting Light or System theme will have no visible effect. The theme data attribute is set on the document root but there are no light-mode CSS rules.
+- Security tab shows "Not yet configured", this is a placeholder with no functionality
+- Light theme and System theme options exist in the UI but the root layout hardcodes `className="dark"` and `bg-slate-950`: selecting Light or System theme will have no visible effect. The theme data attribute is set on the document root but there are no light-mode CSS rules.
 
 ---
 
@@ -402,12 +402,12 @@ Well-implemented error boundary with proper `reset()` integration.
 
 | Page | Breakpoints Used | Mobile Behavior |
 |------|-----------------|-----------------|
-| Landing | `sm:`, `md:`, `lg:` | Good — hero stacks, pricing stacks, nav collapses |
-| Login | None needed | Good — centered card, max-w-md |
-| Onboarding | None needed | Good — centered card, max-w-lg |
-| Dashboard | `md:`, `sm:`, `lg:` | Good — grids collapse |
-| Chat | `sm:`, `lg:` | Good — sidebar drawer, grid collapses |
-| TCA/TRJPP/DCS | `md:` | Adequate — grids collapse to single column |
+| Landing | `sm:`, `md:`, `lg:` | Good, hero stacks, pricing stacks, nav collapses |
+| Login | None needed | Good, centered card, max-w-md |
+| Onboarding | None needed | Good, centered card, max-w-lg |
+| Dashboard | `md:`, `sm:`, `lg:` | Good, grids collapse |
+| Chat | `sm:`, `lg:` | Good, sidebar drawer, grid collapses |
+| TCA/TRJPP/DCS | `md:` | Adequate, grids collapse to single column |
 | Settings | `md:` | Adequate |
 
 **Issue:** The main sidebar (not the chat session sidebar) does not have a mobile drawer. On screens narrower than ~300px with the sidebar expanded, content will be squeezed. On `w-16` (collapsed), this is manageable but the collapse toggle requires the user to find it. No hamburger menu exists in the dashboard layout.
@@ -430,9 +430,9 @@ The `PreferencesProvider` applies CSS classes to `<html>` based on settings. How
 
 | Location | Finding |
 |----------|---------|
-| `settings/page.tsx:329` | Security tab: "Not yet configured" — placeholder, no 2FA functionality |
-| `hallucination-guard.ts:70` | System prompt: "case law lookup is not yet available" — accurate, case law is not in corpus |
-| Theme settings | Light/System theme options exist but have no CSS implementation — dark mode is hardcoded |
+| `settings/page.tsx:329` | Security tab: "Not yet configured", placeholder, no 2FA functionality |
+| `hallucination-guard.ts:70` | System prompt: "case law lookup is not yet available", accurate, case law is not in corpus |
+| Theme settings | Light/System theme options exist but have no CSS implementation, dark mode is hardcoded |
 
 No `TODO` or `FIXME` comments found in any component files.
 
@@ -440,7 +440,7 @@ No `TODO` or `FIXME` comments found in any component files.
 
 | Component | Loading State | Error Handling |
 |-----------|--------------|----------------|
-| Dashboard | Spinner (Loader2) | None explicit — relies on error boundary |
+| Dashboard | Spinner (Loader2) | None explicit, relies on error boundary |
 | Chat | Bouncing dots + "Researching..." | Error message in chat thread |
 | Chat streaming | Progressive markdown render | Graceful fallback on malformed JSON |
 | Research Patterns | Skeleton pulse animation | Console error, silent fail |
@@ -455,15 +455,15 @@ No `TODO` or `FIXME` comments found in any component files.
 ## Summary of Issues
 
 ### High Priority
-1. **Voice input not connected** — Component built and settings toggle exists, but never imported into chat page. Feature is non-functional.
-2. **Broken navigation links in Research Patterns** — Top queries link to `/dashboard/chat?q=...` (should be `/chat?q=...`). Citation links go to `/dashboard/${docType}?section=...` (should be `/${docType}?section=...`).
-3. **Client-side citation fallback missing "Tenn. Code Ann." format** — `extractSourcesFromResponse()` in chat page (line 961) only matches `T.C.A.` prefix, not the `Tenn. Code Ann.` variant that was fixed server-side.
+1. **Voice input not connected**: Component built and settings toggle exists, but never imported into chat page. Feature is non-functional.
+2. **Broken navigation links in Research Patterns**: Top queries link to `/dashboard/chat?q=...` (should be `/chat?q=...`). Citation links go to `/dashboard/${docType}?section=...` (should be `/${docType}?section=...`).
+3. **Client-side citation fallback missing "Tenn. Code Ann." format**: `extractSourcesFromResponse()` in chat page (line 961) only matches `T.C.A.` prefix, not the `Tenn. Code Ann.` variant that was fixed server-side.
 
 ### Medium Priority
-4. **Light/System theme toggle does nothing** — Root layout hardcodes dark mode. Settings show the option but selecting Light or System has no visible effect.
-5. **Courtroom mode CSS selectors don't match JSX** — Custom class names in `courtroom-mode.css` (`.chat-message`, `.sidebar-nav`, etc.) are never applied in components. Only generic element selectors (`button`, `input`) will work.
-6. **Main sidebar has no mobile drawer** — No hamburger menu or slide-in behavior for the primary navigation sidebar on small screens.
-7. **Security settings placeholder** — Tab exists with "Not yet configured" text and no functionality.
+4. **Light/System theme toggle does nothing**: Root layout hardcodes dark mode. Settings show the option but selecting Light or System has no visible effect.
+5. **Courtroom mode CSS selectors don't match JSX**: Custom class names in `courtroom-mode.css` (`.chat-message`, `.sidebar-nav`, etc.) are never applied in components. Only generic element selectors (`button`, `input`) will work.
+6. **Main sidebar has no mobile drawer**: No hamburger menu or slide-in behavior for the primary navigation sidebar on small screens.
+7. **Security settings placeholder**: Tab exists with "Not yet configured" text and no functionality.
 
 ### Low Priority
 8. **No "Forgot Password" flow** on login page
@@ -476,9 +476,9 @@ No `TODO` or `FIXME` comments found in any component files.
 
 ## Recommendations
 
-1. **Wire up voice input** — Import `VoiceEnabledInput` in `chat/page.tsx`, wrap the textarea, and read the voice preference from the context. The component is ready; this is ~10 lines of integration code.
-2. **Fix Research Patterns navigation** — Change `/dashboard/chat?q=` to `/chat?q=` and `/dashboard/${docType}` to `/${docType}` in `research-patterns.tsx`.
-3. **Update client-side citation regex** — Mirror the server-side fix: change `T\.C\.A\.?` to `(?:T\.C\.A\.?|Tenn\.?\s*Code\s*Ann\.?)` in `extractSourcesFromResponse()`.
+1. **Wire up voice input**: Import `VoiceEnabledInput` in `chat/page.tsx`, wrap the textarea, and read the voice preference from the context. The component is ready; this is ~10 lines of integration code.
+2. **Fix Research Patterns navigation**: Change `/dashboard/chat?q=` to `/chat?q=` and `/dashboard/${docType}` to `/${docType}` in `research-patterns.tsx`.
+3. **Update client-side citation regex**: Mirror the server-side fix: change `T\.C\.A\.?` to `(?:T\.C\.A\.?|Tenn\.?\s*Code\s*Ann\.?)` in `extractSourcesFromResponse()`.
 4. **Remove or disable Light/System theme options** until light mode CSS is implemented. Showing non-functional options erodes trust.
 5. **Add courtroom mode data attributes or class names** to actual JSX elements so the CSS rules apply.
 6. **Add mobile hamburger menu** to the dashboard layout for the main sidebar.

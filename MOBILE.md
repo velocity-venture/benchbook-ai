@@ -1,8 +1,8 @@
-# BenchBook.AI — Mobile App Guide
+# BenchBook.AI. Mobile App Guide
 
 ## Architecture: Live Server Mode
 
-The mobile apps use **Capacitor** to wrap the production web app in a native WebView. There is no static export or embedded bundle — the WebView loads directly from the Cloudflare Pages URL.
+The mobile apps use **Capacitor** to wrap the production web app in a native WebView. There is no static export or embedded bundle, the WebView loads directly from the Cloudflare Pages URL.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -20,9 +20,9 @@ The mobile apps use **Capacitor** to wrap the production web app in a native Web
 ```
 
 **Why live server mode?**
-- API routes (chat, auth) run server-side on Cloudflare Workers — they can't run in a static WebView
+- API routes (chat, auth) run server-side on Cloudflare Workers, they can't run in a static WebView
 - Updates deploy instantly via Cloudflare without App Store review cycles
-- The `legal-corpus/` directory stays server-side only — never bundled into the app binary
+- The `legal-corpus/` directory stays server-side only, never bundled into the app binary
 - Single codebase, single deployment target
 
 ---
@@ -83,8 +83,8 @@ This syncs Capacitor and opens the Xcode project. Then:
 
 #### Signing Requirements
 - **Apple Developer Program** membership ($99/year)
-- **Distribution Certificate** — created in Apple Developer portal or Xcode
-- **Provisioning Profile** — App Store distribution profile for `ai.benchbook.app`
+- **Distribution Certificate**: created in Apple Developer portal or Xcode
+- **Provisioning Profile**: App Store distribution profile for `ai.benchbook.app`
 - Xcode manages these automatically when "Automatically manage signing" is enabled
 
 ### Android (Google Play)
@@ -99,12 +99,12 @@ This syncs Capacitor and opens the Xcode project. Then:
 ```
 
 #### Signing Requirements
-- **Upload Keystore** — generate once, store securely:
+- **Upload Keystore**: generate once, store securely:
   ```bash
   keytool -genkey -v -keystore benchbook-upload.keystore \
     -alias benchbook -keyalg RSA -keysize 2048 -validity 10000
   ```
-- **Google Play App Signing** — enabled by default for new apps. Google manages the app signing key; you provide the upload key.
+- **Google Play App Signing**: enabled by default for new apps. Google manages the app signing key; you provide the upload key.
 - Configure signing in `android/app/build.gradle`:
   ```groovy
   android {
@@ -176,7 +176,7 @@ Features:
 
 ## Important Notes
 
-- **legal-corpus/ is NOT bundled** — it stays server-side on Cloudflare Workers. The app binary contains only the native shell and Capacitor plugins.
-- **Updates are instant** — changing the web app on Cloudflare Pages immediately updates what mobile users see (no app store review needed for content changes).
+- **legal-corpus/ is NOT bundled**: it stays server-side on Cloudflare Workers. The app binary contains only the native shell and Capacitor plugins.
+- **Updates are instant**: changing the web app on Cloudflare Pages immediately updates what mobile users see (no app store review needed for content changes).
 - **App Store reviews** are only needed for native shell changes (new plugins, SDK updates, etc.).
-- **Offline mode** is not supported — the app requires an internet connection to load from the production server.
+- **Offline mode** is not supported, the app requires an internet connection to load from the production server.

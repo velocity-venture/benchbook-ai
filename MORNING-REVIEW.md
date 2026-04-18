@@ -25,7 +25,7 @@
 
 **Issues flagged by overnight session:**
 - DCS PDFs need offline extraction to `.txt` before they can be indexed
-- Criminal law corpus (Titles 39/40/55) are stubs only — content gap for General Sessions
+- Criminal law corpus (Titles 39/40/55) are stubs only, content gap for General Sessions
 
 ---
 
@@ -113,7 +113,7 @@ None of these are blockers. They should be cleaned up in a separate PR.
 | MEDIUM | All statute/rule citations verified, but case law references present | "All statute citations verified, but case law references cannot be verified..." |
 | LOW | One or more statute/rule citations could NOT be verified against corpus | "Unverified citations: [list]. These could not be found in the loaded legal corpus." |
 
-**Edge case analysis — can LOW be served without warning?**
+**Edge case analysis, can LOW be served without warning?**
 
 No. The warning generation loop in `runHallucinationGuard()` iterates over the same `unverified` set that triggers LOW confidence. If `computeConfidence()` returns LOW, at least one unverified statute exists, and a warning is generated for each. Warnings and LOW confidence are always paired.
 
@@ -125,7 +125,7 @@ No. The warning generation loop in `runHallucinationGuard()` iterates over the s
 
 ## 6. Citation Validation
 
-**Result: FAIL — "Tenn. Code Ann." format not matched**
+**Result: FAIL, "Tenn. Code Ann." format not matched**
 
 **Location:** `app/src/lib/citation-validator.ts`, line 123
 
@@ -143,7 +143,7 @@ No. The warning generation loop in `runHallucinationGuard()` iterates over the s
 | `Tenn. Code Ann. § 37-1-102` | **NO MATCH** |
 | `TCA 37-1-102` | MATCH |
 
-The regex handles abbreviated forms (`T.C.A.`, `TCA`) but does **not** handle the formal citation format `Tenn. Code Ann.` — this is the format used in published Tennessee appellate opinions and legal briefs. Claude may generate this format in responses, causing valid citations to be flagged as unverified and triggering false LOW confidence scores.
+The regex handles abbreviated forms (`T.C.A.`, `TCA`) but does **not** handle the formal citation format `Tenn. Code Ann.`: this is the format used in published Tennessee appellate opinions and legal briefs. Claude may generate this format in responses, causing valid citations to be flagged as unverified and triggering false LOW confidence scores.
 
 **Recommendation:** Add an alternate pattern or modify the existing regex:
 ```typescript
@@ -190,25 +190,25 @@ The prompt is delivered as two cached `systemBlocks`: the core prompt and the le
 
 | Item | Result | Severity |
 |------|--------|----------|
-| 1. Overnight log review | PASS | — |
-| 2. Tests (31/31) | PASS | — |
+| 1. Overnight log review | PASS |, |
+| 2. Tests (31/31) | PASS |, |
 | 3. Production build | PASS (pre-existing warnings) | Low |
-| 4. Smart routing | PASS | — (fixed) |
-| 5. Hallucination guard | PASS | — |
-| 6. Citation validation | PASS | — (fixed) |
-| 7. Corpus discovery | PASS | — |
-| 8. System prompt | PASS | — |
+| 4. Smart routing | PASS |, (fixed) |
+| 5. Hallucination guard | PASS |, |
+| 6. Citation validation | PASS |, (fixed) |
+| 7. Corpus discovery | PASS |, |
+| 8. System prompt | PASS |, |
 
 ---
 
 ## Fixes Applied (April 8, 2026)
 
-### FIX 1 — Citation Regex (HIGH, now resolved)
+### FIX 1. Citation Regex (HIGH, now resolved)
 - **Changed:** `TCA_PATTERN` in `citation-validator.ts` now uses `(?:T\.?C\.?A\.?|Tenn\.?\s*Code\s*Ann\.?)` as the prefix, matching all four format variants: `T.C.A. §`, `T.C.A.`, `Tenn. Code Ann. §`, and `TCA`.
-- **Tests added:** 2 new tests in `citations.test.ts` — one for `Tenn. Code Ann.` format specifically, one parametric test covering all four variants.
+- **Tests added:** 2 new tests in `citations.test.ts`: one for `Tenn. Code Ann.` format specifically, one parametric test covering all four variants.
 - **Verified:** All four formats now match and verify correctly.
 
-### FIX 2 — Smart Routing Gaps (MEDIUM, now resolved)
+### FIX 2. Smart Routing Gaps (MEDIUM, now resolved)
 - **Changed:** Added four new category patterns to `classifyQueryComplexity()` (extracted to `lib/query-router.ts` for testability):
   - Custody: `custody`, `custodial`, `parenting time`, `parenting plan`, `residential parent`
   - Bail: `bail`, `bail hearing`, `bail revocation` (complements existing `bond schedul`)
@@ -220,15 +220,15 @@ The prompt is delivered as two cached `systemBlocks`: the core prompt and the le
 ### Remaining (deferred, Low):
 1. **Pre-existing lint warnings**: Clean up `any` types and unused variables in `settings/page.tsx`, `voice-input.tsx`, `research-patterns/route.ts`.
 2. **DCS PDF extraction**: Extract 25 DCS PDFs to `.txt` for corpus indexing.
-3. **Criminal law corpus stubs**: Titles 39/40/55 are placeholders — needs real statute text.
+3. **Criminal law corpus stubs**: Titles 39/40/55 are placeholders, needs real statute text.
 
 ---
 
 ## Test & Build Verification
 
 ```
-Tests:  31 passed (31) — 3 test files
-Build:  Compiled successfully — no new warnings introduced
+Tests:  31 passed (31), 3 test files
+Build:  Compiled successfully, no new warnings introduced
 ```
 
 ---

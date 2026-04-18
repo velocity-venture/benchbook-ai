@@ -72,9 +72,9 @@ BenchBook AI is a specialized legal tech platform designed specifically for Tenn
 ## Pricing Model
 
 ### Individual Judge
-- **Starter:** $199/month — Core features, 1 user
-- **Professional:** $299/month — All features, case analytics
-- **Court:** $499/month — Multi-user, admin dashboard
+- **Starter:** $199/month. Core features, 1 user
+- **Professional:** $299/month. All features, case analytics
+- **Court:** $499/month. Multi-user, admin dashboard
 
 ### County/Enterprise
 - Custom pricing for county-wide deployment

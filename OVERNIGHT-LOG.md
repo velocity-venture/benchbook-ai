@@ -8,20 +8,20 @@
 
 ## Summary
 
-8 commits across security, citation validation, hallucination prevention, smart routing, UI polish, corpus documentation, build health, and documentation updates. All changes are on the feature branch — nothing was pushed to main.
+8 commits across security, citation validation, hallucination prevention, smart routing, UI polish, corpus documentation, build health, and documentation updates. All changes are on the feature branch, nothing was pushed to main.
 
 ## Changes by Step
 
 ### Step 1: Security Audit
 - Scanned full git history for leaked secrets (`sk-`, `ANTHROPIC`, `supabase`, `password`, `secret`)
-- **Result:** No real API keys or secrets found in history — only placeholder values in docs and .env.example
+- **Result:** No real API keys or secrets found in history, only placeholder values in docs and .env.example
 - Verified `.env.local` files exist but are properly gitignored
 - Hardened `.gitignore` to cover: `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.crt`, `node_modules/`, `.next/`, `.vercel/`, OS/IDE artifacts
 - **Commit:** `3861f43`
 
 ### Step 2: Citation Validation Engine
 - Rebuilt `citation-validator.ts` with enhanced regex patterns for TCA format variations (`T.C.A.`, `TCA`, `§`, `section`, subsection refs like `37-1-114(a)`)
-- Added pre-indexed snippet extraction — snippets are captured during corpus indexing for faster lookups
+- Added pre-indexed snippet extraction, snippets are captured during corpus indexing for faster lookups
 - Added case law detection patterns (`Name v. Name`, `S.W.2d/3d`, `Tenn.App.`)
 - Added `computeConfidence()` function: HIGH/MEDIUM/LOW scoring
 - Installed vitest test framework
@@ -34,7 +34,7 @@
 - Generates warnings for unverified citations and case law references
 - Added `HALLUCINATION_GUARDRAILS` constant injected into Claude system prompt
 - Rewrote system prompt for bench-ready responses (direct answer → statute → procedure → practical notes)
-- Integrated into streaming API pipeline — sends confidence SSE event
+- Integrated into streaming API pipeline, sends confidence SSE event
 - Wrote 5 additional tests (21 total)
 - **Commit:** `0aba568`
 
@@ -48,7 +48,7 @@
 - **Commit:** `1bdca32`
 
 ### Step 5: System Prompt & Response Quality
-- Completed as part of Step 3 — system prompt was rewritten with bench-ready format and hallucination guardrails
+- Completed as part of Step 3, system prompt was rewritten with bench-ready format and hallucination guardrails
 - System prompt is sent with every API request via `systemBlocks` in `streamClaude()`
 
 ### Step 6: Corpus Documentation & Expansion Prep
@@ -123,16 +123,16 @@ Test coverage:
 
 ## Items Not Completed
 
-1. **DCS PDF text extraction** — The 25 DCS policy PDFs in `legal-corpus/dcs/` are still in PDF format. The `pdf-parse` library is installed but the edge runtime can't use Node.js file system APIs. These need to be pre-extracted to `.txt` files (manually or via a script) so the prebuild step can include them.
+1. **DCS PDF text extraction**: The 25 DCS policy PDFs in `legal-corpus/dcs/` are still in PDF format. The `pdf-parse` library is installed but the edge runtime can't use Node.js file system APIs. These need to be pre-extracted to `.txt` files (manually or via a script) so the prebuild step can include them.
 
-2. **Linter cleanup on other files** — Some lint warnings remain in `settings/page.tsx`, `voice-input.tsx`, and `research-patterns/route.ts` (unused vars, `any` types). These are pre-existing and not related to tonight's changes.
+2. **Linter cleanup on other files**: Some lint warnings remain in `settings/page.tsx`, `voice-input.tsx`, and `research-patterns/route.ts` (unused vars, `any` types). These are pre-existing and not related to tonight's changes.
 
 ## Recommended Next Steps
 
-1. **Review and merge this branch** — All changes are on `remediation/overnight-2026-04-07`
-2. **Extract DCS PDFs to text** — Run `pdf-parse` or similar tool offline to create `.txt` versions of the 25 DCS policy PDFs, then re-run `npm run prebuild`
-3. **Add criminal law corpus** — Fill the Title 39/40/55 stubs with actual statute text. This is the #1 content gap for General Sessions judges.
-4. **Deploy to Cloudflare** — Run `npm run build:cloudflare` and deploy to staging for live testing
-5. **Live testing with real queries** — Test the hallucination guard and confidence scoring with real judicial questions
-6. **Monitor routing decisions** — Review console logs to verify complex queries are hitting Sonnet
-7. **API key rotation** — While no secrets were found leaked, it's good practice to rotate the Anthropic API key periodically
+1. **Review and merge this branch**: All changes are on `remediation/overnight-2026-04-07`
+2. **Extract DCS PDFs to text**: Run `pdf-parse` or similar tool offline to create `.txt` versions of the 25 DCS policy PDFs, then re-run `npm run prebuild`
+3. **Add criminal law corpus**: Fill the Title 39/40/55 stubs with actual statute text. This is the #1 content gap for General Sessions judges.
+4. **Deploy to Cloudflare**: Run `npm run build:cloudflare` and deploy to staging for live testing
+5. **Live testing with real queries**: Test the hallucination guard and confidence scoring with real judicial questions
+6. **Monitor routing decisions**: Review console logs to verify complex queries are hitting Sonnet
+7. **API key rotation**: While no secrets were found leaked, it's good practice to rotate the Anthropic API key periodically
