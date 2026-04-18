@@ -10,7 +10,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "deploy": "node ../scripts/prebuild-corpus.js && npx @cloudflare/next-on-pages && npx wrangler pages deploy .vercel/output/static --project-name benchbook-ai",
+    "deploy:preview": "node ../scripts/prebuild-corpus.js && npx @cloudflare/next-on-pages && npx wrangler pages deploy .vercel/output/static --project-name benchbook-ai --branch preview"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.31.0",
