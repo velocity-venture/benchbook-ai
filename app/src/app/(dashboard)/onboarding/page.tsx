@@ -29,7 +29,7 @@ const TITLES = ["Judge", "Magistrate", "Referee"];
 const LOCAL_RULES_OPTIONS = [
   { value: "unknown", label: "Not sure yet" },
   { value: "not_applicable", label: "No local juvenile rules or not applicable" },
-  { value: "available", label: "Local juvenile rules are available" },
+  { value: "available", label: "Local juvenile rules are available for later private upload" },
 ];
 
 export default function OnboardingPage() {
@@ -198,7 +198,7 @@ export default function OnboardingPage() {
               ))}
             </select>
             <p className="mt-1.5 text-xs text-slate-500">
-              Local rules are optional and stay scoped to your court when enabled.
+              This does not enable local rules by itself. Uploaded local rules stay private to your court after approval.
             </p>
           </div>
 

@@ -47,6 +47,10 @@ interface Message {
   feedback?: Set<string>;
 }
 
+interface TrustMetadata {
+  confidence?: ConfidenceInfo;
+}
+
 interface Source {
   title: string;
   citation: string;
@@ -133,6 +137,14 @@ export default function ChatPage() {
     return supabaseRef.current;
   }
 
+  const requireCurrentUserId = useCallback(async (): Promise<string> => {
+    const { data, error } = await getSupabase().auth.getUser();
+    if (error || !data.user) {
+      throw new Error("Authentication required");
+    }
+    return data.user.id;
+  }, []);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -141,18 +153,22 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages, streamingContent]);
 
-  // Load sessions on mount
-  useEffect(() => {
-    loadSessions();
-  }, []);
-
-  async function loadSessions() {
+  const loadSessions = useCallback(async () => {
+    const userId = await requireCurrentUserId();
     const { data } = await getSupabase()
       .from("chat_sessions")
       .select("id, title, message_count, created_at, updated_at")
+      .eq("user_id", userId)
       .order("updated_at", { ascending: false });
     if (data) setSessions(data);
-  }
+  }, [requireCurrentUserId]);
+
+  // Load sessions on mount
+  useEffect(() => {
+    loadSessions().catch((error) => {
+      console.error("Failed to load chat sessions:", error);
+    });
+  }, [loadSessions]);
 
   const loadSession = useCallback(async (sessionId: string) => {
     setActiveSessionId(sessionId);
@@ -160,7 +176,7 @@ export default function ChatPage() {
 
     const { data } = await getSupabase()
       .from("chat_messages")
-      .select("id, role, content, sources, created_at")
+      .select("id, role, content, sources, trust_metadata, created_at")
       .eq("session_id", sessionId)
       .order("created_at", { ascending: true });
 
@@ -180,19 +196,24 @@ export default function ChatPage() {
       });
 
       setMessages(
-        data.map((m) => ({
-          id: m.id,
-          role: m.role as "user" | "assistant",
-          content: m.content,
-          sources: m.sources || [],
-          timestamp: new Date(m.created_at),
-          feedback: feedbackMap.get(m.id) || new Set(),
-        }))
+        data.map((m) => {
+          const trustMetadata = (m.trust_metadata || {}) as TrustMetadata;
+          return {
+            id: m.id,
+            role: m.role as "user" | "assistant",
+            content: m.content,
+            sources: m.sources || [],
+            confidence: trustMetadata.confidence,
+            timestamp: new Date(m.created_at),
+            feedback: feedbackMap.get(m.id) || new Set(),
+          };
+        })
       );
     }
   }, []);
 
   async function createSession(firstMessage: string): Promise<string> {
+    const userId = await requireCurrentUserId();
     const title =
       firstMessage.length > 60
         ? firstMessage.substring(0, 57) + "..."
@@ -200,7 +221,7 @@ export default function ChatPage() {
 
     const { data, error } = await getSupabase()
       .from("chat_sessions")
-      .insert({ title })
+      .insert({ user_id: userId, title })
       .select("id")
       .single();
 
@@ -215,7 +236,8 @@ export default function ChatPage() {
     sessionId: string,
     role: "user" | "assistant",
     content: string,
-    sources: Source[] = []
+    sources: Source[] = [],
+    trustMetadata: TrustMetadata = {}
   ): Promise<string> {
     const { data, error } = await getSupabase()
       .from("chat_messages")
@@ -224,6 +246,7 @@ export default function ChatPage() {
         role,
         content,
         sources: sources.length > 0 ? sources : [],
+        trust_metadata: trustMetadata,
       })
       .select("id")
       .single();
@@ -249,7 +272,9 @@ export default function ChatPage() {
         .eq("message_id", messageId)
         .eq("feedback_type", feedbackType);
     } else {
+      const userId = await requireCurrentUserId();
       await getSupabase().from("chat_feedback").insert({
+        user_id: userId,
         message_id: messageId,
         feedback_type: feedbackType,
       });
@@ -270,7 +295,12 @@ export default function ChatPage() {
   }
 
   async function deleteSession(sessionId: string) {
-    await getSupabase().from("chat_sessions").delete().eq("id", sessionId);
+    const userId = await requireCurrentUserId();
+    await getSupabase()
+      .from("chat_sessions")
+      .delete()
+      .eq("id", sessionId)
+      .eq("user_id", userId);
     setSessions((prev) => prev.filter((s) => s.id !== sessionId));
     if (activeSessionId === sessionId) {
       setActiveSessionId(null);
@@ -341,7 +371,7 @@ export default function ChatPage() {
       const contentType = response.headers.get('content-type') || '';
 
       if (contentType.includes('text/event-stream')) {
-        // Streaming response — read SSE events
+        // Streaming response: read SSE events
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let fullContent = "";
@@ -431,7 +461,8 @@ export default function ChatPage() {
           sessionId,
           "assistant",
           assistantContent,
-          sources
+          sources,
+          confidenceInfo ? { confidence: confidenceInfo } : {}
         );
 
         const assistantMessage: Message = {
@@ -470,7 +501,8 @@ export default function ChatPage() {
           sessionId,
           "assistant",
           assistantContent,
-          sources
+          sources,
+          { confidence: confidenceInfo }
         );
 
         const assistantMessage: Message = {
@@ -485,7 +517,9 @@ export default function ChatPage() {
         setMessages((prev) => [...prev, assistantMessage]);
       }
 
-      loadSessions();
+      loadSessions().catch((error) => {
+        console.error("Failed to refresh chat sessions:", error);
+      });
     } catch (error) {
       console.error("Chat error:", error);
       setStreamingContent("");
@@ -667,8 +701,8 @@ export default function ChatPage() {
                 </h2>
                 <p className="text-slate-400 max-w-lg mx-auto">
                   I can help you research T.C.A. Titles 36 and 37, DCS policies,
-                  TRJPP rules, and available local juvenile rules. Just ask a
-                  question.
+                  TRJPP rules, and private local juvenile rules after your court
+                  provides them. Just ask a question.
                 </p>
               </div>
 
@@ -949,6 +983,12 @@ export default function ChatPage() {
                       <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-4">
                         <div className="prose prose-invert prose-sm max-w-none text-slate-200">
                           <ReactMarkdown>{streamingContent}</ReactMarkdown>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2 border-t border-slate-800 pt-3 text-xs text-yellow-300/80">
+                          <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+                          <span>
+                            Verification pending. Citations, confidence, and coverage warnings appear when the response finishes.
+                          </span>
                         </div>
                       </div>
                     </div>

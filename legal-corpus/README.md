@@ -1,6 +1,6 @@
 # BenchBook.AI Legal Corpus
 
-This directory contains the authoritative legal source materials loaded into BenchBook.AI's context window for Tennessee judicial research.
+This directory contains the authoritative legal source materials loaded into BenchBook.AI's V1 closed corpus for Tennessee Juvenile and Family Court research.
 
 ## Current Contents
 
@@ -26,33 +26,26 @@ This directory contains the authoritative legal source materials loaded into Ben
 ### Local Rules
 | File | Description |
 |------|-------------|
-| `local-rules/` | Court-specific local rules (currently empty) |
+| `local-rules/` | Optional court-specific local juvenile rules. This folder is currently empty, and any future upload must remain private to the subscribing court. |
 
-## What's Missing. Priority Expansion
+## V1 Scope Lock
 
-### HIGH PRIORITY (Criminal/General Sessions)
-- **TCA Title 39: Criminal Offenses**: assault (39-13), theft/property (39-14), public safety/drugs (39-17), DUI (39-17-418)
-- **TCA Title 40: Criminal Procedure**: bond/bail (Ch. 11), sentencing (Ch. 35), probation (Ch. 36)
-- **TCA Title 55: Motor Vehicles**: DUI (55-10-401+), driving on revoked (55-50-504)
-- **Tennessee Rules of Criminal Procedure**: arraignment, discovery, trial, sentencing
+BenchBook.AI V1 is not a broad criminal, traffic, or case-management product. Do not add the following to the V1 generated corpus:
 
-### MEDIUM PRIORITY
-- **TCA Title 29: Mental Health**: involuntary commitments, judicial review
-- **TCA Title 33: Mental Health/Substance Abuse**: commitment procedures
-- **Tennessee Rules of Evidence**: admissibility, hearsay, privileges
+- T.C.A. Title 39
+- T.C.A. Title 40
+- T.C.A. Title 55
+- Tennessee Rules of Criminal Procedure
 
-### LOWER PRIORITY
-- **TCA Title 16: Courts**: jurisdiction, administrative procedures
-- **TCA Title 24: Witnesses**: competency, privileges
-- Federal constitutional references commonly applied in TN courts
+Placeholder files for those topics may exist for future planning, but they are excluded from V1 builds and should not be described as active coverage.
 
 ## How to Add New Corpus Files
 
 ### Naming Convention
-- TCA titles: `tca/title-NN.html` (raw HTML from Public.Resource.Org or official source)
+- TCA titles: `tca/title-NN.html` (raw HTML from Public.Resource.Org or official source). V1 only includes Titles 36 and 37.
 - Rules: `rules/[ruleset-name]/all-rules.txt` (plain text compilation)
 - Policies: `dcs/chapNN-NN.NN.pdf` (official DCS policy PDFs)
-- Local rules: `local-rules/[county]-[court-type].txt`
+- Local rules: `local-rules/[county]-[court-type].txt`, stored and served only for the authorized subscribing court
 
 ### Build Process
 1. Place the file in the appropriate subdirectory

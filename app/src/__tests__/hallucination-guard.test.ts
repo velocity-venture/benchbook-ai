@@ -42,6 +42,13 @@ describe('runHallucinationGuard', () => {
     expect(result.citations.find(c => c.citation === 'T.C.A. § 37-1-114')?.verified).toBe(true);
     expect(result.citations.find(c => c.citation === 'T.C.A. § 99-1-999')?.verified).toBe(false);
   });
+
+  it('returns LOW confidence when an answer has no citations', () => {
+    const response = 'The court should consider the child and family circumstances.';
+    const result = runHallucinationGuard(response, index, SAMPLE_CORPUS);
+    expect(result.confidence).toBe('LOW');
+    expect(result.warnings.some(w => w.includes('No citations'))).toBe(true);
+  });
 });
 
 describe('HALLUCINATION_GUARDRAILS', () => {

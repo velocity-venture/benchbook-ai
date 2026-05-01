@@ -30,6 +30,12 @@ const tabs = [
   { id: "appearance", name: "Appearance", icon: Palette },
 ];
 
+const LOCAL_RULES_OPTIONS = [
+  { value: "unknown", label: "Not sure yet" },
+  { value: "not_applicable", label: "No local juvenile rules or not applicable" },
+  { value: "available", label: "Local juvenile rules are available" },
+];
+
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
   const [saving, setSaving] = useState(false);
@@ -45,7 +51,9 @@ export default function SettingsPage() {
     email: "",
     phone: "",
     organization: "",
+    localRulesStatus: "unknown",
   });
+  const [profileSettings, setProfileSettings] = useState<Record<string, unknown>>({});
 
   // Use preferences context
   const { preferences, updatePreferences: updatePrefs } = usePreferences();
@@ -69,6 +77,11 @@ export default function SettingsPage() {
       .single();
 
     if (data) {
+      const settings =
+        data.settings && typeof data.settings === "object" && !Array.isArray(data.settings)
+          ? (data.settings as Record<string, unknown>)
+          : {};
+      setProfileSettings(settings);
       setProfile({
         full_name: data.full_name || "",
         title: data.title || "Judge",
@@ -76,6 +89,10 @@ export default function SettingsPage() {
         email: data.email || user.email || "",
         phone: data.phone || "",
         organization: data.organization || "",
+        localRulesStatus:
+          typeof settings.localRulesStatus === "string"
+            ? settings.localRulesStatus
+            : "unknown",
       });
 
     }
@@ -107,12 +124,20 @@ export default function SettingsPage() {
         email: profile.email,
         phone: profile.phone,
         organization: profile.organization,
+        settings: {
+          ...profileSettings,
+          localRulesStatus: profile.localRulesStatus,
+        },
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id);
 
     setSaving(false);
     if (!error) {
+      setProfileSettings((prev) => ({
+        ...prev,
+        localRulesStatus: profile.localRulesStatus,
+      }));
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     }
@@ -232,6 +257,23 @@ export default function SettingsPage() {
                           onChange={(e) => updateProfile("organization", e.target.value)}
                           placeholder="e.g., Tipton County Juvenile Court"
                         />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <label className="text-sm font-medium text-white">Local Juvenile Rules</label>
+                        <select
+                          value={profile.localRulesStatus}
+                          onChange={(e) => updateProfile("localRulesStatus", e.target.value)}
+                          className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-950"
+                        >
+                          {LOCAL_RULES_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-xs text-slate-500">
+                          This only records availability. Local rules are private court-specific content after an authorized upload is approved.
+                        </p>
                       </div>
                     </div>
                   </CardContent>

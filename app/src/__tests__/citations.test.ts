@@ -197,8 +197,9 @@ describe('computeConfidence', () => {
     expect(confidence.level).toBe('MEDIUM');
   });
 
-  it('returns HIGH with no citations', () => {
+  it('returns LOW with no citations', () => {
     const confidence = computeConfidence([]);
-    expect(confidence.level).toBe('HIGH');
+    expect(confidence.level).toBe('LOW');
+    expect(confidence.reason).toMatch(/No citations were provided/i);
   });
 });

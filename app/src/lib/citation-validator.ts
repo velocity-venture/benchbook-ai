@@ -285,14 +285,17 @@ export type ConfidenceLevel = 'HIGH' | 'MEDIUM' | 'LOW';
  *
  * HIGH:   All statute/rule citations verified, no unverifiable case law
  * MEDIUM: All statutes verified, but case law references present
- * LOW:    One or more statute/rule citations could not be verified
+ * LOW:    No citations, or one or more statute/rule citations could not be verified
  */
 export function computeConfidence(citations: VerifiedCitation[]): {
   level: ConfidenceLevel;
   reason: string;
 } {
   if (citations.length === 0) {
-    return { level: 'HIGH', reason: 'No citations to verify' };
+    return {
+      level: 'LOW',
+      reason: 'No citations were provided for verification against the loaded legal corpus.',
+    };
   }
 
   const statuteCitations = citations.filter(c => c.type !== 'CASELAW');

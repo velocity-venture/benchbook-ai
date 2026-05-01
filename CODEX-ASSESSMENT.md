@@ -150,3 +150,22 @@ Recommended priority order:
 5. Add minimal plan constants and public Enterprise escalation copy.
 6. Run tests, lint, typecheck, app build, and Cloudflare build path.
 7. Consider patch upgrades only after P0 behavior is stable.
+
+## 8. Phase 2 Launch-Risk Reassessment
+
+Date: 2026-05-01
+
+Assessment changes after the second pass:
+
+- The most serious newly confirmed launch risk was saved chat persistence. Client-created sessions and feedback were missing `user_id`, which conflicted with RLS requirements and could break saved research history and feedback. This has been fixed.
+- Trust metadata persistence was materially incomplete. A saved answer could keep source snippets but lose confidence, warnings, and coverage context on reload. A `trust_metadata` column and client load/save wiring now preserve that context.
+- The answer pipeline now has a deterministic pre-model scope refusal for excluded Titles 39, 40, and 55, adult criminal, DUI, and traffic-law topics. This materially improves the closed-universe promise because the refusal happens before corpus loading and Claude generation.
+- The confidence model no longer treats citation-free answers as high trust. A no-citation answer is now `LOW` confidence and carries a warning.
+- Public pricing now shows the Enterprise path directly and makes 5 or more named users an Enterprise requirement.
+- Settings now exposes local juvenile rules status, but the actual private overlay workflow remains a future launch dependency.
+
+Updated readiness view:
+
+- BenchBook.AI is closer to controlled beta than it was after the first pass because the highest-risk trust and pricing ambiguities are reduced.
+- BenchBook.AI is not ready for a broad paid launch until server-side chat persistence, local-rules private overlay architecture, API route tests, and seat-management workflow are completed.
+- For a controlled beta, the product should be limited to known Tennessee Juvenile and Family Court users, with explicit onboarding language that V1 excludes Titles 39, 40, and 55, web retrieval, and any active local-rules overlay unless that court has completed a private upload workflow.

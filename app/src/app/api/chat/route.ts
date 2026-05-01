@@ -11,6 +11,7 @@ import {
   type CorpusCoverageReport,
   type VerifiedCitationWithCoverage,
 } from "@/lib/corpus-coverage";
+import { buildScopeRefusal, detectOutOfScopeQuery, type ScopeGuardResult } from "@/lib/scope-guard";
 
 export const runtime = 'edge';
 
@@ -232,6 +233,20 @@ export async function POST(request: NextRequest) {
       messages = rawMessages as Message[];
     }
 
+    const scopeResult = detectOutOfScopeQuery(query);
+    if (scopeResult) {
+      const stream = streamScopeRefusal(scopeResult);
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'X-Model-Used': 'scope-guard',
+          'X-Processing-Start': startTime.toString(),
+        },
+      });
+    }
+
     // Require Claude API to be enabled and configured
     if (!USE_CLAUDE_API) {
       return NextResponse.json(
@@ -300,6 +315,50 @@ export async function POST(request: NextRequest) {
 }
 
 // classifyQueryComplexity is in lib/query-router.ts for testability
+
+function streamScopeRefusal(scopeResult: ScopeGuardResult): ReadableStream {
+  const encoder = new TextEncoder();
+
+  return new ReadableStream({
+    start(controller) {
+      const answer = buildScopeRefusal(scopeResult);
+      const deltaEvent = JSON.stringify({ type: 'delta', text: answer });
+      controller.enqueue(encoder.encode(`data: ${deltaEvent}\n\n`));
+
+      const confidenceEvent = JSON.stringify({
+        type: 'confidence',
+        level: 'LOW',
+        reason: scopeResult.reason,
+        warnings: [
+          'This response is a scope refusal, not a legal answer.',
+          'BenchBook.AI V1 does not retrieve or answer from T.C.A. Titles 39, 40, or 55.',
+        ],
+      });
+      controller.enqueue(encoder.encode(`data: ${confidenceEvent}\n\n`));
+
+      const coverageEvent = JSON.stringify({
+        type: 'coverage',
+        summary:
+          'V1 corpus: T.C.A. Titles 36 and 37, TRJPP, selected DCS policies, and optional private local juvenile rules when provided. Titles 39, 40, and 55 are excluded.',
+        warnings: [
+          'No internet search or outside legal database was used.',
+        ],
+      });
+      controller.enqueue(encoder.encode(`data: ${coverageEvent}\n\n`));
+
+      const doneEvent = JSON.stringify({
+        type: 'done',
+        tokens_used: 0,
+        cache_creation_input_tokens: 0,
+        cache_read_input_tokens: 0,
+        cache_hit: false,
+        model_used: 'scope-guard',
+      });
+      controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`));
+      controller.close();
+    },
+  });
+}
 
 /**
  * Load relevant legal corpus sections based on query content

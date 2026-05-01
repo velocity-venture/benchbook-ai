@@ -200,7 +200,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features — Bento Grid */}
+      {/* Features: Bento Grid */}
       <section id="features" className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <FadeIn>
@@ -211,7 +211,7 @@ export default function Home() {
 
           <FadeIn>
             <div className="grid lg:grid-cols-3 gap-6">
-              {/* AI Research — spans 2 cols */}
+              {/* AI Research spans 2 cols */}
               <div className="lg:col-span-2 bg-white rounded-xl p-8 border border-slate-200 hover:-translate-y-0.5 hover:shadow-lg transition-all">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-[#B85C38]/10 rounded-lg flex items-center justify-center">
@@ -249,7 +249,7 @@ export default function Home() {
                 </h3>
                 <p className="text-slate-600">
                   Answers stay inside T.C.A. Titles 36 and 37, TRJPP, DCS policies,
-                  and approved local juvenile rules when a court provides them.
+                  and private local juvenile rules only when a subscribing court provides them.
                 </p>
               </div>
 
@@ -312,7 +312,7 @@ export default function Home() {
               {[
                 { icon: BookOpen, label: "Tennessee Code", stat: "ALL", desc: "Complete Title 37 (Juveniles) and Title 36 (Domestic Relations)", color: "text-blue-600 bg-blue-50" },
                 { icon: Scale, label: "TRJPP Rules", stat: "ALL", desc: "Complete Tennessee Rules of Juvenile Practice and Procedure", color: "text-orange-600 bg-orange-50" },
-                { icon: FileText, label: "DCS Policies", stat: "ALL", desc: "Complete DCS policies and procedures, plus county local rules on request", color: "text-green-600 bg-green-50" },
+                { icon: FileText, label: "DCS Policies", stat: "SELECTED", desc: "DCS policies relevant to investigations, removal, foster care, placement, and case planning", color: "text-green-600 bg-green-50" },
               ].map((item, i) => (
                 <div key={i} className="p-6 bg-white border border-slate-200 rounded-2xl text-center hover:-translate-y-0.5 hover:shadow-lg transition-all">
                   <div className={`w-12 h-12 ${item.color} rounded-lg flex items-center justify-center mx-auto mb-4`}>
@@ -394,13 +394,13 @@ export default function Home() {
                 Pricing built for courts, not corporations.
               </h2>
               <p className="text-xl text-slate-600">
-                10 months for the price of 12 when you pay annually.
+                Annual plans include 12 months of service for the price of 10.
               </p>
             </div>
           </FadeIn>
 
           <FadeIn>
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {/* Solo Plan */}
               <div className="bg-white rounded-xl p-8 border border-slate-200 hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col">
                 <h3 className="text-2xl font-semibold mb-4" style={{ fontFamily: "'Georgia', serif" }}>
@@ -455,7 +455,7 @@ export default function Home() {
                     "Up to 4 named users",
                     "Small court team access",
                     "Optional private local juvenile rules overlay",
-                    "Enterprise path for 5 or more users",
+                    "5 or more named users require Enterprise",
                     "Priority support",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-slate-700">
@@ -470,6 +470,38 @@ export default function Home() {
                 >
                   Request Access
                 </Link>
+              </div>
+
+              {/* Enterprise */}
+              <div className="bg-white rounded-xl p-8 border border-slate-200 hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col">
+                <h3 className="text-2xl font-semibold mb-4" style={{ fontFamily: "'Georgia', serif" }}>
+                  Enterprise
+                </h3>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold">Custom</span>
+                  <div className="text-sm text-slate-500 mt-1">Required for 5 or more named users</div>
+                </div>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {[
+                    "Larger county or district deployment",
+                    "Multiple judges or court departments",
+                    "Court-specific onboarding",
+                    "Optional private local juvenile rules overlay",
+                    "Advanced support and rollout planning",
+                    "Named-user pricing set by agreement",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-slate-700">
+                      <span className="text-[#B85C38]">&#10003;</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="mailto:demo@benchbook.ai?subject=BenchBook.AI Enterprise Access"
+                  className="block text-center border border-[#B85C38] text-[#B85C38] py-3 rounded-lg font-medium hover:bg-[#B85C38] hover:text-white transition"
+                >
+                  Contact for Enterprise
+                </a>
               </div>
             </div>
           </FadeIn>
