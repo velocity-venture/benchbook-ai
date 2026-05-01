@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { buildCitationIndex, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
+import { buildCitationIndex, type CitationIndex } from "@/lib/citation-validator";
 import { runHallucinationGuard, HALLUCINATION_GUARDRAILS } from "@/lib/hallucination-guard";
 import { classifyQueryComplexity } from "@/lib/query-router";
+import {
+  annotateCoverage,
+  buildCoverageReport,
+  coverageSummaryLine,
+  type CorpusCoverageReport,
+  type VerifiedCitationWithCoverage,
+} from "@/lib/corpus-coverage";
 
 export const runtime = 'edge';
 
@@ -22,6 +29,9 @@ interface Source {
   citation: string;
   type: "TCA" | "DCS" | "TRJPP" | "LOCAL" | "CASELAW";
   snippet: string;
+  verified?: boolean;
+  coverageScope?: "covered" | "stub" | "unknown";
+  coverageWarning?: string;
 }
 
 // Validation limits
@@ -58,13 +68,13 @@ async function checkRateLimit(userId: string): Promise<boolean> {
       p_max_requests: RATE_LIMIT_MAX,
     });
     if (error) {
-      console.error('Supabase rate limit check failed, allowing request:', error);
-      return true; // Fail open
+      console.error('Supabase rate limit check failed:', error);
+      return false;
     }
     return data as boolean;
   } catch (err) {
-    console.error('Rate limit RPC error, allowing request:', err);
-    return true; // Fail open
+    console.error('Rate limit RPC error:', err);
+    return false;
   }
 }
 
@@ -73,7 +83,7 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const USE_CLAUDE_API = process.env.USE_CLAUDE_API === 'true';
 const ENABLE_PROMPT_CACHING = process.env.ENABLE_PROMPT_CACHING !== 'false';
 
-// Model configuration — latest Claude models
+// Model configuration: latest Claude models
 const HAIKU_MODEL = process.env.CLAUDE_HAIKU_MODEL || 'claude-haiku-4-5-20250414';
 const SONNET_MODEL = process.env.CLAUDE_SONNET_MODEL || 'claude-sonnet-4-5-20250414';
 
@@ -89,6 +99,7 @@ interface CorpusCache {
   trjppRules?: string;
   dcsRelevant?: string;
   citationIndex?: CitationIndex;
+  coverageReport?: CorpusCoverageReport;
   lastUpdated: number;
 }
 
@@ -98,7 +109,7 @@ const corpusCache: CorpusCache = {
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-// System prompt for legal research — bench-ready judicial responses
+// System prompt for legal research: bench-ready judicial responses
 const SYSTEM_PROMPT = `You are BenchBook.AI, a judicial research assistant for Tennessee state court judges. Responses must be concise, authoritative, and immediately actionable from the bench.
 
 You have direct access to the Tennessee legal corpus including:
@@ -106,7 +117,7 @@ You have direct access to the Tennessee legal corpus including:
 - Department of Children's Services (DCS) policies
 - Tennessee Rules of Juvenile Practice and Procedure (TRJPP)
 
-RESPONSE FORMAT — Structure every answer as follows:
+RESPONSE FORMAT: Structure every answer as follows:
 1. Direct answer in 1-2 sentences
 2. Applicable statute with section number (T.C.A. § [title]-[chapter]-[section])
 3. Key procedural requirements or elements
@@ -250,6 +261,7 @@ export async function POST(request: NextRequest) {
       modelToUse,
       ENABLE_PROMPT_CACHING,
       corpusCache.citationIndex,
+      corpusCache.coverageReport,
       (verifiedSources) => {
         // Track research query with real verified sources
         const sources: Source[] = verifiedSources.map(s => ({
@@ -257,6 +269,9 @@ export async function POST(request: NextRequest) {
           citation: s.citation,
           type: s.type,
           snippet: s.snippet.substring(0, 200),
+          verified: s.verified,
+          coverageScope: s.coverageScope,
+          coverageWarning: s.coverageWarning,
         }));
         trackResearchQuery(user.id, query, sources).catch((err) => {
           console.error("Research tracking error:", err);
@@ -344,6 +359,7 @@ async function refreshCorpusCache(): Promise<void> {
     corpusCache.trjppRules,
     corpusCache.dcsRelevant
   );
+  corpusCache.coverageReport = buildCoverageReport(corpusCache.citationIndex);
 }
 
 /**
@@ -356,7 +372,8 @@ async function streamClaude(
   model: string,
   useCache: boolean,
   citationIndex?: CitationIndex,
-  onComplete?: (sources: VerifiedCitation[]) => void
+  coverageReport?: CorpusCoverageReport,
+  onComplete?: (sources: VerifiedCitationWithCoverage[]) => void
 ): Promise<ReadableStream> {
   if (!anthropic) {
     throw new Error('Anthropic client not initialized');
@@ -415,28 +432,14 @@ async function streamClaude(
         // Wait for final message to get usage stats
         const finalMessage = await stream.finalMessage();
 
-        // Send metadata event with token usage and cache stats
-        const usage = finalMessage.usage;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const usageAny = usage as any;
-        const cacheCreation = usageAny.cache_creation_input_tokens || 0;
-        const cacheRead = usageAny.cache_read_input_tokens || 0;
-
-        const meta = JSON.stringify({
-          type: 'done',
-          tokens_used: usage.input_tokens + usage.output_tokens,
-          cache_creation_input_tokens: cacheCreation,
-          cache_read_input_tokens: cacheRead,
-          cache_hit: cacheRead > 0,
-          model_used: model.includes('haiku') ? 'haiku' : 'sonnet',
-        });
-        controller.enqueue(encoder.encode(`data: ${meta}\n\n`));
-
         // Run hallucination guard: verify citations and compute confidence
-        let verifiedSources: VerifiedCitation[] = [];
-        if (citationIndex) {
+        let verifiedSources: VerifiedCitationWithCoverage[] = [];
+        if (citationIndex && coverageReport) {
           const guardResult = runHallucinationGuard(fullResponse, citationIndex, legalCorpus);
-          verifiedSources = guardResult.citations;
+          verifiedSources = annotateCoverage(guardResult.citations, coverageReport);
+          const coverageWarnings = verifiedSources
+            .map((source) => source.coverageWarning)
+            .filter((warning): warning is string => Boolean(warning));
 
           // Send sources event
           if (verifiedSources.length > 0) {
@@ -452,10 +455,37 @@ async function streamClaude(
             type: 'confidence',
             level: guardResult.confidence,
             reason: guardResult.confidenceReason,
-            warnings: guardResult.warnings,
+            warnings: [...guardResult.warnings, ...coverageWarnings],
           });
           controller.enqueue(encoder.encode(`data: ${confidenceEvent}\n\n`));
+
+          const coverageEvent = JSON.stringify({
+            type: 'coverage',
+            summary: coverageSummaryLine(coverageReport),
+            warnings: coverageWarnings,
+          });
+          controller.enqueue(encoder.encode(`data: ${coverageEvent}\n\n`));
         }
+
+        // Send final metadata after trust events so clients do not mark
+        // the response complete before verification data arrives.
+        const usage = finalMessage.usage;
+        const usageWithCache = usage as typeof usage & {
+          cache_creation_input_tokens?: number;
+          cache_read_input_tokens?: number;
+        };
+        const cacheCreation = usageWithCache.cache_creation_input_tokens || 0;
+        const cacheRead = usageWithCache.cache_read_input_tokens || 0;
+
+        const meta = JSON.stringify({
+          type: 'done',
+          tokens_used: usage.input_tokens + usage.output_tokens,
+          cache_creation_input_tokens: cacheCreation,
+          cache_read_input_tokens: cacheRead,
+          cache_hit: cacheRead > 0,
+          model_used: model.includes('haiku') ? 'haiku' : 'sonnet',
+        });
+        controller.enqueue(encoder.encode(`data: ${meta}\n\n`));
 
         controller.close();
 
@@ -506,4 +536,3 @@ async function trackResearchQuery(userId: string, query: string, sources: Source
     .then(() => { console.log('Research patterns updated'); })
     .catch((err: unknown) => { console.error('Failed to update research patterns:', err); });
 }
-

@@ -33,6 +33,8 @@ interface ConfidenceInfo {
   level: "HIGH" | "MEDIUM" | "LOW";
   reason: string;
   warnings: string[];
+  coverageSummary?: string;
+  coverageWarnings?: string[];
 }
 
 interface Message {
@@ -51,6 +53,8 @@ interface Source {
   type: "TCA" | "DCS" | "TRJPP" | "LOCAL" | "CASELAW";
   snippet: string;
   verified?: boolean;
+  coverageScope?: "covered" | "stub" | "unknown";
+  coverageWarning?: string;
 }
 
 interface ChatSession {
@@ -64,7 +68,7 @@ interface ChatSession {
 const suggestedQueries = [
   "What are the grounds for detention under T.C.A. § 37-1-114?",
   "When is a child entitled to appointed counsel?",
-  "What is the standard for transfer to criminal court?",
+  "What is the standard for transfer from juvenile court?",
   "DCS policy on home removal investigations",
   "FERPA requirements for juvenile records",
 ];
@@ -80,11 +84,11 @@ const benchCards = [
     ],
   },
   {
-    category: "Sentencing & Disposition",
+    category: "Disposition",
     icon: Scale,
     queries: [
       "What dispositions are available for a delinquent child under T.C.A. § 37-1-129?",
-      "What are the factors for transfer to criminal court?",
+      "What are the factors for transfer from juvenile court?",
       "What are probation conditions for juvenile offenders?",
     ],
   },
@@ -328,7 +332,7 @@ export default function ChatPage() {
           const errData = await response.json();
           errMsg = errData.error || errMsg;
         } catch {
-          // response wasn't JSON
+                  // response was not JSON
         }
         throw new Error(errMsg);
       }
@@ -343,6 +347,8 @@ export default function ChatPage() {
         let fullContent = "";
         let backendSources: Source[] = [];
         let confidenceInfo: ConfidenceInfo | undefined;
+        let coverageSummary: string | undefined;
+        let coverageWarnings: string[] = [];
 
         if (reader) {
           let buffer = "";
@@ -375,6 +381,9 @@ export default function ChatPage() {
                     reason: event.reason,
                     warnings: event.warnings || [],
                   };
+                } else if (event.type === 'coverage') {
+                  coverageSummary = event.summary;
+                  coverageWarnings = event.warnings || [];
                 }
               } catch {
                 // Skip malformed JSON lines
@@ -386,10 +395,36 @@ export default function ChatPage() {
         const assistantContent = fullContent || "I apologize, but I couldn't generate a response.";
         setStreamingContent("");
 
-        // Prefer backend-verified sources; fall back to client-side extraction
+        if (confidenceInfo) {
+          confidenceInfo = {
+            ...confidenceInfo,
+            coverageSummary,
+            coverageWarnings,
+          };
+        }
+
+        // Prefer backend-verified sources. Client extraction is visibly unverified.
         const sources = backendSources.length > 0
           ? backendSources
-          : extractSourcesFromResponse(assistantContent);
+          : extractSourcesFromResponse(assistantContent).map((source) => ({
+              ...source,
+              verified: false,
+              coverageScope: "unknown" as const,
+              coverageWarning: "Server citation verification was not returned for this source.",
+            }));
+
+        if (!confidenceInfo && sources.length > 0) {
+          confidenceInfo = {
+            level: "LOW",
+            reason: "Server citation verification metadata was not returned.",
+            warnings: [
+              "Treat extracted citations as unverified until the server confirms them against the loaded corpus.",
+            ],
+            coverageWarnings: sources
+              .map((source) => source.coverageWarning)
+              .filter((warning): warning is string => Boolean(warning)),
+          };
+        }
 
         // Save assistant message
         const assistantMsgId = await saveMessage(
@@ -414,7 +449,22 @@ export default function ChatPage() {
         const data = await response.json();
         const assistantContent =
           data.response || "I apologize, but I couldn't generate a response.";
-        const sources: Source[] = data.sources || [];
+        const sources: Source[] = (data.sources || []).map((source: Source) => ({
+          ...source,
+          verified: source.verified === true,
+          coverageScope: source.coverageScope || "unknown",
+          coverageWarning: source.coverageWarning || "Server citation verification was not returned for this source.",
+        }));
+        const confidenceInfo: ConfidenceInfo = {
+          level: "LOW",
+          reason: "This response did not use the trusted streaming verification path.",
+          warnings: [
+            "Treat this response as unverified until citation validation and confidence metadata are available.",
+          ],
+          coverageWarnings: sources
+            .map((source) => source.coverageWarning)
+            .filter((warning): warning is string => Boolean(warning)),
+        };
 
         const assistantMsgId = await saveMessage(
           sessionId,
@@ -428,6 +478,7 @@ export default function ChatPage() {
           role: "assistant",
           content: assistantContent,
           sources,
+          confidence: confidenceInfo,
           timestamp: new Date(),
           feedback: new Set(),
         };
@@ -548,7 +599,7 @@ export default function ChatPage() {
                   AI Legal Research
                 </h1>
                 <p className="text-sm text-slate-400">
-                  T.C.A., DCS Policy, Case Law, TRJPP
+                  T.C.A. Titles 36 and 37, TRJPP, DCS Policy
                 </p>
               </div>
             </div>
@@ -615,8 +666,8 @@ export default function ChatPage() {
                   Ask anything about Tennessee Juvenile Law
                 </h2>
                 <p className="text-slate-400 max-w-lg mx-auto">
-                  I can help you research T.C.A. Title 37, DCS policies, TRJPP
-                  rules, local court rules, and relevant case law. Just ask a
+                  I can help you research T.C.A. Titles 36 and 37, DCS policies,
+                  TRJPP rules, and available local juvenile rules. Just ask a
                   question.
                 </p>
               </div>
@@ -654,7 +705,7 @@ export default function ChatPage() {
                   },
                   {
                     icon: Scale,
-                    label: "Case Law",
+                    label: "Citation Check",
                     color: "text-purple-400",
                   },
                   {
@@ -750,10 +801,18 @@ export default function ChatPage() {
                                             {source.verified === false && (
                                               <span className="text-yellow-400 text-[10px]">(unverified)</span>
                                             )}
+                                            {source.coverageScope === "stub" && (
+                                              <span className="text-yellow-400 text-[10px]">(outside V1 corpus)</span>
+                                            )}
                                           </p>
                                           <p className="text-xs text-slate-500 truncate">
                                             {source.snippet}
                                           </p>
+                                          {source.coverageWarning && (
+                                            <p className="mt-1 text-[11px] text-yellow-300/80">
+                                              {source.coverageWarning}
+                                            </p>
+                                          )}
                                         </div>
                                       </div>
                                     ))}
@@ -781,8 +840,15 @@ export default function ChatPage() {
                                 {message.confidence.level} Confidence
                               </span>
                               <span className="text-slate-500">
-                                — {message.confidence.reason}
+                                - {message.confidence.reason}
                               </span>
+                            </div>
+                          )}
+
+                          {/* Coverage Summary */}
+                          {message.confidence?.coverageSummary && (
+                            <div className="mt-2 text-xs text-slate-500 bg-slate-900/70 border border-slate-800 rounded px-2 py-1">
+                              {message.confidence.coverageSummary}
                             </div>
                           )}
 

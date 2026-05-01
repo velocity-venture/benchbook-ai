@@ -8,8 +8,6 @@ import {
   FileText,
   Search,
   Lock,
-  BarChart3,
-  Pencil,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -120,8 +118,8 @@ export default function Home() {
                 Amplified.
               </h1>
               <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                The judicial productivity platform that understands the weight of your
-                decisions and the pressure of your docket.
+                Fast, citation-checked Tennessee juvenile and family court research
+                for the moments when a judge needs a bench-ready answer.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
@@ -134,7 +132,7 @@ export default function Home() {
                   href="/login"
                   className="border border-[#B85C38] text-[#B85C38] px-8 py-4 rounded-lg font-medium hover:bg-[#B85C38] hover:text-white transition text-center"
                 >
-                  Start Free Trial
+                  Request Access
                 </Link>
               </div>
             </FadeIn>
@@ -155,11 +153,11 @@ export default function Home() {
                     <p className="mb-2">
                       Found <strong>4 relevant grounds</strong> including abandonment
                       (12+ months), severe abuse, failure to remedy conditions, and
-                      persistent conditions. Cross-referenced with TN Court of Appeals
-                      precedent.
+                      persistent conditions, with citation checks against the loaded
+                      Tennessee corpus.
                     </p>
                     <p className="text-xs text-slate-400 italic">
-                      Demo response — actual BenchBook queries cite full statute text
+                      Demo response. Actual BenchBook queries cite full statute text
                       with procedural requirements.
                     </p>
                   </div>
@@ -225,7 +223,7 @@ export default function Home() {
                     </h3>
                     <p className="text-slate-600 mb-4">
                       Ask complex legal questions in plain language. Get Tennessee-specific
-                      answers with statute citations, case law, and procedural guidance.
+                      answers with statute, rule, and policy citations.
                     </p>
                     <div className="bg-slate-50 rounded-lg p-4 text-sm">
                       <span className="text-slate-500">Query:</span>{" "}
@@ -235,7 +233,7 @@ export default function Home() {
                       <br />
                       <span className="text-slate-500">Response:</span>{" "}
                       <span className="text-slate-700">
-                        T.C.A. &sect; 36-6-106 emergency provisions, 4 case precedents found...
+                        T.C.A. &sect; 36-6-106 factors identified with source snippets...
                       </span>
                     </div>
                   </div>
@@ -244,14 +242,14 @@ export default function Home() {
 
               <div className="bg-white rounded-xl p-8 border border-slate-200 hover:-translate-y-0.5 hover:shadow-lg transition-all">
                 <div className="w-12 h-12 bg-[#B85C38]/10 rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="w-6 h-6 text-[#B85C38]" />
+                  <Lock className="w-6 h-6 text-[#B85C38]" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3" style={{ fontFamily: "'Georgia', serif" }}>
-                  Case Pattern Analysis
+                  Closed Corpus Answers
                 </h3>
                 <p className="text-slate-600">
-                  Identify trends across your docket. Spot recurring issues before they
-                  become problems.
+                  Answers stay inside T.C.A. Titles 36 and 37, TRJPP, DCS policies,
+                  and approved local juvenile rules when a court provides them.
                 </p>
               </div>
 
@@ -268,30 +266,29 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Document Drafting — spans 2 cols */}
+              {/* Trust Controls */}
               <div className="lg:col-span-2 bg-white rounded-xl p-8 border border-slate-200 hover:-translate-y-0.5 hover:shadow-lg transition-all">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-[#B85C38]/10 rounded-lg flex items-center justify-center">
-                    <Pencil className="w-6 h-6 text-[#B85C38]" />
+                    <FileText className="w-6 h-6 text-[#B85C38]" />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-2xl font-semibold mb-3" style={{ fontFamily: "'Georgia', serif" }}>
-                      Judicial Document Drafting
+                      Citation Verification
                     </h3>
                     <p className="text-slate-600 mb-4">
-                      Generate orders, findings, and rulings with proper Tennessee
-                      citations and procedural requirements. Your voice, your reasoning,
-                      done faster.
+                      Every answer surfaces citation status, confidence, warnings, and
+                      source snippets so a judge can see what the system can and cannot verify.
                     </p>
                     <div className="bg-slate-50 rounded-lg p-4 text-sm">
-                      <span className="text-slate-500">Template:</span>{" "}
+                      <span className="text-slate-500">Trust signal:</span>{" "}
                       <span className="text-slate-700">
-                        Custody modification order with safety plan requirements
+                        HIGH, MEDIUM, or LOW confidence
                       </span>
                       <br />
-                      <span className="text-slate-500">Output:</span>{" "}
+                      <span className="text-slate-500">Warning:</span>{" "}
                       <span className="text-slate-700">
-                        Court-ready document with statute citations and standard language
+                        Unverified citations are flagged before reliance
                       </span>
                     </div>
                   </div>
@@ -331,7 +328,7 @@ export default function Home() {
           <FadeIn className="mt-8">
             <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
               <Lock className="w-4 h-4" />
-              <span>Closed legal universe — every answer sourced from vetted Tennessee law. No internet searches. No hallucinated citations.</span>
+              <span>Closed legal universe, every answer sourced from vetted Tennessee law. No internet searches. No hallucinated citations.</span>
             </div>
           </FadeIn>
         </div>
@@ -376,7 +373,7 @@ export default function Home() {
                   the gravity of that responsibility.&rdquo;
                 </blockquote>
                 <div className="text-[#B85C38] font-medium">
-                  &mdash; Judge M.O. Eckel III
+                  - Judge M.O. Eckel III
                   <br />
                   <span className="text-slate-500 text-sm">
                     General Sessions &amp; Juvenile Court Judge, Tipton County
@@ -410,16 +407,17 @@ export default function Home() {
                   Solo Plan
                 </h3>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold">$79</span>
+                  <span className="text-4xl font-bold">$69</span>
                   <span className="text-slate-600">/month</span>
-                  <div className="text-sm text-slate-500 mt-1">or $790/year (save $158)</div>
+                  <div className="text-sm text-slate-500 mt-1">or $690/year (pay for 10 months)</div>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
-                    "Unlimited AI research queries",
+                    "1 named judicial user",
+                    "AI research workspace",
                     "Tennessee statute browser",
-                    "Document drafting templates",
-                    "Case pattern analysis",
+                    "TRJPP and DCS policy browsers",
+                    "Citation verification and confidence badges",
                     "Email support",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-slate-700">
@@ -432,7 +430,7 @@ export default function Home() {
                   href="/login"
                   className="block text-center border border-[#B85C38] text-[#B85C38] py-3 rounded-lg font-medium hover:bg-[#B85C38] hover:text-white transition"
                 >
-                  Start Free Trial
+                  Request Access
                 </Link>
               </div>
 
@@ -454,10 +452,10 @@ export default function Home() {
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
                     "Everything in Solo Plan",
-                    "Up to 5 judicial users",
-                    "Court administrator dashboard",
-                    "Shared templates & workflows",
-                    "Court-specific customization",
+                    "Up to 4 named users",
+                    "Small court team access",
+                    "Optional private local juvenile rules overlay",
+                    "Enterprise path for 5 or more users",
                     "Priority support",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-slate-700">
@@ -470,7 +468,7 @@ export default function Home() {
                   href="/login"
                   className="block text-center bg-[#B85C38] text-white py-3 rounded-lg font-medium hover:bg-[#a04e2f] transition"
                 >
-                  Start Free Trial
+                  Request Access
                 </Link>
               </div>
             </div>
@@ -487,7 +485,7 @@ export default function Home() {
             </h2>
             <p className="text-xl text-slate-600 mb-12">
               Launching with Tennessee Juvenile Court judges first. Be among the first
-              to experience judicial productivity built by judges.
+              to experience judicial research built by a judge for Tennessee courts.
             </p>
           </FadeIn>
 
@@ -562,8 +560,8 @@ export default function Home() {
                 BenchBook<span className="text-[#B85C38]">.AI</span>
               </div>
               <p className="text-slate-400 mb-6 max-w-md">
-                Judicial productivity platform built by a judge for judges. Research
-                faster, draft better, decide with confidence.
+                Judicial research built by a judge for Tennessee juvenile and family courts.
+                Ask faster, verify citations, and decide with confidence.
               </p>
               <div className="text-sm text-slate-500">
                 A Velocity Venture Holdings product

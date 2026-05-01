@@ -9,14 +9,14 @@
 /**
  * Classify query complexity for smart model routing.
  *
- * Complex legal queries ALWAYS route to Sonnet — a judge cannot get
+ * Complex legal queries ALWAYS route to Sonnet. A judge cannot get
  * a shallow answer on sentencing or juvenile detention.
  * Haiku handles only simple single-statute lookups and clarifications.
  */
 export function classifyQueryComplexity(query: string): 'simple' | 'complex' {
   const queryLower = query.toLowerCase();
 
-  // ALWAYS route to Sonnet — these are too important for the cheaper model
+  // ALWAYS route to Sonnet. These are too important for the cheaper model.
   const forceComplex = [
     // Multiple TCA references in one query
     (query.match(/\d+-\d+-\d+/g) || []).length > 1,
@@ -37,7 +37,7 @@ export function classifyQueryComplexity(query: string): 'simple' | 'complex' {
     /contempt(?:\s+of\s+court)?|willful\s+contempt|civil\s+contempt|criminal\s+contempt/i.test(query),
     // Mental health commitments (Title 33)
     /mental\s+health\s+commitment|judicial\s+commitment|title\s+33|involuntary\s+commitment/i.test(query),
-    // Long queries — complex by nature
+    // Long queries are complex by nature.
     query.length > 150,
     // Analysis/comparison requests
     /analyz|compar|evaluat|assess|what\s+factors?|how\s+should\s+i/i.test(query),

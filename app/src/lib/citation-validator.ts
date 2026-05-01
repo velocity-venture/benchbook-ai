@@ -3,7 +3,7 @@
  *
  * Builds an index of real legal citations from the loaded corpus,
  * then verifies citations in AI responses against that index.
- * A judge cannot rely on unverified citations — this is the safety net.
+ * A judge cannot rely on unverified citations. This is the safety net.
  */
 
 export interface CitationIndex {
@@ -113,7 +113,7 @@ export function buildCitationIndex(
 }
 
 /**
- * TCA citation patterns — handles format variations judges might see:
+ * TCA citation patterns, handling format variations judges might see:
  *   T.C.A. § 37-1-114
  *   T.C.A. section 37-1-114
  *   TCA § 37-1-114
@@ -139,7 +139,7 @@ const TRJPP_PATTERN = /(?:TRJPP\s+)?Rule\s+(\d+)/gi;
 const DCS_PATTERN = /DCS\s+Policy\s+([0-9.]+)/gi;
 
 /**
- * Case law patterns — detect case citations that we cannot verify
+ * Case law patterns detect case citations that we cannot verify.
  *   Smith v. Jones
  *   In re Smith
  *   State of Tennessee v. Jones
@@ -233,7 +233,7 @@ export function verifyCitations(
     });
   }
 
-  // Detect case law citations — these cannot be verified
+  // Detect case law citations. These cannot be verified.
   for (const pattern of CASE_LAW_PATTERNS) {
     const caseRegex = new RegExp(pattern.source, pattern.flags);
     while ((match = caseRegex.exec(responseText)) !== null) {

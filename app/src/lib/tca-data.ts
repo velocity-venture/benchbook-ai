@@ -1,4 +1,4 @@
-// Tennessee Code Annotated — Key sections for Juvenile Court judges
+// Tennessee Code Annotated - Key sections for Juvenile Court judges
 // Covers Title 37 (Juveniles), Title 36 (Domestic Relations), and related provisions
 
 export interface TCASection {
@@ -13,14 +13,14 @@ export interface TCASection {
 
 export const tcaSections: TCASection[] = [
   // ========================================
-  // TITLE 37, CHAPTER 1 — JUVENILE COURTS
+  // TITLE 37, CHAPTER 1 - JUVENILE COURTS
   // ========================================
   {
     id: "37-1-101",
     title: "Short title",
     chapter: "Juvenile Courts and Proceedings",
     titleNum: "37",
-    description: "Short title — Tennessee Juvenile Court Act",
+    description: "Short title - Tennessee Juvenile Court Act",
     summary: "This part shall be known and may be cited as the 'Juvenile Court Act of Tennessee.' Establishes the statutory framework for juvenile courts.",
     tags: ["general", "jurisdiction"],
   },
@@ -71,7 +71,7 @@ export const tcaSections: TCASection[] = [
   },
   {
     id: "37-1-111",
-    title: "Petition — commencement of proceedings",
+    title: "Petition - commencement of proceedings",
     chapter: "Juvenile Courts and Proceedings",
     titleNum: "37",
     description: "How juvenile proceedings are initiated",
@@ -80,7 +80,7 @@ export const tcaSections: TCASection[] = [
   },
   {
     id: "37-1-112",
-    title: "Summons — notice",
+    title: "Summons - notice",
     chapter: "Juvenile Courts and Proceedings",
     titleNum: "37",
     description: "Summons and notice requirements",
@@ -152,7 +152,7 @@ export const tcaSections: TCASection[] = [
   },
   {
     id: "37-1-129",
-    title: "Dispositions — delinquent child",
+    title: "Dispositions - delinquent child",
     chapter: "Juvenile Courts and Proceedings",
     titleNum: "37",
     description: "Available dispositional alternatives for delinquent children",
@@ -161,7 +161,7 @@ export const tcaSections: TCASection[] = [
   },
   {
     id: "37-1-130",
-    title: "Dispositions — dependent/neglected child",
+    title: "Dispositions - dependent/neglected child",
     chapter: "Juvenile Courts and Proceedings",
     titleNum: "37",
     description: "Dispositional options for dependent/neglected children",
@@ -242,7 +242,7 @@ export const tcaSections: TCASection[] = [
   },
 
   // ========================================
-  // TITLE 37, CHAPTER 1 — DETENTION SPECIFICS
+  // TITLE 37, CHAPTER 1 - DETENTION SPECIFICS
   // ========================================
   {
     id: "37-1-114a",
@@ -255,7 +255,7 @@ export const tcaSections: TCASection[] = [
   },
 
   // ========================================
-  // TITLE 37, CHAPTER 2 — DCS
+  // TITLE 37, CHAPTER 2 - DCS
   // ========================================
   {
     id: "37-2-403",
@@ -286,11 +286,11 @@ export const tcaSections: TCASection[] = [
   },
 
   // ========================================
-  // TITLE 36 — DOMESTIC RELATIONS
+  // TITLE 36 - DOMESTIC RELATIONS
   // ========================================
   {
     id: "36-1-102",
-    title: "Definitions — Adoption",
+    title: "Definitions - Adoption",
     chapter: "Adoption",
     titleNum: "36",
     description: "Definitions related to adoption proceedings",
@@ -299,7 +299,7 @@ export const tcaSections: TCASection[] = [
   },
   {
     id: "36-1-113",
-    title: "Termination of parental rights — Grounds",
+    title: "Termination of parental rights - Grounds",
     chapter: "Adoption",
     titleNum: "36",
     description: "Grounds for termination of parental rights",
@@ -308,7 +308,7 @@ export const tcaSections: TCASection[] = [
   },
   {
     id: "36-1-113(g)",
-    title: "Best interest factors — TPR",
+    title: "Best interest factors - TPR",
     chapter: "Adoption",
     titleNum: "36",
     description: "Best interest analysis for termination of parental rights",
@@ -335,12 +335,12 @@ export const tcaSections: TCASection[] = [
   },
 
   // ========================================
-  // TITLE 37, CHAPTER 5 — EDUCATION
+  // TITLE 37, CHAPTER 5 - EDUCATION
   // ========================================
   {
     id: "37-5-106",
     title: "Truancy proceedings",
-    chapter: "Education — Attendance",
+    chapter: "Education - Attendance",
     titleNum: "37",
     description: "Court proceedings for truancy",
     summary: "Petition may be filed alleging child is truant (unruly). School must document: progressive interventions attempted, notification to parents, attendance records. Court may order: counseling, attendance monitoring, community service, parent education. Commitment for truancy alone is prohibited. Focus on identification and removal of barriers to attendance.",
@@ -409,7 +409,7 @@ export function searchTCA(query: string): TCASection[] {
       }
       // Description match
       if (section.description.toLowerCase().includes(q)) score += 10;
-      // Summary match — word-level
+      // Summary match - word-level
       const words = q.split(/\s+/);
       for (const word of words) {
         if (word.length < 3) continue;

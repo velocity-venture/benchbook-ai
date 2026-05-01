@@ -47,6 +47,7 @@ export default function PrivacyPolicy() {
             <p><strong className="text-white">Research Queries:</strong> Questions you submit through the AI legal research chat. These are stored to provide session history, enable multi-turn conversations, and analyze your personal research patterns.</p>
             <p><strong className="text-white">Research Patterns:</strong> Aggregated, per-user analytics about the legal topics, statutes, and areas you research most frequently. This data is visible only to you and helps surface relevant suggestions.</p>
             <p><strong className="text-white">Chat Feedback:</strong> Thumbs up/down ratings and bookmarks you provide on AI responses, used to improve response quality.</p>
+            <p><strong className="text-white">Local Rules Status:</strong> Whether your court has optional local juvenile rules available. If local rules are later uploaded, they are treated as court-specific content and are not added to the statewide corpus by default.</p>
             <p><strong className="text-white">Usage Data:</strong> Standard server logs including IP addresses, browser type, and access times for security monitoring and service reliability.</p>
           </Section>
 
@@ -122,9 +123,9 @@ export default function PrivacyPolicy() {
               We do not sell your personal information. We share data only with:
             </p>
             <ul className="list-disc list-inside space-y-2">
-              <li><strong className="text-white">Anthropic</strong> — query text for AI processing (see Section 4)</li>
-              <li><strong className="text-white">Supabase/AWS</strong> — infrastructure hosting</li>
-              <li><strong className="text-white">Cloudflare</strong> — CDN, DDoS protection, and edge hosting</li>
+              <li><strong className="text-white">Anthropic</strong> - query text for AI processing (see Section 4)</li>
+              <li><strong className="text-white">Supabase/AWS</strong> - infrastructure hosting</li>
+              <li><strong className="text-white">Cloudflare</strong> - CDN, DDoS protection, and edge hosting</li>
             </ul>
             <p>
               We may disclose information if required by law, court order, or to protect the rights and safety

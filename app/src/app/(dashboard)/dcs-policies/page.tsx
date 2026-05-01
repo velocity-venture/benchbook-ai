@@ -16,9 +16,9 @@ import {
 import { dcsPolicies, searchDCS, type DCSPolicy } from "@/lib/dcs-data";
 
 const chapterGroups = [
-  { chapterNum: "9", label: "Chapter 9 — Confidentiality", color: "text-green-400 border-green-500" },
-  { chapterNum: "14", label: "Chapter 14 — Child Protective Services", color: "text-green-400 border-green-500" },
-  { chapterNum: "16", label: "Chapter 16 — Foster Care", color: "text-green-400 border-green-500" },
+  { chapterNum: "9", label: "Chapter 9 - Confidentiality", color: "text-green-400 border-green-500" },
+  { chapterNum: "14", label: "Chapter 14 - Child Protective Services", color: "text-green-400 border-green-500" },
+  { chapterNum: "16", label: "Chapter 16 - Foster Care", color: "text-green-400 border-green-500" },
 ];
 
 export default function DCSPoliciesPage() {

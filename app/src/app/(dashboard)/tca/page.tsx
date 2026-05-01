@@ -25,8 +25,8 @@ const featuredIds = [
 
 // Group sections by title for browsing
 const titleGroups = [
-  { titleNum: "37", label: "Title 37 — Juveniles", color: "text-blue-400 border-blue-500" },
-  { titleNum: "36", label: "Title 36 — Domestic Relations", color: "text-purple-400 border-purple-500" },
+  { titleNum: "37", label: "Title 37 - Juveniles", color: "text-blue-400 border-blue-500" },
+  { titleNum: "36", label: "Title 36 - Domestic Relations", color: "text-purple-400 border-purple-500" },
   { titleNum: "Rules", label: "Rules of Juvenile Practice", color: "text-amber-400 border-amber-500" },
 ];
 
