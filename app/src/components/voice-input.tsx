@@ -169,7 +169,7 @@ export const VoiceEnabledInput: React.FC<VoiceEnabledInputProps> = ({
   value,
   onChange,
   onSubmit,
-  placeholder,
+  placeholder = "Speak your question",
   voiceEnabled = false,
   className,
   children,
@@ -194,7 +194,7 @@ export const VoiceEnabledInput: React.FC<VoiceEnabledInputProps> = ({
       <VoiceInput
         enabled={voiceEnabled}
         onTranscript={handleVoiceTranscript}
-        placeholder="Speak your question"
+        placeholder={placeholder}
       />
     </div>
   );

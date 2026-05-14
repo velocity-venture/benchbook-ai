@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export const runtime = 'edge';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const supabase = createClient();
     const {
@@ -57,7 +57,7 @@ export async function GET(_request: NextRequest) {
   }
 }
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     const supabase = createClient();
     const {
