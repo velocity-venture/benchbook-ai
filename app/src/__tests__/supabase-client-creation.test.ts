@@ -129,6 +129,35 @@ describe("Supabase client creation", () => {
     );
   });
 
+  it("throws a named configuration error before creating the browser client when Supabase env is missing", () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    expect(() => createBrowserSupabaseClient()).toThrow(
+      "Missing required environment variable(s): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    );
+    expect(mockCreateBrowserClient).not.toHaveBeenCalled();
+  });
+
+  it("treats blank Supabase env values as missing without exposing values", () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "   ";
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "   ";
+
+    expect(() => createBrowserSupabaseClient()).toThrow(
+      "Missing required environment variable(s): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    );
+    expect(mockCreateBrowserClient).not.toHaveBeenCalled();
+  });
+
+  it("throws a named configuration error before creating the browser client when the Supabase URL is invalid", () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "not-a-url";
+
+    expect(() => createBrowserSupabaseClient()).toThrow(
+      "Invalid environment variable: NEXT_PUBLIC_SUPABASE_URL"
+    );
+    expect(mockCreateBrowserClient).not.toHaveBeenCalled();
+  });
+
   it("creates the server client with public env vars and cookie getAll/setAll wiring", () => {
     const existingCookies = [{ name: "existing", value: "cookie-value" }];
     const cookieStore = {
@@ -169,6 +198,16 @@ describe("Supabase client creation", () => {
     expect(cookieStore.set).toHaveBeenCalledWith("refresh", "refresh-value", {
       path: "/",
     });
+  });
+
+  it("throws a named configuration error before reading cookies or creating the server client when Supabase env is missing", () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+    expect(() => createServerSupabaseClient()).toThrow(
+      "Missing required environment variable(s): NEXT_PUBLIC_SUPABASE_URL"
+    );
+    expect(mockCookies).not.toHaveBeenCalled();
+    expect(mockCreateServerClient).not.toHaveBeenCalled();
   });
 
   it("does not throw when server cookie writes are unavailable", () => {
@@ -237,5 +276,15 @@ describe("Supabase client creation", () => {
       { path: "/", httpOnly: true }
     );
     expect(response.headers.get("x-request-id")).toBe("request-1");
+  });
+
+  it("throws a named configuration error before creating the middleware client when Supabase env is missing", async () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const request = createMockRequest("/");
+
+    await expect(updateSession(request as never)).rejects.toThrow(
+      "Missing required environment variable(s): NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    );
+    expect(mockCreateServerClient).not.toHaveBeenCalled();
   });
 });
