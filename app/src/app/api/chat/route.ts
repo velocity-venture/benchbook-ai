@@ -17,7 +17,12 @@ export const runtime = 'edge';
 
 // Cloudflare Workers / Edge runtime: legal corpus is pre-built at build time into a JSON file.
 // This eliminates all filesystem access at runtime.
-import prebuiltCorpus from "@/lib/legal-corpus-data.json";
+interface PrebuiltLegalCorpus {
+  tcaTitle37?: unknown;
+  tcaTitle36?: unknown;
+  trjppRules?: unknown;
+  dcsText?: unknown;
+}
 
 // Types
 interface Message {
@@ -101,6 +106,7 @@ interface CorpusCache {
   dcsRelevant?: string;
   citationIndex?: CitationIndex;
   coverageReport?: CorpusCoverageReport;
+  loadError?: boolean;
   lastUpdated: number;
 }
 
@@ -109,6 +115,7 @@ const corpusCache: CorpusCache = {
 };
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let prebuiltCorpusCache: PrebuiltLegalCorpus | null | undefined;
 
 // System prompt for legal research: bench-ready judicial responses
 const SYSTEM_PROMPT = `You are BenchBook.AI, a judicial research assistant for Tennessee state court judges. Responses must be concise, authoritative, and immediately actionable from the bench.
@@ -267,6 +274,12 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Load relevant legal corpus into context
     const legalCorpus = await loadRelevantCorpus(query);
+    if (corpusCache.loadError) {
+      return NextResponse.json(
+        { error: "Legal corpus is temporarily unavailable. Please try again later." },
+        { status: 503 }
+      );
+    }
 
     // Step 3: Stream Claude response with citation verification
     const stream = await streamClaude(
@@ -407,10 +420,18 @@ async function loadRelevantCorpus(query: string): Promise<string> {
  * Refresh legal corpus cache from pre-built JSON (edge runtime compatible)
  */
 async function refreshCorpusCache(): Promise<void> {
-  corpusCache.tcaTitle37 = prebuiltCorpus.tcaTitle37 || undefined;
-  corpusCache.tcaTitle36 = prebuiltCorpus.tcaTitle36 || undefined;
-  corpusCache.trjppRules = prebuiltCorpus.trjppRules || undefined;
-  corpusCache.dcsRelevant = prebuiltCorpus.dcsText || undefined;
+  const prebuiltCorpus = await loadPrebuiltCorpus();
+
+  corpusCache.tcaTitle37 = stringField(prebuiltCorpus?.tcaTitle37);
+  corpusCache.tcaTitle36 = stringField(prebuiltCorpus?.tcaTitle36);
+  corpusCache.trjppRules = stringField(prebuiltCorpus?.trjppRules);
+  corpusCache.dcsRelevant = stringField(prebuiltCorpus?.dcsText);
+  corpusCache.loadError = !(
+    corpusCache.tcaTitle37 ||
+    corpusCache.tcaTitle36 ||
+    corpusCache.trjppRules ||
+    corpusCache.dcsRelevant
+  );
 
   corpusCache.citationIndex = buildCitationIndex(
     corpusCache.tcaTitle37,
@@ -419,6 +440,36 @@ async function refreshCorpusCache(): Promise<void> {
     corpusCache.dcsRelevant
   );
   corpusCache.coverageReport = buildCoverageReport(corpusCache.citationIndex);
+}
+
+async function loadPrebuiltCorpus(): Promise<PrebuiltLegalCorpus | null> {
+  if (prebuiltCorpusCache !== undefined) {
+    return prebuiltCorpusCache;
+  }
+
+  try {
+    const corpusModule = await import("@/lib/legal-corpus-data.json");
+    const corpus = corpusModule.default;
+    if (!corpus || typeof corpus !== "object" || Array.isArray(corpus)) {
+      console.error("Prebuilt legal corpus data is invalid.");
+      prebuiltCorpusCache = null;
+      return prebuiltCorpusCache;
+    }
+    prebuiltCorpusCache = corpus as PrebuiltLegalCorpus;
+    return prebuiltCorpusCache;
+  } catch (error) {
+    console.error("Failed to load prebuilt legal corpus data:", error);
+    prebuiltCorpusCache = null;
+    return prebuiltCorpusCache;
+  }
+}
+
+function stringField(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
 }
 
 /**
