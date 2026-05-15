@@ -45,11 +45,14 @@ describe('chat persistence auth boundaries', () => {
   });
 
   it('rejects feedback changes when no user is authenticated', async () => {
+    const from = vi.fn();
     mockCreateClient.mockReturnValue({
       auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null } }) },
+      from,
     });
 
     await expect(toggleFeedback('message-1', 'bookmark')).rejects.toThrow('Unauthorized');
+    expect(from).not.toHaveBeenCalled();
   });
 
   it('creates sessions for the authenticated user only', async () => {
@@ -167,6 +170,68 @@ describe('chat persistence auth boundaries', () => {
     expect(insert).not.toHaveBeenCalled();
   });
 
+  it('returns a safe error when the existing-feedback lookup fails', async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({
+      data: null,
+      error: new Error('database unavailable while checking feedback'),
+    });
+    const eqUser = vi.fn().mockReturnValue({ maybeSingle });
+    const eqType = vi.fn().mockReturnValue({ eq: eqUser });
+    const eqMessage = vi.fn().mockReturnValue({ eq: eqType });
+    const select = vi.fn().mockReturnValue({ eq: eqMessage });
+    const deleteFn = vi.fn();
+    const insert = vi.fn();
+    const from = vi.fn().mockReturnValue({ select, delete: deleteFn, insert });
+
+    mockCreateClient.mockReturnValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } } }) },
+      from,
+    });
+
+    let caught: unknown;
+    try {
+      await toggleFeedback('message-1', 'bookmark');
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).toBeInstanceOf(Error);
+    expect((caught as Error).message).toBe('Failed to toggle feedback');
+    expect(deleteFn).not.toHaveBeenCalled();
+    expect(insert).not.toHaveBeenCalled();
+  });
+
+  it('returns a safe error when removing existing feedback fails', async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: { id: 'feedback-1' }, error: null });
+    const eqUser = vi.fn().mockReturnValue({ maybeSingle });
+    const eqType = vi.fn().mockReturnValue({ eq: eqUser });
+    const eqMessage = vi.fn().mockReturnValue({ eq: eqType });
+    const select = vi.fn().mockReturnValue({ eq: eqMessage });
+    const deleteEq = vi.fn().mockResolvedValue({
+      error: new Error('delete failed for internal reason'),
+    });
+    const deleteFn = vi.fn().mockReturnValue({ eq: deleteEq });
+    const insert = vi.fn();
+    const from = vi.fn().mockReturnValue({ select, delete: deleteFn, insert });
+
+    mockCreateClient.mockReturnValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } } }) },
+      from,
+    });
+
+    let caught: unknown;
+    try {
+      await toggleFeedback('message-1', 'bookmark');
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).toBeInstanceOf(Error);
+    expect((caught as Error).message).toBe('Failed to toggle feedback');
+    expect(deleteEq).toHaveBeenCalledWith('id', 'feedback-1');
+    expect(insert).not.toHaveBeenCalled();
+  });
+
   it('inserts feedback with the authenticated user when none exists', async () => {
     const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
     const eqUser = vi.fn().mockReturnValue({ maybeSingle });
@@ -187,6 +252,40 @@ describe('chat persistence auth boundaries', () => {
       user_id: 'user-1',
       message_id: 'message-1',
       feedback_type: 'thumbs_up',
+    });
+    expect(deleteFn).not.toHaveBeenCalled();
+  });
+
+  it('returns a safe error when inserting feedback fails', async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+    const eqUser = vi.fn().mockReturnValue({ maybeSingle });
+    const eqType = vi.fn().mockReturnValue({ eq: eqUser });
+    const eqMessage = vi.fn().mockReturnValue({ eq: eqType });
+    const select = vi.fn().mockReturnValue({ eq: eqMessage });
+    const insert = vi.fn().mockResolvedValue({
+      error: new Error('insert failed for internal reason'),
+    });
+    const deleteFn = vi.fn();
+    const from = vi.fn().mockReturnValue({ select, delete: deleteFn, insert });
+
+    mockCreateClient.mockReturnValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } } }) },
+      from,
+    });
+
+    let caught: unknown;
+    try {
+      await toggleFeedback('message-1', 'thumbs_down');
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).toBeInstanceOf(Error);
+    expect((caught as Error).message).toBe('Failed to toggle feedback');
+    expect(insert).toHaveBeenCalledWith({
+      user_id: 'user-1',
+      message_id: 'message-1',
+      feedback_type: 'thumbs_down',
     });
     expect(deleteFn).not.toHaveBeenCalled();
   });

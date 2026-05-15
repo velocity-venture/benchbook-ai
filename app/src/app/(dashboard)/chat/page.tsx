@@ -264,15 +264,16 @@ export default function ChatPage() {
     if (!message) return;
 
     const hasFeedback = message.feedback?.has(feedbackType);
+    const userId = await requireCurrentUserId();
 
     if (hasFeedback) {
       await getSupabase()
         .from("chat_feedback")
         .delete()
         .eq("message_id", messageId)
-        .eq("feedback_type", feedbackType);
+        .eq("feedback_type", feedbackType)
+        .eq("user_id", userId);
     } else {
-      const userId = await requireCurrentUserId();
       await getSupabase().from("chat_feedback").insert({
         user_id: userId,
         message_id: messageId,
