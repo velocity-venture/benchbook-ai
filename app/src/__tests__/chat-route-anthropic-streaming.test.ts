@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 
 type StreamScenario = {
   chunks: string[];
+  source?: typeof TEST_SOURCE;
   finalMessage?: {
     usage: {
       input_tokens: number;
@@ -89,7 +90,7 @@ async function importRouteWithMocks(scenario: StreamScenario) {
   vi.doMock('@/lib/hallucination-guard', () => ({
     HALLUCINATION_GUARDRAILS: 'Test guardrails',
     runHallucinationGuard: vi.fn(() => ({
-      citations: [TEST_SOURCE],
+      citations: [scenario.source ?? TEST_SOURCE],
       confidence: 'HIGH',
       confidenceReason: 'Citations verified in test corpus.',
       warnings: [],
@@ -140,7 +141,7 @@ describe('chat API Anthropic streaming integration', () => {
   });
 
   it('emits text chunks and final usage metadata including cache token fields', async () => {
-    const { POST, insert, messagesStream } = await importRouteWithMocks({
+    const { POST, insert, messagesStream, rpc } = await importRouteWithMocks({
       chunks: ['Detention requires ', 'statutory criteria.'],
       finalMessage: {
         usage: {
@@ -189,6 +190,48 @@ describe('chat API Anthropic streaming integration', () => {
           snippet: TEST_SOURCE.snippet,
         },
       ],
+    });
+    expect(rpc).toHaveBeenCalledWith('update_user_research_patterns', {
+      target_user_id: 'stream-test-user',
+    });
+  });
+
+  it('truncates tracked queries and source snippets before writing the audit trail', async () => {
+    const longQuery = 'q'.repeat(1200);
+    const longSnippet = 's'.repeat(240);
+    const { POST, insert, rpc } = await importRouteWithMocks({
+      chunks: ['T.C.A. § 37-1-114 applies.'],
+      source: {
+        ...TEST_SOURCE,
+        snippet: longSnippet,
+      },
+      finalMessage: {
+        usage: {
+          input_tokens: 3,
+          output_tokens: 4,
+        },
+      },
+    });
+
+    const response = await POST(chatRequest(longQuery));
+    await response.text();
+
+    expect(response.status).toBe(200);
+    expect(insert).toHaveBeenCalledWith({
+      user_id: 'stream-test-user',
+      query: 'q'.repeat(1000),
+      query_type: 'chat',
+      response_sources: [
+        {
+          title: TEST_SOURCE.title,
+          citation: TEST_SOURCE.citation,
+          type: TEST_SOURCE.type,
+          snippet: 's'.repeat(200),
+        },
+      ],
+    });
+    expect(rpc).toHaveBeenCalledWith('update_user_research_patterns', {
+      target_user_id: 'stream-test-user',
     });
   });
 

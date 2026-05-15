@@ -58,8 +58,9 @@ describe('chat API auth and rate limiting', () => {
 
   it('rejects unauthenticated chat requests before body parsing or rate-limit RPCs', async () => {
     const rpc = vi.fn();
+    const from = vi.fn();
     const getUser = vi.fn().mockResolvedValue({ data: { user: null } });
-    mockCreateClient.mockReturnValue({ auth: { getUser }, rpc });
+    mockCreateClient.mockReturnValue({ auth: { getUser }, rpc, from });
 
     const response = await POST(chatRequest({ query: 'What are detention criteria?' }));
 
@@ -67,6 +68,7 @@ describe('chat API auth and rate limiting', () => {
     expect(response.status).toBe(401);
     expect(getUser).toHaveBeenCalledTimes(1);
     expect(rpc).not.toHaveBeenCalled();
+    expect(from).not.toHaveBeenCalled();
   });
 
   it('rejects authenticated users when the Supabase rate-limit RPC denies the request', async () => {
@@ -74,7 +76,8 @@ describe('chat API auth and rate limiting', () => {
       data: { user: { id: 'rate-limited-user' } },
     });
     const rpc = vi.fn().mockResolvedValue({ data: false, error: null });
-    mockCreateClient.mockReturnValue({ auth: { getUser }, rpc });
+    const from = vi.fn();
+    mockCreateClient.mockReturnValue({ auth: { getUser }, rpc, from });
 
     const response = await POST(chatRequest({ query: 'What are detention criteria?' }));
 
@@ -86,5 +89,6 @@ describe('chat API auth and rate limiting', () => {
       p_user_id: 'rate-limited-user',
       p_max_requests: 20,
     });
+    expect(from).not.toHaveBeenCalled();
   });
 });
