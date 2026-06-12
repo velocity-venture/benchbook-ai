@@ -1,0 +1,63 @@
+{
+  "manifest_version": "1.1",
+  "generated_at": "2026-06-12T11:54:08+00:00",
+  "generator": "scripts/source_manifest/build_source_manifest.py",
+  "source_root": "Benchbook.ai Database Files",
+  "source_root_abspath": "/Users/m3_ai_factory/Projects/benchbook-ai/Benchbook.ai Database Files",
+  "total_files": 677,
+  "total_bytes": 165836692,
+  "counts_by_source_type": {
+    "dcs_policy": 661,
+    "metadata": 2,
+    "rule": 2,
+    "statute": 12
+  },
+  "counts_by_authority_family": {
+    "dcs_policies_procedures": 661,
+    "metadata": 2,
+    "tca_title_36": 6,
+    "tca_title_37": 6,
+    "tenn_rules_evidence": 1,
+    "tenn_rules_juvenile_practice_procedure": 1
+  },
+  "counts_by_approval_status": {
+    "not_required_metadata": 2,
+    "pending_judge_approval": 675
+  },
+  "counts_by_extension": {
+    ".csv": 1,
+    ".pdf": 675,
+    ".txt": 1
+  },
+  "duplicate_hash_groups": 24,
+  "anomaly_counts": {
+    "non_pdf_files": 2,
+    "empty_files": 0,
+    "unusually_large_files": 0,
+    "unknown_files": 0,
+    "excluded_files": 0,
+    "unexpected_top_level_entries": 0
+  },
+  "anomalies": {
+    "non_pdf_files": [
+      "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/00_INDEX/download_manifest_windows_paths.csv",
+      "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/START_HERE.txt"
+    ],
+    "empty_files": [],
+    "unusually_large_files": [],
+    "unknown_files": [],
+    "excluded_files": [],
+    "unexpected_top_level_entries": []
+  },
+  "hash_verification": {
+    "verified_against": "docs/architecture-review/APPENDIX_A_SOURCE_FILE_HASHES_20260610.txt",
+    "verified_at": "2026-06-12T11:54:08+00:00",
+    "prior_entries": 677,
+    "current_files": 677,
+    "files_matched": 677,
+    "mismatches": [],
+    "additions": [],
+    "deletions": [],
+    "result": "EXACT_MATCH"
+  }
+}

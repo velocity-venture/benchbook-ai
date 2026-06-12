@@ -1,0 +1,52 @@
+# 11 — Component Classification Table
+
+**Date:** 2026-06-10 · Classifications: Adopt · Adopt with revision · Archive · Reject · Needs further review (NFR)
+
+| Component | Path | Finding | Classification | Reason | Next Action |
+|-----------|------|---------|----------------|--------|-------------|
+| Bundled corpus (Titles 36/37 strings) | `app/src/lib/legal-corpus-data.json` | TNCODE Release 76 (2021-05-21); untraceable; flat strings | **Reject** (as production authority) | Stale + unrebuildable; disqualified by Judge 2026-06-10 | Replace via Phases B–D; label any interim use as demo-only |
+| Bundled corpus (TRJPP, DCS strings) | same file | Currentness/provenance unverified; DCS partial (~26 policies) | **NFR** | May match approved sources but unprovable without manifest | Verify against source-of-record PDFs in Phase B |
+| TCA placeholder stubs (39/40/55) | `legal-corpus/tca/*.md` | Excluded-title placeholders inside corpus tree | **Archive** | Risk of accidental ingestion; explicitly out of universe | Move to `docs/` or delete |
+| TRJPP rule files | `legal-corpus/trjpp/rule-*.txt` | 45 individual rules; `all-rules.txt` build input deleted | **NFR** | Provenance/currentness unknown | Verify vs. official PDF; regenerate in Phase C |
+| DCS text extracts | `legal-corpus/dcs/*.txt` | 26 policies, no metadata fields | **NFR** | Subset; unstructured dates | Re-extract from approved PDF set in Phase C |
+| Corpus README | `legal-corpus/README.md` | Describes deleted files; calls .txt files PDFs | **Adopt with revision** | Good V1 scope-lock language; wrong inventory | Rewrite after Phase B manifest |
+| **Source-of-record Drive folder (arrived mid-review)** | `Benchbook.ai Database Files/` (repo root, untracked) | 675+ PDFs: Title 36 ×6, Title 37 ×6, `Tenn. R. Juv. P. Rules.pdf`, `Tenn. R. Evid..pdf`, DCS tree. Spot-check: current Lexis exports (2026-06-08; 2025-session amendments) | **Adopt with revision** | The approved closed-universe source set; needs manifest, per-file currency evidence, Judge approval stamps, Lexis-license review, storage decision (gitignore/LFS/external) | **Phase A/B immediately** — hash vs. Appendix A, build SOURCE_MANIFEST.json, classify, approval=pending; do not ingest yet |
+| DCS STAGING PDF set (outside repo) | `~/Downloads/TN-DCS-Policies-Procedures-Obligations-STAGING/` | 661 PDFs, PowerDMS IDs, source index | **NFR** | Superseded as primary candidate by the Drive folder's DCS tree; useful for cross-checking versions | Phase B: reconcile PowerDMS IDs against Drive set; then Archive |
+| DCS Windows_Ready set | `~/Downloads/TN_DCS_Policies_Windows_Ready/` | Renamed duplicate | **Archive** | Lossy derivative | Keep as backup only |
+| OneDrive-era Title 36/37 ZIPs, TRJPP docx | iCloud backup `MacStudio_M3_Backup_20260313/...` | Historical, unverified | **NFR → likely Archive** | Probably same stale era | Compare lineage only; never ingest directly |
+| Prebuild script | `scripts/prebuild-corpus.js` | Tag-strip → flat strings; silent stale-preserve fallback (lines 82–87) | **Adopt with revision → then Archive** | Fallback is the staleness mechanism | Stopgap: make missing sources fatal; retire at Phase C |
+| Corpus validator | `scripts/validate-corpus.js` | Checks deleted files; not wired to build | **Adopt with revision** | Right idea, wrong inputs, unenforced | Rewrite against manifest; wire into build + CI |
+| Python ingest (section parser) | `scripts/ingest_local.py` (parse/chunk portions) | Real TCA section parsing, page tracking | **Adopt with revision** | Concepts match target architecture | Port parser concepts into Phase C pipeline |
+| Python ingest (embed/Pinecone), search server | `scripts/ingest_local.py --embed/--pinecone`, `scripts/search_server.py` | OpenAI embeddings + Pinecone; disconnected | **Archive** | Contradicts pgvector/Postgres target | Do not run; keep for reference |
+| AWS/SST infra | `benchbook-ai-infra/` | S3→Lambda→Pinecone + LangSmith eval; unused by app | **Archive** | Wrong stack for target; duplicate pipeline | Decommission any deployed AWS resources; salvage eval-question ideas |
+| Chat route plumbing | `app/src/app/api/chat/route.ts` (auth, rate limit, validation, SSE, error paths) | Solid, tested | **Adopt** | Production-quality | Keep through Phase E refactor |
+| Corpus context-stuffing | `route.ts` `loadRelevantCorpus()` (379–417) | Keyword-gated whole-title injection; ~390K+ tokens exceeds 200K window | **Reject** | Cannot work; misses authorities; no audit | Replace with hybrid retrieval (Phase E) |
+| Default model IDs | `route.ts:93-94` | `claude-*-4-5-20250414` are not real Anthropic IDs | **Reject** (values) | Calls fail unless env overrides exist | Fix defaults; document required env in DEPLOY.md |
+| Query router | `app/src/lib/query-router.ts` | Heuristic Haiku/Sonnet routing | **Adopt with revision** | Sound cost idea; recalibrate post-retrieval | Phase E |
+| Citation validator | `app/src/lib/citation-validator.ts` (uncommitted Δ) | Existence-only vs flat strings; good excluded-title defense | **Adopt with revision** | Right API/tests; wrong evidence base; no subsections/ranges/TRE | Commit pending Δ; re-point at authority DB (Phase F) |
+| Hallucination guard | `app/src/lib/hallucination-guard.ts` | Post-hoc verification + confidence + warnings | **Adopt with revision** | Add proposition support; persist results | Phase F |
+| Corpus coverage annotator | `app/src/lib/corpus-coverage.ts` | Covered/stub/unknown labeling; partially wired | **Adopt with revision** | Useful trust signal; re-point at manifest/DB | Phase F/I |
+| Scope guard | `app/src/lib/scope-guard.ts` (uncommitted Δ) | Deterministic, server-side, pre-generation; criminal/traffic only | **Adopt with revision** | Best guardrail present; missing judicial-conduct classes; not run on history/response | Commit Δ; extend in Phase G |
+| System prompt | `route.ts:121-146` + HALLUCINATION_GUARDRAILS | Good citation discipline; "most common practice first" drifts toward recommendations | **Adopt with revision** | Judicial-role boundary missing | Rewrite in Phase G |
+| Test suite | `app/src/__tests__/` (14 files) | All Apr-2026 audit gaps closed; no currentness/E2E/golden tests | **Adopt** | Strong engineering base | Extend per doc 08; add CI |
+| Coverage audits | `audits/` (untracked) | 2026-04-26 FINAL + archive | **Adopt** | Process artifact worth keeping | Commit to repo or move under `docs/` |
+| Supabase chat/auth/rate-limit schema | `supabase/migrations/2026020[4-9]*, 20260404*, 20260501*` | RLS-correct, used | **Adopt** | Sound | Add authority/audit schema beside it (Phase D) |
+| trust_metadata column | `20260501_chat_trust_metadata.sql` | Never written by server | **Adopt with revision** | Dead column | Write it or supersede with `answer_verifications` |
+| Case-management tables | `cases, hearings, documents, document_templates, case_notes, compliance_deadlines, document_views` | Defined+seeded, zero app usage | **Future / NFR** | Outside closed-universe V1; "Findings of Fact" template conflicts with guardrails | Exclude from V1 surface; Judge decision at Phase D |
+| Commercial tables | `court_accounts, court_account_members, waitlist` + plan enums | SQL-enforced seats; inert | **Adopt** (launch) | Sound and dormant | Leave |
+| Research patterns feature | `20260214_*`, `/api/research-patterns`, dashboard component | Personal analytics, not case-pattern analysis | **Adopt with revision** | Broken links; naming could confuse | Phase I copy/link fixes |
+| Demo seed | `supabase/seed-demo-data.sql` | Fictional juvenile cases incl. child initials | **Adopt with revision** | Dev-only; must never reach prod | Guard + note in DEPLOY.md |
+| Landing/marketing copy | `app/src/app/page.tsx`, `layout.tsx` | Honest except "recent amendments" | **Adopt with revision** | Doc 09 §A | Phase I |
+| Mobile listing copy | `MOBILE.md:149-158` | "complete TRJPP… all DCS policies" false | **Adopt with revision** | Overpromise | Rewrite before any store submission |
+| Chat trust UI | `app/src/app/chat/page.tsx` | Badges/warnings/labels solid; event-ordering + unverified fallback defects | **Adopt with revision** | Doc 09 §B | Phase I |
+| Statute/TRJPP/DCS browsers | `/tca`, `/trjpp`, `/dcs-policies` pages | Read flat JSON | **Adopt with revision** | Re-point at authority DB | Phase I |
+| Terms / Privacy pages | `terms/`, `privacy/` | Strong disclaimers; retention claim unenforced | **Adopt** / revision for retention (S7) | Doc 10 | Phase before external users |
+| Mobile shells | `app/android`, `app/ios`, Capacitor config | WebView wrapper; corpus server-side | **Adopt** | Sensible distribution | Defer store work until after rebuild |
+| Auth/middleware/env validation | `app/src/middleware.ts`, `lib/supabase/*` | Correct SSR pattern; fail-fast env | **Adopt** | Tested | — |
+| Supabase auth config | `supabase/config.toml` | Email confirmation disabled | **Adopt with revision** | Open signup risk (S1) | Before external users |
+| Deploy docs/scripts | `DEPLOY.md`, `scripts/deploy_supabase.sh`, `wrangler.toml` | Accurate for Cloudflare path | **Adopt with revision** | Add env/model-ID requirements + CI + seed prohibition | Phase A/J |
+| Dead deploy artifacts | `docker-compose.yml`, `makefile.txt`, `.vercel/`, `scripts/deploy_rag.sh`, `deploy_infra.sh`, `scripts/build-*.sh` (mobile, premature) | Obsolete stack references | **Archive** | Confusion risk | Move to `docs/history/` or delete in Phase A |
+| Current-era docs | `CODEX-SOURCE-OF-TRUTH.md`, `CODEX-BRIEF.md`, `CODEX-ASSESSMENT.md`, `CODEX-REFACTOR-LOG.md`, `ARCHITECTURE.md`, `DEPLOY.md`, `MOBILE.md` | Accurate (Apr 30 era) | **Adopt** / minor revision | Controlling product brief | Fold corpus-rebuild decision into SOURCE-OF-TRUTH |
+| Historical docs | `COMPLETION_PLAN.md`, `CLAUDE_MIGRATION.md`, `DEPLOYMENT_REPORT.md`, `LAUNCH-CHECKLIST.md`, `PHASE1_COMPLETE.md`, `MORNING-REVIEW.md`, `OVERNIGHT-LOG.md`, `benchbook-ai-overnight-prompt.md`, `PRODUCT.md`, `CHANGELOG.md`, `README.md` pricing | Stale (OpenAI/Pinecone era, old pricing) | **Archive** (README: revise) | Misleading to future agents | Phase A: move to `docs/history/` |
+| Build artifacts | `app/node_modules`, `app/.next`, `app/.vercel`, mobile build dirs | Gitignored, expected | **Adopt** (ignore) | Not architecture | None |
+| Uncommitted work by prior agent | 4 modified files + `audits/` | Sound improvements (docs 06/07) | **Adopt** | Reviewed, not touched per instructions | Author/Judge to commit |
