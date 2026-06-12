@@ -49,3 +49,7 @@ yarn-error.log*
 
 # BenchBook.AI generated ingestion pilot outputs containing derivative legal text
 data/ingestion-pilot/
+
+# BenchBook.AI Phase C expansion outputs (derivative legal text — not committed
+# pending the storage/licensing decision)
+data/ingestion-expanded/
