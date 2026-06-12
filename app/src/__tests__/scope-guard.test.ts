@@ -18,6 +18,26 @@ describe("detectOutOfScopeQuery", () => {
       .not.toBeNull();
   });
 
+  it("does not treat bare numbers as excluded Title references", () => {
+    expect(detectOutOfScopeQuery("Must the permanency hearing be held within 40 days?"))
+      .toBeNull();
+    expect(detectOutOfScopeQuery("The infant was born at 39 weeks"))
+      .toBeNull();
+    expect(detectOutOfScopeQuery("Can the court order 55 hours of community service?"))
+      .toBeNull();
+    expect(detectOutOfScopeQuery("The review is set 40 days out and the child is 39 months old"))
+      .toBeNull();
+  });
+
+  it("still blocks excluded Titles in statutory context", () => {
+    expect(detectOutOfScopeQuery("What does Tenn. Code Ann. § 39-13-101 cover?")?.matchedTerms)
+      .toContain("T.C.A. Title 39");
+    expect(detectOutOfScopeQuery("Summarize TCA section 40 procedures")?.matchedTerms)
+      .toContain("T.C.A. Title 40");
+    expect(detectOutOfScopeQuery("Explain title 55 registration rules")?.matchedTerms)
+      .toContain("T.C.A. Title 55");
+  });
+
   it("does not block juvenile-court topics that mention delinquency or transfer", () => {
     expect(detectOutOfScopeQuery("What is the juvenile transfer standard?"))
       .toBeNull();

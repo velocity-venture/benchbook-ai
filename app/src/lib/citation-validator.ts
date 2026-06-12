@@ -16,6 +16,19 @@ export interface CitationIndex {
   dcsSnippets: Map<string, string>;
 }
 
+/**
+ * TCA Titles outside the V1 closed universe (39 criminal offenses,
+ * 40 criminal procedure, 55 motor vehicles). Title 36/37 statutes
+ * cross-reference these titles, so their section numbers appear in the
+ * loaded corpus text — but the referenced sections themselves are not
+ * in the corpus and must never verify as V1 authority.
+ */
+export const EXCLUDED_TCA_TITLES: readonly string[] = ["39", "40", "55"];
+
+function isExcludedTcaSection(section: string): boolean {
+  return EXCLUDED_TCA_TITLES.includes(section.split("-")[0]);
+}
+
 export interface VerifiedCitation {
   title: string;
   citation: string;
@@ -54,6 +67,7 @@ export function buildCitationIndex(
     const pattern1 = new RegExp(tcaPattern.source, tcaPattern.flags);
     while ((match = pattern1.exec(text)) !== null) {
       const section = match[1];
+      if (isExcludedTcaSection(section)) continue;
       tcaSections.add(section);
       if (!tcaSnippets.has(section)) {
         const start = Math.max(0, match.index);
@@ -65,6 +79,7 @@ export function buildCitationIndex(
     const pattern2 = new RegExp(tcaBarePattern.source, tcaBarePattern.flags);
     while ((match = pattern2.exec(text)) !== null) {
       const section = match[1];
+      if (isExcludedTcaSection(section)) continue;
       tcaSections.add(section);
       if (!tcaSnippets.has(section)) {
         const start = Math.max(0, match.index);
@@ -175,7 +190,7 @@ export function verifyCitations(
     if (seen.has(key)) continue;
     seen.add(key);
 
-    const verified = index.tcaSections.has(sectionNum);
+    const verified = !isExcludedTcaSection(sectionNum) && index.tcaSections.has(sectionNum);
     const snippet = verified
       ? (index.tcaSnippets.get(sectionNum) || extractCorpusSnippet(corpusText, sectionNum)).substring(0, 200)
       : '';

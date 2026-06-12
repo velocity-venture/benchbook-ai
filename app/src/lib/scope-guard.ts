@@ -3,18 +3,22 @@ export interface ScopeGuardResult {
   matchedTerms: string[];
 }
 
+// A bare number ("40 days", "39 weeks") is not a statutory reference.
+// Refuse only when the title number appears in statutory context: after
+// the word "Title", as a full section number (39-13-101), or after a
+// T.C.A. / Tenn. Code Ann. prefix.
 const EXCLUDED_TITLE_PATTERNS = [
   {
     term: "T.C.A. Title 39",
-    pattern: /\b(?:title\s*)?39(?:-\d{1,3}-\d{1,4})?\b|t\.?c\.?a\.?\s*(?:§|section)?\s*39-/i,
+    pattern: /\btitle\s*39\b|\b39-\d{1,3}-\d{1,4}\b|\b(?:t\.?c\.?a\.?|tenn\.?\s*code\s*ann\.?)\s*(?:§|section)?\s*39\b/i,
   },
   {
     term: "T.C.A. Title 40",
-    pattern: /\b(?:title\s*)?40(?:-\d{1,3}-\d{1,4})?\b|t\.?c\.?a\.?\s*(?:§|section)?\s*40-/i,
+    pattern: /\btitle\s*40\b|\b40-\d{1,3}-\d{1,4}\b|\b(?:t\.?c\.?a\.?|tenn\.?\s*code\s*ann\.?)\s*(?:§|section)?\s*40\b/i,
   },
   {
     term: "T.C.A. Title 55",
-    pattern: /\b(?:title\s*)?55(?:-\d{1,3}-\d{1,4})?\b|t\.?c\.?a\.?\s*(?:§|section)?\s*55-/i,
+    pattern: /\btitle\s*55\b|\b55-\d{1,3}-\d{1,4}\b|\b(?:t\.?c\.?a\.?|tenn\.?\s*code\s*ann\.?)\s*(?:§|section)?\s*55\b/i,
   },
 ];
 
