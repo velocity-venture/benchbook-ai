@@ -29,6 +29,7 @@ create table if not exists legal_authority.authority_units (
     or policy_number is not null
     or rule_number is not null
     or section is not null
+    or metadata->>'identity_status' = 'unresolved'
   )
 );
 

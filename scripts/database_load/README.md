@@ -1,6 +1,6 @@
-# Phase E2 Database Load Scripts
+# Phase E3 Database Load Scripts
 
-These scripts support local disposable database dry-run work for BenchBook.AI.
+These scripts support local disposable database dry-run and target-promotion work for BenchBook.AI.
 
 They must not:
 
@@ -37,16 +37,17 @@ python3 scripts/database_load/validate_expanded_chunks_for_load.py --json
 
 ## `dry_run_load_legal_authority.py`
 
-Runs static validation first. If a local disposable PostgreSQL database is explicitly provided or created, it applies the draft migrations and stages raw manifest, chunk, warning, and dedupe JSON into `legal_authority_stage`.
+Runs static validation first. If a local disposable PostgreSQL database is explicitly provided or created, it applies the draft migrations, stages raw manifest, chunk, warning, and dedupe JSON into `legal_authority_stage`, and promotes the corpus into local target tables for verification.
 
 Local database examples:
 
 ```bash
 python3 scripts/database_load/dry_run_load_legal_authority.py --static-only
 python3 scripts/database_load/dry_run_load_legal_authority.py --create-local-db --drop-after
-python3 scripts/database_load/dry_run_load_legal_authority.py --database-url benchbook_e2_dry_run --apply-migrations
+python3 scripts/database_load/dry_run_load_legal_authority.py --database-url benchbook_e3_dry_run --apply-migrations
+python3 scripts/database_load/dry_run_load_legal_authority.py --create-local-db --drop-after --skip-target-promotion
 ```
 
 The loader rejects remote database URLs. Allowed database targets are local database names, Unix socket connections, `localhost`, or `127.0.0.1`.
 
-Runtime local dry-run staging can contain derivative legal text inside the disposable database. Do not export it into committed files.
+Runtime local dry-run staging and promoted target chunks can contain derivative legal text inside the disposable database. Do not export it into committed files.
