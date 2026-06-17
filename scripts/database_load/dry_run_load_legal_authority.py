@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local-only Phase E3 dry-run loader for the legal_authority schema.
+"""Local-only Phase E4 dry-run loader for the legal_authority schema.
 
 The loader always runs static validation first. With a local database target, it
 applies draft migrations, stages raw JSON into legal_authority_stage, and
@@ -241,17 +241,25 @@ def parse_date_label(text: str, phrase: str) -> str | None:
 
 def effective_label(row: dict[str, Any]) -> str:
     title = row.get("title") or ""
-    bracket = re.search(r"\[(Effective\s+(?:on|until)[^\]]+)\]", title, flags=re.IGNORECASE)
+    bracket = re.search(r"\[(Effective[^\]]+)\]", title, flags=re.IGNORECASE)
     if bracket:
-        return bracket.group(1)
+        label = bracket.group(1)
+        if re.match(r"Effective\s+(?:on\s+|until\s+|[A-Za-z]+\s+\d{1,2},\s+\d{4}|when\b)", label, flags=re.IGNORECASE):
+            return label
     for warning in row.get("extraction_warnings") or []:
         if not warning_code(warning).startswith("effective_dated"):
             continue
         detail = warning_detail(warning)
-        bracket = re.search(r"\[(Effective\s+(?:on|until)[^\]]+)\]", detail, flags=re.IGNORECASE)
+        bracket = re.search(r"\[(Effective[^\]]+)\]", detail, flags=re.IGNORECASE)
         if bracket:
-            return bracket.group(1)
-        match = re.search(r"\bEffective\s+(?:on|until)\b.{0,220}", detail, flags=re.IGNORECASE)
+            label = bracket.group(1)
+            if re.match(r"Effective\s+(?:on\s+|until\s+|[A-Za-z]+\s+\d{1,2},\s+\d{4}|when\b)", label, flags=re.IGNORECASE):
+                return label
+        match = re.search(
+            r"\bEffective\s+(?:on\s+|until\s+)?(?:[A-Za-z]+\s+\d{1,2},\s+\d{4}|when\b.{0,160})",
+            detail,
+            flags=re.IGNORECASE,
+        )
         if match:
             return match.group(0)
     return ""
@@ -268,9 +276,14 @@ def version_status_for_row(row: dict[str, Any]) -> dict[str, Any]:
     if lower.startswith("effective until"):
         status = "current"
         valid_to = parse_date_label(label, "effective until")
-    elif lower.startswith("effective on"):
+    elif lower.startswith("effective on") or re.match(r"effective\s+[a-z]+\s+\d{1,2},\s+\d{4}", lower):
         status = "future_effective"
-        valid_from = parse_date_label(label, "effective on") or valid_from
+        parsed_from = parse_date_label(label, "effective on") or parse_date_label(label, "effective")
+        if parsed_from:
+            valid_from = parsed_from
+        else:
+            status = "unknown_effectivity"
+            valid_from = None
     elif has_effective_warning:
         status = "unknown_effectivity"
         valid_from = None
@@ -324,35 +337,69 @@ def chunk_identity(row: dict[str, Any]) -> dict[str, Any]:
         if canonical:
             normalized = normalize(canonical)
             key = f"{family}:citation:{normalized}"
-            return {"key": key, "normalized": normalized, "unresolved": False}
+            return {
+                "key": key,
+                "normalized": normalized,
+                "unresolved": False,
+                "identity_status": "resolved",
+                "alias_eligible": True,
+            }
         if policy_number:
             normalized = normalize(f"{policy_chapter or ''}:{policy_number}")
             key = f"{family}:policy:{normalized}"
-            return {"key": key, "normalized": normalized, "unresolved": False}
+            return {
+                "key": key,
+                "normalized": normalized,
+                "unresolved": False,
+                "identity_status": "resolved",
+                "alias_eligible": True,
+            }
+        if source_path and document_type and document_type != "unknown":
+            normalized = normalize(f"{row.get('source_manifest_sha256') or source_path}:{document_type}")
+            key = f"{family}:document:{normalized}"
+            return {
+                "key": key,
+                "normalized": normalized,
+                "unresolved": False,
+                "identity_status": "document_anchored",
+                "alias_eligible": False,
+            }
         unresolved_key = normalize(f"{family}:{source_path}:{document_type or ''}:{chunk_type}") or normalize(
             str(row.get("chunk_id"))
         )
-        return {"key": f"{family}:unresolved:{unresolved_key}", "normalized": None, "unresolved": True}
+        return {
+            "key": f"{family}:unresolved:{unresolved_key}",
+            "normalized": None,
+            "unresolved": True,
+            "identity_status": "unresolved",
+            "alias_eligible": False,
+        }
 
     if canonical:
         normalized = normalize(canonical)
         key = f"{family}:citation:{normalized}"
-        return {"key": key, "normalized": normalized, "unresolved": False}
+        return {"key": key, "normalized": normalized, "unresolved": False, "identity_status": "resolved", "alias_eligible": True}
     if section:
         normalized = normalize(section)
         key = f"{family}:section:{normalized}"
-        return {"key": key, "normalized": normalized, "unresolved": False}
+        return {"key": key, "normalized": normalized, "unresolved": False, "identity_status": "resolved", "alias_eligible": True}
     if rule_number:
         normalized = normalize(rule_number)
         key = f"{family}:rule:{normalized}"
-        return {"key": key, "normalized": normalized, "unresolved": False}
+        return {"key": key, "normalized": normalized, "unresolved": False, "identity_status": "resolved", "alias_eligible": True}
     if policy_number:
         normalized = normalize(f"{policy_chapter or ''}:{policy_number}")
         key = f"{family}:policy:{normalized}"
-        return {"key": key, "normalized": normalized, "unresolved": False}
+        return {"key": key, "normalized": normalized, "unresolved": False, "identity_status": "resolved", "alias_eligible": True}
 
     unresolved_key = normalize(f"{family}:{source_path}:{document_type or ''}:{chunk_type}") or normalize(str(row.get("chunk_id")))
-    return {"key": f"{family}:unresolved:{unresolved_key}", "normalized": None, "unresolved": True}
+    return {
+        "key": f"{family}:unresolved:{unresolved_key}",
+        "normalized": None,
+        "unresolved": True,
+        "identity_status": "unresolved",
+        "alias_eligible": False,
+    }
 
 
 def load_manifest_rows() -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]]]:
@@ -415,7 +462,7 @@ def insert_corpus_build(database_url: str, validation_report: dict[str, Any], lo
     chunk_sha = validation_report["chunks"]["file_sha256"]
     pipeline = validation_report["summary"]["pipeline_version"] or "unknown"
     chunk_summary = json.dumps(validation_report["summary"], separators=(",", ":"))
-    build_version = "phase-e3-local-" + load_batch_id
+    build_version = "phase-e4-local-" + load_batch_id
     sql = f"""
       insert into legal_authority.corpus_builds (
         build_version,
@@ -432,7 +479,7 @@ def insert_corpus_build(database_url: str, validation_report: dict[str, Any], lo
         notes
       ) values (
         {sql_literal(build_version)},
-        'Phase E3 local disposable target promotion dry run',
+        'Phase E4 local disposable target promotion dry run',
         {sql_literal(manifest_sha)},
         {sql_literal(chunk_sha)},
         {sql_literal(pipeline)},
@@ -559,8 +606,8 @@ def text_hash_rollup(hashes: list[str]) -> str | None:
 
 def unit_field_values(row: dict[str, Any], identity: dict[str, Any]) -> dict[str, Any]:
     family = str(row.get("authority_family") or "")
-    unresolved = bool(identity["unresolved"])
-    if unresolved:
+    identity_status = identity.get("identity_status")
+    if identity_status in {"unresolved", "document_anchored"}:
         return {
             "canonical_citation": None,
             "normalized_citation": None,
@@ -646,7 +693,7 @@ def promote_targets(
             if row.get("relative_path")
         )
         metadata = {
-            "phase": "E3",
+            "phase": "E4",
             "manifest_version": manifest_row.get("manifest_version"),
             "generated_at": manifest_row.get("generated_at"),
             "source_root": manifest_row.get("source_root"),
@@ -721,7 +768,7 @@ def promote_targets(
         else:
             path_role = "manifest_path"
         metadata = {
-            "phase": "E3",
+            "phase": "E4",
             "dedupe_role": path_role,
             "source_manifest_sha256": sha,
             "selected_as_chunk_source": source_path in chunk_source_paths,
@@ -766,10 +813,18 @@ def promote_targets(
     high_risk_version_keys: set[str] = set()
     source_chunk_id_totals = Counter(str(row.get("chunk_id") or "") for row in chunks)
     source_chunk_id_seen: Counter[str] = Counter()
+    identity_status_chunk_counts: Counter[str] = Counter()
+    unresolved_by_family: Counter[str] = Counter()
+    unresolved_by_chunk_type: Counter[str] = Counter()
 
     for row in chunks:
         identity = chunk_identity(row)
         family_code = str(row.get("authority_family") or "")
+        identity_status = str(identity.get("identity_status", "resolved"))
+        identity_status_chunk_counts[identity_status] += 1
+        if identity["unresolved"]:
+            unresolved_by_family[family_code] += 1
+            unresolved_by_chunk_type[str(row.get("chunk_type") or "unknown")] += 1
         source_hash = row_source_hash(row)
         source_file_id = source_file_ids.get(source_hash)
         if not source_file_id:
@@ -781,8 +836,8 @@ def promote_targets(
         unit_id = stable_uuid("authority_unit", unit_key)
         fields = unit_field_values(row, identity)
         unit_meta = {
-            "phase": "E3",
-            "identity_status": "unresolved" if identity["unresolved"] else "resolved",
+            "phase": "E4",
+            "identity_status": identity.get("identity_status", "resolved"),
             "identity_key": unit_key,
             "first_source_path": row.get("source_path"),
         }
@@ -813,6 +868,7 @@ def promote_targets(
                 or unit_key,
                 "metadata": unit_meta,
                 "identity_unresolved": identity["unresolved"],
+                "identity_status": identity.get("identity_status", "resolved"),
             },
         )
 
@@ -849,7 +905,7 @@ def promote_targets(
                 "qa_signoff_required": version_info["qa_signoff_required"] or high_risk,
                 "text_hashes": [],
                 "metadata": {
-                    "phase": "E3",
+                    "phase": "E4",
                     "source_path": row.get("source_path"),
                     "source_hash": source_hash,
                     "requires_high_risk_review": high_risk,
@@ -891,14 +947,14 @@ def promote_targets(
                 "black_letter_eligible": family_code in BLACK_LETTER_FAMILIES
                 and row.get("chunk_type") == "black_letter_text",
                 "metadata": {
-                    "phase": "E3",
+                    "phase": "E4",
                     "source_path": row.get("source_path"),
                     "source_hash": source_hash,
                     "authority_family": family_code,
                     "corpus_designation": row.get("corpus_designation"),
                     "answer_scope_note": row.get("answer_scope_note"),
                     "warning_codes": [warning_code(w) for w in row.get("extraction_warnings") or []],
-                    "identity_status": "unresolved" if identity["unresolved"] else "resolved",
+                    "identity_status": identity.get("identity_status", "resolved"),
                     "production_eligible_at_load": production_eligible(row),
                     "original_source_chunk_id": original_source_chunk_id,
                     "source_chunk_id_occurrence": source_chunk_id_seen[original_source_chunk_id],
@@ -908,7 +964,7 @@ def promote_targets(
             }
         )
 
-        if not identity["unresolved"]:
+        if identity.get("alias_eligible"):
             alias_values: list[tuple[str, str]] = []
             if row.get("canonical_citation"):
                 alias_values.append((str(row["canonical_citation"]), "canonical"))
@@ -917,8 +973,6 @@ def promote_targets(
                     alias_values.append((str(alias), "source_alias"))
             if family_code in {"tca_title_36", "tca_title_37"} and row.get("section"):
                 alias_values.append((str(row["section"]), "section"))
-            if family_code in {"tenn_rules_evidence", "tenn_rules_juvenile_practice_procedure"} and row.get("rule_number"):
-                alias_values.append((str(row["rule_number"]), "rule_number"))
             if family_code == "dcs_policies_procedures" and row.get("policy_number"):
                 alias_values.append((str(row["policy_number"]), "policy_number"))
             for alias_text, alias_kind in alias_values:
@@ -1071,7 +1125,7 @@ def promote_targets(
                     code,
                     detail,
                     "warning",
-                    json_metadata({"phase": "E3", "source_chunk_id": payload["source_chunk_id"]}),
+                    json_metadata({"phase": "E4", "source_chunk_id": payload["source_chunk_id"]}),
                 ]
             )
     copy_columns(
@@ -1117,7 +1171,7 @@ def promote_targets(
                 alias["alias_text"],
                 normalized,
                 alias["alias_kind"],
-                json_metadata({"phase": "E3"}),
+                json_metadata({"phase": "E4"}),
             ]
         )
     copy_columns(
@@ -1167,7 +1221,7 @@ def promote_targets(
                 warning.get("page"),
                 json_metadata(
                     {
-                        "phase": "E3",
+                        "phase": "E4",
                         "source_path": source_path,
                         "source_chunk_id": warning.get("chunk_id"),
                     }
@@ -1205,7 +1259,7 @@ def promote_targets(
     )
     retrieval_log_id = stable_uuid("retrieval_log", load_batch_id)
     answer_audit_record_id = stable_uuid("answer_audit_record", load_batch_id)
-    query_hash = hashlib.sha256(b"phase-e3-audit-reconstruction").hexdigest()
+    query_hash = hashlib.sha256(b"phase-e4-audit-reconstruction").hexdigest()
     copy_columns(
         database_url,
         "legal_authority.retrieval_logs",
@@ -1268,7 +1322,7 @@ def promote_targets(
                 pg_array([audit_chunk["authority_chunk_id"]]),
                 pg_array([audit_alias[0]]) if audit_alias else "{}",
                 hashlib.sha256(b"no-answer-text-recorded").hexdigest(),
-                json_metadata({"phase": "E3", "test": "audit_reconstruction", "answer_text_stored": False}),
+                json_metadata({"phase": "E4", "test": "audit_reconstruction", "answer_text_stored": False}),
                 "passed",
                 0,
             ]
@@ -1309,7 +1363,7 @@ def promote_targets(
                         [
                             {
                                 "code": "display_gate_pending",
-                                "phase": "E3",
+                                "phase": "E4",
                             }
                         ],
                         separators=(",", ":"),
@@ -1349,6 +1403,13 @@ def promote_targets(
         "identity_results": {
             "unresolved_unit_count": sum(1 for unit in unit_rows_by_key.values() if unit["identity_unresolved"]),
             "unresolved_chunk_count": unresolved_chunk_count,
+            "document_anchored_unit_count": sum(
+                1 for unit in unit_rows_by_key.values() if unit["identity_status"] == "document_anchored"
+            ),
+            "document_anchored_chunk_count": identity_status_chunk_counts.get("document_anchored", 0),
+            "identity_status_chunk_counts": dict(identity_status_chunk_counts),
+            "unresolved_by_family": dict(unresolved_by_family),
+            "unresolved_by_chunk_type": dict(unresolved_by_chunk_type),
             "alias_collision_normalized_count": len(collision_norms),
             "alias_candidates_suppressed_by_collision": sum(
                 1 for (_, normalized) in alias_candidates if normalized in collision_norms
@@ -1644,7 +1705,7 @@ def run_local_dry_run(args: argparse.Namespace, validation_report: dict[str, Any
     database_url = args.database_url or os.environ.get("BENCHBOOK_LOCAL_DATABASE_URL")
 
     if args.create_local_db:
-        database_url = args.local_db_name or f"benchbook_e3_dry_run_{uuid.uuid4().hex[:10]}"
+        database_url = args.local_db_name or f"benchbook_e4_dry_run_{uuid.uuid4().hex[:10]}"
         create_database(database_url)
         created_database = True
 
@@ -1693,7 +1754,7 @@ def run_local_dry_run(args: argparse.Namespace, validation_report: dict[str, Any
 
 
 def print_text(report: dict[str, Any]) -> None:
-    print("BenchBook.AI Phase E3 local target-promotion dry-run loader")
+    print("BenchBook.AI Phase E4 local target-promotion dry-run loader")
     print("remote_database_connection: false")
     print("body_text_printed: false")
     print(f"static_expanded_chunks: {report['static_validation']['chunks']['total_chunks']}")

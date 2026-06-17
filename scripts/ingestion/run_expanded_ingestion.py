@@ -59,7 +59,7 @@ OUT_DIR = os.path.join(REPO, "data", "ingestion-expanded")
 TEXT_DIR = os.path.join(OUT_DIR, "extracted-text")
 MD_DIR = os.path.join(OUT_DIR, "structured-markdown")
 
-PIPELINE_VERSION = "phase-c-expansion-1.0"
+PIPELINE_VERSION = "phase-e4-blocker-remediation-1.0"
 SHORT_PAGE_CHARS = 50
 LARGE_CHUNK_CHARS = 12000
 
@@ -89,6 +89,7 @@ RESTRICTED_TYPES = {"annotation_candidate", "case_note_candidate", "advisory_com
 # ---------------------------------------------------------------- warnings
 
 WARNINGS: list[dict] = []
+CHUNK_ID_SEEN: Counter[str] = Counter()
 
 
 def warn(source_path, code, detail, page=None, chunk_id=None):
@@ -347,6 +348,14 @@ def dcs_filename_doc_type(filename):
     return (dt, ct, "")
 
 
+def dcs_title_from_filename(filename):
+    stem = os.path.splitext(filename)[0]
+    stem = re.sub(r"^\d{3}_", "", stem)
+    stem = stem.replace("_", " ").replace("-", " ")
+    stem = re.sub(r"\s+", " ", stem).strip()
+    return stem
+
+
 def parse_manifest_notes(notes):
     out = {}
     m = re.search(r"policy number:\s*([^;]+);", notes or "")
@@ -384,6 +393,8 @@ def parse_dcs(pages, source_path, filename, manifest_notes):
             break
     if not policy_title:
         policy_title = notes_meta.get("policy_name", "")
+    if not policy_title:
+        policy_title = dcs_title_from_filename(filename)
     if not policy_number and notes_meta.get("policy_number_label", "").replace(".", "").isdigit():
         policy_number = notes_meta["policy_number_label"]
     if document_type == "policy" and not policy_number:
@@ -489,7 +500,38 @@ def make_chunk(seq_key, me, **fields):
         "restricted_pending_license_review"
         if base["chunk_type"] in RESTRICTED_TYPES else "pending_extraction_qa")
     base["text_sha256"] = sha256_bytes(base["text"].encode())
-    base["chunk_id"] = "bb-exp-" + sha256_bytes(f"{me['sha256']}:{seq_key}".encode())[:24]
+    identity = (
+        base["canonical_citation"]
+        or base["policy_number"]
+        or base["rule_number"]
+        or base["section"]
+        or base["title"]
+        or seq_key
+    )
+    id_basis = "|".join(
+        str(part)
+        for part in [
+            PIPELINE_VERSION,
+            me["sha256"],
+            me["relative_path"],
+            fam,
+            identity,
+            base["document_type"],
+            base["chunk_type"],
+            base["page_start"],
+            base["page_end"],
+            base["subsection"],
+            seq_key,
+            base["text_sha256"][:24],
+        ]
+    )
+    base_id = "bb-exp-" + sha256_bytes(id_basis.encode())[:24]
+    CHUNK_ID_SEEN[base_id] += 1
+    if CHUNK_ID_SEEN[base_id] > 1:
+        occurrence_basis = f"{id_basis}|occurrence:{CHUNK_ID_SEEN[base_id]}"
+        base["chunk_id"] = "bb-exp-" + sha256_bytes(occurrence_basis.encode())[:24]
+    else:
+        base["chunk_id"] = base_id
     return base
 
 
@@ -650,6 +692,8 @@ def write_markdown(slug, me, chunks, extra_meta=None):
 # --------------------------------------------------------------------- main
 
 def main() -> int:
+    WARNINGS.clear()
+    CHUNK_ID_SEEN.clear()
     if not os.path.isfile(MANIFEST_PATH):
         print("ERROR: manifest missing:", MANIFEST_PATH, file=sys.stderr)
         return 3

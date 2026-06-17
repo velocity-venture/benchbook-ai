@@ -1,4 +1,4 @@
-# Phase E3 Database Load Scripts
+# Phase E4 Database Load Scripts
 
 These scripts support local disposable database dry-run and target-promotion work for BenchBook.AI.
 
@@ -44,7 +44,7 @@ Local database examples:
 ```bash
 python3 scripts/database_load/dry_run_load_legal_authority.py --static-only
 python3 scripts/database_load/dry_run_load_legal_authority.py --create-local-db --drop-after
-python3 scripts/database_load/dry_run_load_legal_authority.py --database-url benchbook_e3_dry_run --apply-migrations
+python3 scripts/database_load/dry_run_load_legal_authority.py --database-url benchbook_e4_dry_run --apply-migrations
 python3 scripts/database_load/dry_run_load_legal_authority.py --create-local-db --drop-after --skip-target-promotion
 ```
 

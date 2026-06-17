@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static metadata and hash validation for Phase E2 dry-run loading.
+"""Static metadata and hash validation for Phase E4 dry-run loading.
 
 The script reads ignored derivative corpus files but never prints chunk body
 text. It reports counts, validation results, and blockers only.
@@ -151,6 +151,7 @@ def validate_chunks(manifest_by_hash: dict[str, dict[str, Any]]) -> dict[str, An
     restricted_production_violations = 0
     pending_production_violations = 0
     chunk_ids: dict[str, str] = {}
+    chunk_id_counts: Counter[str] = Counter()
     duplicate_chunk_conflicts = 0
     alias_targets: dict[str, set[str]] = defaultdict(set)
     chunks_with_aliases = 0
@@ -194,6 +195,7 @@ def validate_chunks(manifest_by_hash: dict[str, dict[str, Any]]) -> dict[str, An
 
         chunk_id = str(row.get("chunk_id") or "")
         if chunk_id:
+            chunk_id_counts[chunk_id] += 1
             prior = chunk_ids.get(chunk_id)
             if prior and prior != expected_hash:
                 duplicate_chunk_conflicts += 1
@@ -269,6 +271,8 @@ def validate_chunks(manifest_by_hash: dict[str, dict[str, Any]]) -> dict[str, An
         "missing_manifest_hash_count": missing_manifest_hash,
         "invalid_text_hash_count": invalid_text_hash,
         "text_hash_mismatch_count": text_hash_mismatches,
+        "duplicate_chunk_id_count": sum(1 for count in chunk_id_counts.values() if count > 1),
+        "duplicate_chunk_id_row_count": sum(count for count in chunk_id_counts.values() if count > 1),
         "duplicate_chunk_conflict_count": duplicate_chunk_conflicts,
         "invalid_page_span_count": invalid_page_span,
         "restricted_gate_violation_count": restricted_gate_violations,
@@ -367,6 +371,8 @@ def build_report() -> dict[str, Any]:
         blockers.append("Some chunks use unknown authority families.")
     if chunks["unit_input_missing_identity_count"]:
         blockers.append("Some non-metadata chunks lack citation, section, rule, or policy identity.")
+    if chunks["duplicate_chunk_id_count"]:
+        blockers.append("Some chunk IDs are duplicated and must be remediated before production load.")
     if chunks["effectivity_warning_row_count"]:
         blockers.append("Effective-dated rows require version partitioning and QA signoff before production.")
     if not validations["dcs_deduplication_alias_membership"]:
@@ -408,13 +414,14 @@ def build_report() -> dict[str, Any]:
 
 
 def print_text(report: dict[str, Any]) -> None:
-    print("BenchBook.AI Phase E2 static load validation")
+    print("BenchBook.AI Phase E4 static load validation")
     print("metadata_only: true")
     print("body_text_printed: false")
     print(f"manifest_rows: {report['manifest']['rows']}")
     print(f"expanded_chunks: {report['chunks']['total_chunks']}")
     print(f"summary_total_chunks: {report['summary']['total_chunks']}")
     print(f"text_hash_mismatches: {report['chunks']['text_hash_mismatch_count']}")
+    print(f"duplicate_chunk_ids: {report['chunks']['duplicate_chunk_id_count']}")
     print(f"missing_manifest_hashes: {report['chunks']['missing_manifest_hash_count']}")
     print(f"unknown_authority_families: {report['chunks']['unknown_family_count']}")
     print(f"restricted_chunks: {report['chunks']['display_status_counts'].get('restricted_pending_license_review', 0)}")
