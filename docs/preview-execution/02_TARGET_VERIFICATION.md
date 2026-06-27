@@ -4,38 +4,42 @@
 
 Approved Supabase preview target: `benchbook-ai`.
 
-Forbidden target: `benchbook-ai-prod`.
+Approved project ref: `clerihqbjyczarqkiqnb`.
 
-## Verification Attempts
+Forbidden production target: `benchbook-ai-prod`.
+
+Forbidden production project ref: `suiylfayvjsjtbrsjrwx`.
+
+## Verification History
+
+The initial Codex-run E8 package stopped because the local environment could not verify an authenticated Supabase preview target. At that time, the Supabase CLI was not available to Codex, no approved remote connection string was available, and no remote command was run.
+
+After commit `c7ddf13`, owner-approved execution resumed manually through Mac Terminal. The Supabase CLI was available there, and target verification ultimately succeeded through CLI project list and link verification.
+
+## Final Target Verification
 
 | Check | Result |
 |---|---|
-| `supabase --version` | command not found |
-| `supabase --help` | command not found |
-| `supabase db --help` | command not found |
-| `supabase projects --help` | command not found |
-| Project-local Supabase CLI package | not present |
-| Supabase-related environment variable names | none found |
-| Doppler CLI | not present |
-| `psql` | present locally, but no approved remote connection string available |
-| `supabase/config.toml` project id | `benchbook-ai` |
+| Linked Supabase target | `benchbook-ai` |
+| Linked project ref | `clerihqbjyczarqkiqnb` |
+| Forbidden production target identified | `benchbook-ai-prod` |
+| Forbidden production project ref identified | `suiylfayvjsjtbrsjrwx` |
+| `benchbook-ai-prod` touched | no |
+| Production Supabase touched | no |
 
 ## Verification Finding
 
-The local config identifies this repository's Supabase project id as `benchbook-ai`, but that is not enough to prove the remote project target. It does not prove the organization, remote project reference, database host, or current authenticated Supabase session.
+The verified linked target was the approved preview project `benchbook-ai`, project ref `clerihqbjyczarqkiqnb`.
 
-Because the Supabase CLI was unavailable and no approved remote connection method was available, E8 could not positively verify target `benchbook-ai`.
+The forbidden production project `benchbook-ai-prod`, project ref `suiylfayvjsjtbrsjrwx`, was not touched.
 
-## Stop Decision
+## Continuing Rule
 
-Remote schema execution stopped before any Supabase connection or schema-changing command.
+Any later remote command must again verify:
 
-## Required To Resume
+- The linked target is `benchbook-ai`.
+- The project ref is `clerihqbjyczarqkiqnb`.
+- The target is not `benchbook-ai-prod`.
+- The project ref is not `suiylfayvjsjtbrsjrwx`.
 
-Resume only after one of these is true:
-
-- An authenticated Supabase CLI session is available locally and can list or identify `benchbook-ai` without exposing secrets.
-- A safe approved connection method is available through local secret management, without printing tokens, passwords, service-role keys, or connection strings.
-- A later owner prompt provides a precise non-secret project reference plus approved connection method and credential handling path.
-
-Do not paste secrets into Codex.
+Do not print tokens, passwords, service-role keys, database URLs, or connection strings in docs or logs.

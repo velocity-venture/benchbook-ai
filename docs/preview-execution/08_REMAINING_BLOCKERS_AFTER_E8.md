@@ -1,15 +1,20 @@
 # Remaining Blockers After E8
 
-E8 did not complete remote preview schema application because target verification could not be completed.
+E8 completed schema-only preview application against the verified preview target `benchbook-ai`.
 
-## Execution Blockers
+The phase did not load corpus data and did not authorize app integration, embeddings, display gate relaxation, production corpus replacement, or production Supabase access.
 
-- Supabase CLI is not available on `PATH`.
-- No project-local Supabase CLI package is available.
-- No Supabase-related environment variable names are present.
-- Doppler CLI is not available.
-- No approved remote connection string or database password is available through a safe local mechanism.
-- `supabase/config.toml` names `benchbook-ai`, but local config alone does not prove the remote target.
+## Operational Caveat
+
+The preview-safe files were applied with:
+
+```bash
+supabase db query --linked --file <file>
+```
+
+`supabase db push` was not used because a dry run showed it would apply the default `supabase/migrations/` list, including older pending app migrations and E6 local-rehearsal migrations.
+
+Because `db query --linked --file` was used, Supabase migration history may not record these preview-safe files as formal migrations. Before any future schema drift check, migration repair, preview reset, or production migration planning, the team must confirm the actual remote schema state instead of relying only on Supabase migration history.
 
 ## Corpus And QA Blockers Carried Forward
 
@@ -39,10 +44,14 @@ E8 did not complete remote preview schema application because target verificatio
 - Legal answer behavior changes.
 - Raw source PDF changes.
 
-## Ready For A Later Retry
+## Ready For E9 Planning
 
-The preview-safe migration set is ready for a later verified-target retry:
+E9 should not repeat preview schema execution. E9 should plan an owner-approved preview corpus-load dry run or preview corpus-load execution path, while preserving these gates:
 
-- Migration 001 no longer creates a local `auth` schema or `auth.uid()` stub.
-- Migrations 002 through 010 preserve legal authority schema substance with preview comments only.
-- Local schema-only smoke test passed with 0 corpus rows.
+- Preview only.
+- No production Supabase.
+- No embeddings unless separately approved.
+- No app integration unless separately approved.
+- No production corpus replacement.
+- No production display gate relaxation.
+- No restricted or pending QA rows made judge-facing.

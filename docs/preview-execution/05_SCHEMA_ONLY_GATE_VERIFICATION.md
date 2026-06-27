@@ -2,41 +2,66 @@
 
 ## Remote Gate Verification
 
-Remote gate verification was not run because no remote schema migration was applied.
+Remote schema-only gate verification was completed after the preview-safe files were applied to the verified preview target `benchbook-ai`.
 
-## Local Schema-only Smoke Gates
+## Schema Presence
 
-The local smoke test verified schema-only gates without loading corpus data.
-
-| Gate | Result |
+| Check | Result |
 |---|---:|
-| Preview migrations applied locally | 10 |
-| Authority chunk rows | 0 |
-| Displayable production view count | 0 |
-| RLS-enabled table count | 20 |
-| `authority_chunks` policy count | 0 |
+| `legal_authority` schema exists | true |
+| `legal_authority_stage` schema exists | true |
+| Legal authority and stage base tables | 20 |
 | Legal authority views | 3 |
 | Legal authority functions | 3 |
-| Embedding column count | 0 |
+
+Created views:
+
+- `v_black_letter_current_chunks`
+- `v_current_displayable_chunks`
+- `v_internal_qa_restricted_chunks`
+
+## Corpus Row Counts
+
+| Table | Row count |
+|---|---:|
+| `legal_authority.source_files` | 0 |
+| `legal_authority.authority_units` | 0 |
+| `legal_authority.authority_versions` | 0 |
+| `legal_authority.authority_chunks` | 0 |
+
+## Display Gate Counts
+
+| View | Row count |
+|---|---:|
+| `legal_authority.v_current_displayable_chunks` | 0 |
+| `legal_authority.v_black_letter_current_chunks` | 0 |
+| `legal_authority.v_internal_qa_restricted_chunks` | 0 |
+
+## RLS And Policy Verification
+
+| Check | Result |
+|---|---:|
+| RLS-enabled tables | 20 |
+| Broad `authority_chunks` read policy shown | no |
+
+Policies shown:
+
+- `legal_authority_user_answer_audits`
+- `legal_authority_read_families`
+- `legal_authority_read_units`
+- `legal_authority_read_versions`
+- `legal_authority_read_citation_aliases`
+- `legal_authority_read_builds`
+- `legal_authority_user_refusals`
+- `legal_authority_user_retrieval_logs`
+
+No `authority_chunks` policy was shown.
 
 ## Gate Interpretation
 
-- No corpus rows were present.
-- `v_current_displayable_chunks` returned 0 rows.
-- No broad raw `authority_chunks` read policy was created.
-- The nullable embedding column was not created in the local smoke test because pgvector was unavailable.
-- No embeddings were generated.
-
-## Required Remote Verification After Target Access Exists
-
-After a later approved remote run, verify:
-
-- `legal_authority` schema exists.
-- `legal_authority_stage` schema exists.
-- Expected base tables, views, and functions exist.
-- RLS is enabled on target tables.
-- No broad raw `authority_chunks` read policy exists.
-- `select count(*) from legal_authority.authority_chunks` returns 0 for schema-only E8.
-- `select count(*) from legal_authority.v_current_displayable_chunks` returns 0.
-- No corpus staging tables contain rows.
-- No embeddings exist.
+- The preview legal authority schemas exist.
+- The schema is empty of corpus data.
+- Production display views return 0 rows.
+- No broad raw `authority_chunks` read policy was verified.
+- No source manifest, expanded chunks, extraction warnings, or embeddings were loaded.
+- Display gates remain closed.

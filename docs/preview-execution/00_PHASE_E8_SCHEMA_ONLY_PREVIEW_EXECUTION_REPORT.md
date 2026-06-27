@@ -6,37 +6,38 @@ Scope: schema-only Supabase preview execution against `benchbook-ai`
 
 ## Result
 
-Phase E8 stopped before any remote schema change.
+Phase E8 had two parts.
 
-The approved target was `benchbook-ai`. The forbidden target was `benchbook-ai-prod`.
+First, Codex performed a safe stop because the local environment could not verify an authenticated Supabase preview target. That safe-stop package was committed as `c7ddf13 Add Phase E8 preview safe-stop package`.
 
-Preflight confirmed the repo state and created a preview-safe migration set under `supabase/migrations_preview/`, but the local environment could not positively verify or connect to the Supabase preview target without additional tooling or credentials:
+Second, owner-approved schema-only preview execution resumed manually through Mac Terminal after Supabase CLI login and link were available. The preview-safe schema files from `supabase/migrations_preview/` were applied successfully to the verified preview target.
 
-- `supabase` CLI was not available on `PATH`.
-- No project-local Supabase CLI package was present.
-- No Supabase-related environment variable names were present.
-- No Doppler CLI was present.
-- `supabase/config.toml` contains `project_id = "benchbook-ai"`, but that is local project metadata and is not enough to prove the remote target.
+No corpus rows were loaded. No embeddings were generated. No app integration occurred. No production display gates were relaxed. The forbidden production project was not touched.
 
-Because target verification could not be completed, no remote migration was applied.
+## Target verification
 
-## Pre-checks
-
-| Check | Result |
+| Item | Result |
 |---|---|
-| Working directory | `/Users/m3_ai_factory/Projects/benchbook-ai` |
-| Branch | `refactor/codex-gpt55-launch-prep` |
-| Working tree before E8 | clean |
-| Current HEAD | `90c8068 Add Phase E7 preview planning package` |
-| E6 local-rehearsal migrations present | yes |
-| Draft migrations present | yes |
-| Corpus data staged or loaded | no |
-| Remote target verified | no |
-| Remote schema migration applied | no |
+| Approved linked target | `benchbook-ai` |
+| Approved project ref | `clerihqbjyczarqkiqnb` |
+| Forbidden production target | `benchbook-ai-prod` |
+| Forbidden production project ref | `suiylfayvjsjtbrsjrwx` |
+| Production target touched | no |
+| Target verification method | Supabase CLI project list and link verification |
 
-## Preview-safe Migration Set
+## Execution method
 
-Created:
+The preview-safe files were applied with:
+
+```bash
+supabase db query --linked --file <file>
+```
+
+`supabase db push` was not used. A dry run showed `db push` would apply the default `supabase/migrations/` list, including older pending app migrations and E6 local-rehearsal migrations. The manual execution therefore used the preview-safe files directly.
+
+Operational caveat: because `supabase db query --linked --file` was used, Supabase migration history may not record these preview-safe files as formal migrations. Future phases must account for that before relying on migration-history state.
+
+## Applied files
 
 - `supabase/migrations_preview/20260627090000_preview_legal_authority_001_extensions_schemas.sql`
 - `supabase/migrations_preview/20260627090100_preview_legal_authority_002_enums_reference.sql`
@@ -49,34 +50,52 @@ Created:
 - `supabase/migrations_preview/20260627090800_preview_legal_authority_009_rls_grants.sql`
 - `supabase/migrations_preview/20260627090900_preview_legal_authority_010_post_load_search_and_vector.sql`
 
-The migration 001 local `auth.uid()` stub issue was resolved in the preview-safe copy by removing the local-only `auth` schema and function creation. The E6 local-rehearsal files and draft files were not modified.
-
-## Local Smoke Verification
-
-A disposable local PostgreSQL smoke test applied the preview-safe migration set with a temporary auth shim supplied outside the migration files to mimic Supabase auth availability.
+## Schema verification
 
 | Check | Result |
 |---|---:|
-| Preview migrations applied locally | 10 |
+| `legal_authority` schema exists | true |
+| `legal_authority_stage` schema exists | true |
 | Legal authority and stage base tables | 20 |
 | Legal authority views | 3 |
 | Legal authority functions | 3 |
-| Displayable view count | 0 |
-| Authority chunk rows | 0 |
-| RLS-enabled table count | 20 |
-| `authority_chunks` policy count | 0 |
-| Embedding column count | 0 |
-| Local smoke database dropped | yes |
+| RLS-enabled tables | 20 |
 
-## No-touch Audit
+Created views:
+
+- `v_black_letter_current_chunks`
+- `v_current_displayable_chunks`
+- `v_internal_qa_restricted_chunks`
+
+## Schema-only row and gate verification
+
+| Check | Result |
+|---|---:|
+| `source_files` rows | 0 |
+| `authority_units` rows | 0 |
+| `authority_versions` rows | 0 |
+| `authority_chunks` rows | 0 |
+| `v_current_displayable_chunks` rows | 0 |
+| `v_black_letter_current_chunks` rows | 0 |
+| `v_internal_qa_restricted_chunks` rows | 0 |
+
+Policies shown during verification:
+
+- `legal_authority_user_answer_audits`
+- `legal_authority_read_families`
+- `legal_authority_read_units`
+- `legal_authority_read_versions`
+- `legal_authority_read_citation_aliases`
+- `legal_authority_read_builds`
+- `legal_authority_user_refusals`
+- `legal_authority_user_retrieval_logs`
+
+No `authority_chunks` policy was shown.
+
+## No-touch audit
 
 | Item | Result |
 |---|---|
-| Target `benchbook-ai` verified remotely | no |
-| Target `benchbook-ai-prod` touched | no |
-| Production database touched | no |
-| Any remote database touched | no |
-| Schema migration applied remotely | no |
 | Corpus rows loaded | no |
 | Source manifest loaded | no |
 | Expanded chunks uploaded | no |
@@ -84,13 +103,10 @@ A disposable local PostgreSQL smoke test applied the preview-safe migration set 
 | App integration performed | no |
 | Production corpus replaced | no |
 | Production display gates relaxed | no |
-| E6 real migrations changed | no |
-| Draft migrations changed | no |
-| Preview-specific migrations created | yes |
-| Files staged or committed | no |
+| Production Supabase accessed | no |
+| `benchbook-ai-prod` accessed | no |
+| Final Terminal-verified Git status | clean |
 
 ## Conclusion
 
-E8 is safe but incomplete. The preview-safe migration set exists and passed local schema-only smoke verification, but remote preview execution did not occur because the target could not be positively verified through an approved local mechanism.
-
-Next required owner direction: provide an approved safe connection method or make an authenticated Supabase CLI session available locally for the exact preview target `benchbook-ai`, without pasting secrets into Codex.
+E8 schema-only preview execution completed successfully after the initial safe stop and manual owner-approved resume. The preview target now has the legal authority schema shell, but no corpus data. E9 should focus on owner-approved preview corpus-load planning or preview corpus-load dry-run planning, not another schema execution phase.

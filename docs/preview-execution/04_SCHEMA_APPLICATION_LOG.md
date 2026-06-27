@@ -2,44 +2,54 @@
 
 ## Remote Application Status
 
-Remote schema application did not occur.
+Schema-only preview application completed successfully after the initial safe stop and manual owner-approved resume through Mac Terminal.
 
-Reason: target `benchbook-ai` could not be positively verified through an approved local mechanism. The Supabase CLI was not available, no project-local CLI package was available, and no approved remote connection string or credential path was available without needing secrets.
+Target:
 
-## Remote Commands Not Run
+- Linked Supabase target: `benchbook-ai`.
+- Project ref: `clerihqbjyczarqkiqnb`.
+- Forbidden production target: `benchbook-ai-prod`.
+- Forbidden production project ref: `suiylfayvjsjtbrsjrwx`.
+- Production target touched: no.
 
-- No `supabase link`.
+## Application Method
+
+Preview-safe schema files were applied one at a time with:
+
+```bash
+supabase db query --linked --file <file>
+```
+
+`supabase db push` was not used.
+
+Reason: `supabase db push` dry run showed it would apply the default `supabase/migrations/` list, including older pending app migrations and E6 local-rehearsal migrations. That was outside the schema-only preview approval scope.
+
+Operational caveat: because `supabase db query --linked --file` was used, Supabase migration history may not record these preview-safe files as formal migrations.
+
+## Applied Files
+
+| Order | File | Status |
+|---:|---|---|
+| 1 | `supabase/migrations_preview/20260627090000_preview_legal_authority_001_extensions_schemas.sql` | applied |
+| 2 | `supabase/migrations_preview/20260627090100_preview_legal_authority_002_enums_reference.sql` | applied |
+| 3 | `supabase/migrations_preview/20260627090200_preview_legal_authority_003_builds_sources_staging.sql` | applied |
+| 4 | `supabase/migrations_preview/20260627090300_preview_legal_authority_004_units_versions_chunks.sql` | applied |
+| 5 | `supabase/migrations_preview/20260627090400_preview_legal_authority_005_citations_warnings_relationships.sql` | applied |
+| 6 | `supabase/migrations_preview/20260627090500_preview_legal_authority_006_audit_tables.sql` | applied |
+| 7 | `supabase/migrations_preview/20260627090600_preview_legal_authority_007_core_integrity_indexes.sql` | applied |
+| 8 | `supabase/migrations_preview/20260627090700_preview_legal_authority_008_views_rpcs.sql` | applied |
+| 9 | `supabase/migrations_preview/20260627090800_preview_legal_authority_009_rls_grants.sql` | applied |
+| 10 | `supabase/migrations_preview/20260627090900_preview_legal_authority_010_post_load_search_and_vector.sql` | applied |
+
+## Commands Not Used
+
 - No `supabase db push`.
-- No Supabase CLI project command.
-- No remote `psql` command.
-- No command requiring a Supabase access token.
+- No production Supabase command.
+- No command against `benchbook-ai-prod`.
+- No corpus load command.
+- No embedding command.
+- No app integration command.
 
-## Local Smoke Application
+## Application Boundary
 
-A disposable local PostgreSQL database was used only to smoke-test the preview-safe migration set.
-
-| Item | Result |
-|---|---|
-| Local smoke database | `benchbook_e8_preview_safe_local_smoke_20260627_083851` |
-| Temporary auth shim | supplied outside migration files for local test only |
-| Preview migrations applied locally | 10 |
-| Corpus rows loaded | 0 |
-| Database dropped | yes |
-| Remaining local smoke database | no |
-
-## Local Smoke Counts
-
-| Check | Result |
-|---|---:|
-| Legal authority and stage base tables | 20 |
-| Legal authority views | 3 |
-| Legal authority functions | 3 |
-| Displayable view count | 0 |
-| Authority chunk rows | 0 |
-| RLS-enabled table count | 20 |
-| `authority_chunks` policy count | 0 |
-| Embedding column count | 0 |
-
-## Schema Application Decision
-
-No remote schema migration may be applied until a later run can verify the exact preview target `benchbook-ai` and avoid `benchbook-ai-prod`.
+The schema application created only the schema shell. It did not load source manifest rows, expanded authority chunks, extraction warnings, corpus data, embeddings, or app-facing production corpus data.
