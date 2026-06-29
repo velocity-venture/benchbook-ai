@@ -1,0 +1,27 @@
+{
+  "app_files_changed": false,
+  "body_text_in_queues": false,
+  "corpus_rows_loaded": false,
+  "embeddings_generated": false,
+  "existing_scripts_changed": false,
+  "metadata_only": true,
+  "migrations_changed": false,
+  "phase": "E13-A",
+  "queue_counts": {
+    "dcs_document_anchored_chunks": 1146,
+    "dcs_handbook_checklist_items": 8,
+    "pending_extraction_qa_chunks": 4198,
+    "qa_signoff_required_versions": 439,
+    "restricted_lexis_chunks": 2392,
+    "unknown_effectivity_chunks": 39,
+    "unknown_effectivity_versions": 15,
+    "unresolved_identity_chunks": 21,
+    "unresolved_identity_units": 17
+  },
+  "remote_command_run": false,
+  "source_pdfs_changed": false,
+  "validation_outputs": {
+    "local_target_promotion": "/tmp/benchbook_phase_e13a_local_target_promotion.json",
+    "static_validation": "/tmp/benchbook_phase_e13a_static_validation.json"
+  }
+}
