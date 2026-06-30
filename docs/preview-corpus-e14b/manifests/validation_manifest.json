@@ -1,0 +1,51 @@
+{
+  "body_text_printed": false,
+  "count_results": {
+    "dcs_document_anchored_mapping_candidate.csv": {
+      "expected": 1146,
+      "observed": 1146,
+      "status": "pass"
+    },
+    "dcs_handbook_reconciliation_evidence_register_candidate.csv": {
+      "expected": 8,
+      "observed": 8,
+      "status": "pass"
+    },
+    "pending_extraction_qa_decision_register_candidate.csv": {
+      "expected": 4198,
+      "observed": 4198,
+      "status": "pass"
+    },
+    "qa_signoff_decision_register_candidate.csv": {
+      "expected": 439,
+      "observed": 439,
+      "status": "pass"
+    },
+    "restricted_lexis_disposition_register_candidate.csv": {
+      "expected": 2392,
+      "observed": 2392,
+      "status": "pass"
+    },
+    "unknown_effectivity_patch_map_candidate.csv": {
+      "expected": 54,
+      "observed": 54,
+      "status": "pass"
+    },
+    "unresolved_identity_patch_map_candidate.csv": {
+      "expected": 38,
+      "observed": 38,
+      "status": "pass"
+    }
+  },
+  "error_count": 0,
+  "errors": [],
+  "manifest_json_parse": true,
+  "metadata_only": true,
+  "phase": "E14-B",
+  "prohibited_body_text_headers_absent": true,
+  "remote_database_connection": false,
+  "required_fields_present": true,
+  "row_contents_printed": false,
+  "secret_patterns_absent": true,
+  "status": "PASS"
+}

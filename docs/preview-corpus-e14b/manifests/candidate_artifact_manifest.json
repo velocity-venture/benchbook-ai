@@ -1,0 +1,161 @@
+{
+  "candidate_artifacts": [
+    {
+      "artifact_type": "unresolved_identity_patch_map",
+      "body_text_included": false,
+      "candidate_artifact": "unresolved_identity_patch_map_candidate.csv",
+      "default_decision_status": "pending_corpus_admin_review",
+      "default_production_impact": "blocks_app_integration_or_display_until_resolved",
+      "default_proposed_action": "review_identity_metadata",
+      "expected_rows": 38,
+      "metadata_only": true,
+      "observed_rows": 38,
+      "sha256": "e178a3da815c06313f0cc5ae1774c769bcd013484d8309386a7d8b592b518af6",
+      "source_queue_counts": {
+        "unresolved_identity_chunks.csv": 21,
+        "unresolved_identity_units.csv": 17
+      },
+      "source_queue_sha256": {
+        "unresolved_identity_chunks.csv": "08be1b6a368aaad646759095dd086b7c18128e245868ef1dcfb691c4f84db8d8",
+        "unresolved_identity_units.csv": "045b409f073ea43d6a1addf482e12195d60c7b5035d9d2cdab34e01c605b6606"
+      },
+      "source_queues": [
+        "unresolved_identity_units.csv",
+        "unresolved_identity_chunks.csv"
+      ]
+    },
+    {
+      "artifact_type": "unknown_effectivity_patch_map",
+      "body_text_included": false,
+      "candidate_artifact": "unknown_effectivity_patch_map_candidate.csv",
+      "default_decision_status": "pending_effectivity_review",
+      "default_production_impact": "exclude_from_display_until_resolved",
+      "default_proposed_action": "verify_effective_date_or_exclude_from_production",
+      "expected_rows": 54,
+      "metadata_only": true,
+      "observed_rows": 54,
+      "sha256": "87cdb93dc7ddbe9f0946d784f061316730b9bbe7c2af476d6e237f800099f190",
+      "source_queue_counts": {
+        "unknown_effectivity_chunks.csv": 39,
+        "unknown_effectivity_versions.csv": 15
+      },
+      "source_queue_sha256": {
+        "unknown_effectivity_chunks.csv": "39c79caedb30b4b8165c6f994d411bf3e0699b2b6900067204a9c216b5c36e6c",
+        "unknown_effectivity_versions.csv": "c90b2db9b3e9829ec2feef7a3b8463fb6ff0bfc88c9687bf5121273cc41c7998"
+      },
+      "source_queues": [
+        "unknown_effectivity_versions.csv",
+        "unknown_effectivity_chunks.csv"
+      ]
+    },
+    {
+      "artifact_type": "qa_signoff_decision_register",
+      "body_text_included": false,
+      "candidate_artifact": "qa_signoff_decision_register_candidate.csv",
+      "default_decision_status": "pending_qa_signoff",
+      "default_production_impact": "non_displayable_until_signoff",
+      "default_proposed_action": "corpus_admin_signoff_required",
+      "expected_rows": 439,
+      "metadata_only": true,
+      "observed_rows": 439,
+      "sha256": "29dbdec49e95921d32567f84480e7d3655b5dd5580478114c0992f91c650ca59",
+      "source_queue_counts": {
+        "qa_signoff_required_versions_summary.csv": 439
+      },
+      "source_queue_sha256": {
+        "qa_signoff_required_versions_summary.csv": "a5a8c56c8394c076bff7d19e7843b790196d57aa5d717a149288c7bc018bee0d"
+      },
+      "source_queues": [
+        "qa_signoff_required_versions_summary.csv"
+      ]
+    },
+    {
+      "artifact_type": "dcs_document_anchored_mapping",
+      "body_text_included": false,
+      "candidate_artifact": "dcs_document_anchored_mapping_candidate.csv",
+      "default_decision_status": "guardrail_reference_only_pending_mapping",
+      "default_production_impact": "production_answer_authority_prohibited",
+      "default_proposed_action": "manual_dcs_mapping_or_keep_guardrail_only",
+      "expected_rows": 1146,
+      "metadata_only": true,
+      "observed_rows": 1146,
+      "sha256": "34aa712ecd3779f0f49a99258354a289863a8609253fb634de2b2df57dab60fe",
+      "source_queue_counts": {
+        "dcs_document_anchored_summary.csv": 1146
+      },
+      "source_queue_sha256": {
+        "dcs_document_anchored_summary.csv": "f3e950969c6b83eac5a4938906e6ae79d53c97129a25f230b3b3b5c8b4b3ab52"
+      },
+      "source_queues": [
+        "dcs_document_anchored_summary.csv"
+      ]
+    },
+    {
+      "artifact_type": "restricted_lexis_disposition_register",
+      "body_text_included": false,
+      "candidate_artifact": "restricted_lexis_disposition_register_candidate.csv",
+      "default_decision_status": "restricted_internal_qa_only",
+      "default_production_impact": "non_displayable",
+      "default_proposed_action": "license_display_review_required",
+      "expected_rows": 2392,
+      "metadata_only": true,
+      "observed_rows": 2392,
+      "sha256": "c49d8d5c5c7fd45ba2d4ea123bfdcb6bc86ebb00972600093d823dc20fa2d99e",
+      "source_queue_counts": {
+        "restricted_lexis_content_summary.csv": 2392
+      },
+      "source_queue_sha256": {
+        "restricted_lexis_content_summary.csv": "5c52f1dfe24d6e026e42f3b0803900bdef749f1cd2093bda740462539a559a8d"
+      },
+      "source_queues": [
+        "restricted_lexis_content_summary.csv"
+      ]
+    },
+    {
+      "artifact_type": "pending_extraction_qa_decision_register",
+      "body_text_included": false,
+      "candidate_artifact": "pending_extraction_qa_decision_register_candidate.csv",
+      "default_decision_status": "pending_extraction_qa",
+      "default_production_impact": "non_displayable",
+      "default_proposed_action": "verify_extraction_before_any_display",
+      "expected_rows": 4198,
+      "metadata_only": true,
+      "observed_rows": 4198,
+      "sha256": "8da831968de73ee3932366ad7da66bb78f6b75c6737e4d3ae466dca194ab9a53",
+      "source_queue_counts": {
+        "pending_extraction_qa_summary.csv": 4198
+      },
+      "source_queue_sha256": {
+        "pending_extraction_qa_summary.csv": "c0f72eb799348bc4ff8f7716f1f5ef05338c6808f9512629658dc2cd1e7a607c"
+      },
+      "source_queues": [
+        "pending_extraction_qa_summary.csv"
+      ]
+    },
+    {
+      "artifact_type": "dcs_handbook_reconciliation_evidence_register",
+      "body_text_included": false,
+      "candidate_artifact": "dcs_handbook_reconciliation_evidence_register_candidate.csv",
+      "default_decision_status": "evidence_required",
+      "default_production_impact": "blocks_resolution_of_historical_dcs_source_gap",
+      "default_proposed_action": "verify_source_status_and_extraction_path",
+      "expected_rows": 8,
+      "metadata_only": true,
+      "observed_rows": 8,
+      "sha256": "07f095b5aafa25a075706e99a9917d3efa42bc58ea23d09a095f80159b631024",
+      "source_queue_counts": {
+        "dcs_handbook_reconciliation_checklist.csv": 8
+      },
+      "source_queue_sha256": {
+        "dcs_handbook_reconciliation_checklist.csv": "f25a723438f1fbce9f29b2ac3d23a3ad095f62aa46d2e9699f9b31fe22f3a97c"
+      },
+      "source_queues": [
+        "dcs_handbook_reconciliation_checklist.csv"
+      ]
+    }
+  ],
+  "generated_at": "2026-06-29",
+  "metadata_only": true,
+  "metadata_patch_manifest_sha256": "4769099c86079c7c06e6dd7c7de83b3f8a5237060a99fdcbb63c2be6464418d6",
+  "phase": "E14-B"
+}
