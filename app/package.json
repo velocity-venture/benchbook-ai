@@ -15,7 +15,7 @@
     "deploy:preview": "node ../scripts/prebuild-corpus.js && npx @cloudflare/next-on-pages && npx wrangler pages deploy .vercel/output/static --project-name benchbook-ai --branch preview"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.31.0",
+    "@anthropic-ai/sdk": "^0.92.0",
     "@capacitor/android": "^8.3.0",
     "@capacitor/browser": "^8.0.3",
     "@capacitor/cli": "^8.3.0",

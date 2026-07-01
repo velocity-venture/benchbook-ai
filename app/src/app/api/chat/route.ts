@@ -45,6 +45,12 @@ async function checkRateLimit(userId: string): Promise<boolean> {
 
   // Update in-memory counter
   if (!entry || now > entry.resetAt) {
+    // Evict expired entries so the map stays bounded across long-lived isolates
+    if (rateLimitMap.size >= 500) {
+      for (const [key, value] of rateLimitMap) {
+        if (now > value.resetAt) rateLimitMap.delete(key);
+      }
+    }
     rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
   } else {
     entry.count++;
@@ -73,30 +79,53 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const USE_CLAUDE_API = process.env.USE_CLAUDE_API === 'true';
 const ENABLE_PROMPT_CACHING = process.env.ENABLE_PROMPT_CACHING !== 'false';
 
-// Model configuration — latest Claude models
-const HAIKU_MODEL = process.env.CLAUDE_HAIKU_MODEL || 'claude-haiku-4-5-20250414';
-const SONNET_MODEL = process.env.CLAUDE_SONNET_MODEL || 'claude-sonnet-4-5-20250414';
+// Model configuration — current model aliases (dated IDs here must exist or every request 404s)
+const HAIKU_MODEL = process.env.CLAUDE_HAIKU_MODEL || 'claude-haiku-4-5';
+const SONNET_MODEL = process.env.CLAUDE_SONNET_MODEL || 'claude-sonnet-4-6';
 
 // Initialize Anthropic client
 const anthropic = ANTHROPIC_API_KEY ? new Anthropic({
   apiKey: ANTHROPIC_API_KEY,
 }) : null;
 
-// Legal corpus cache
-interface CorpusCache {
+// Legal corpus, prepared once per isolate. The corpus is baked in at build time,
+// so there is nothing to refresh — building the citation index (regex scans over
+// several MB of text) is the expensive part and must not repeat per request.
+interface Corpus {
+  // Always sent: Title 37 + TRJPP, pre-joined so the cached prompt prefix is byte-stable
+  stableText: string;
+  // Sent only when the query matches the relevant keywords
   tcaTitle36?: string;
-  tcaTitle37?: string;
-  trjppRules?: string;
   dcsRelevant?: string;
-  citationIndex?: CitationIndex;
-  lastUpdated: number;
+  citationIndex: CitationIndex;
 }
 
-const corpusCache: CorpusCache = {
-  lastUpdated: 0
-};
+let corpus: Corpus | null = null;
 
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+function getCorpus(): Corpus {
+  if (corpus) return corpus;
+
+  const tcaTitle37 = prebuiltCorpus.tcaTitle37 || undefined;
+  const tcaTitle36 = prebuiltCorpus.tcaTitle36 || undefined;
+  const trjppRules = prebuiltCorpus.trjppRules || undefined;
+  const dcsRelevant = prebuiltCorpus.dcsText || undefined;
+
+  let stableText = "";
+  if (tcaTitle37) {
+    stableText += `=== TENNESSEE CODE ANNOTATED - TITLE 37 (JUVENILES) ===\n\n${tcaTitle37}\n\n`;
+  }
+  if (trjppRules) {
+    stableText += `=== TENNESSEE RULES OF JUVENILE PRACTICE AND PROCEDURE ===\n\n${trjppRules}\n\n`;
+  }
+
+  corpus = {
+    stableText,
+    tcaTitle36,
+    dcsRelevant,
+    citationIndex: buildCitationIndex(tcaTitle37, tcaTitle36, trjppRules, dcsRelevant),
+  };
+  return corpus;
+}
 
 // System prompt for legal research — bench-ready judicial responses
 const SYSTEM_PROMPT = `You are BenchBook.AI, a judicial research assistant for Tennessee state court judges. Responses must be concise, authoritative, and immediately actionable from the bench.
@@ -240,7 +269,7 @@ export async function POST(request: NextRequest) {
     const modelToUse = complexity === 'simple' ? HAIKU_MODEL : SONNET_MODEL;
 
     // Step 2: Load relevant legal corpus into context
-    const legalCorpus = await loadRelevantCorpus(query);
+    const legalCorpus = loadRelevantCorpus(query);
 
     // Step 3: Stream Claude response with citation verification
     const stream = await streamClaude(
@@ -249,7 +278,7 @@ export async function POST(request: NextRequest) {
       messages,
       modelToUse,
       ENABLE_PROMPT_CACHING,
-      corpusCache.citationIndex,
+      getCorpus().citationIndex,
       (verifiedSources) => {
         // Track research query with real verified sources
         const sources: Source[] = verifiedSources.map(s => ({
@@ -286,32 +315,26 @@ export async function POST(request: NextRequest) {
 
 // classifyQueryComplexity is in lib/query-router.ts for testability
 
+interface RelevantCorpus {
+  // Identical for every query — cached prompt prefix stays warm across all queries
+  stable: string;
+  // Query-dependent sections (Title 36, DCS) — kept out of the stable block so
+  // their presence/absence never invalidates the cached stable prefix
+  conditional: string;
+}
+
 /**
  * Load relevant legal corpus sections based on query content
  */
-async function loadRelevantCorpus(query: string): Promise<string> {
-  const now = Date.now();
-
-  if (now - corpusCache.lastUpdated > CACHE_TTL_MS) {
-    await refreshCorpusCache();
-    corpusCache.lastUpdated = now;
-  }
-
+function loadRelevantCorpus(query: string): RelevantCorpus {
+  const { stableText, tcaTitle36, dcsRelevant } = getCorpus();
   const queryLower = query.toLowerCase();
-  let corpus = "";
-
-  if (corpusCache.tcaTitle37) {
-    corpus += `=== TENNESSEE CODE ANNOTATED - TITLE 37 (JUVENILES) ===\n\n${corpusCache.tcaTitle37}\n\n`;
-  }
+  let conditional = "";
 
   if ((queryLower.includes('custody') || queryLower.includes('parent') ||
        queryLower.includes('guardian') || queryLower.includes('domestic')) &&
-      corpusCache.tcaTitle36) {
-    corpus += `=== TENNESSEE CODE ANNOTATED - TITLE 36 (DOMESTIC RELATIONS) ===\n\n${corpusCache.tcaTitle36}\n\n`;
-  }
-
-  if (corpusCache.trjppRules) {
-    corpus += `=== TENNESSEE RULES OF JUVENILE PRACTICE AND PROCEDURE ===\n\n${corpusCache.trjppRules}\n\n`;
+      tcaTitle36) {
+    conditional += `=== TENNESSEE CODE ANNOTATED - TITLE 36 (DOMESTIC RELATIONS) ===\n\n${tcaTitle36}\n\n`;
   }
 
   const dcsKeywords = [
@@ -320,30 +343,11 @@ async function loadRelevantCorpus(query: string): Promise<string> {
     'home study', 'cftm', 'trial home visit', 'child protective',
     'abuse', 'neglect', 'safety plan', 'case plan'
   ];
-  if (dcsKeywords.some(kw => queryLower.includes(kw))) {
-    if (corpusCache.dcsRelevant) {
-      corpus += `=== DEPARTMENT OF CHILDREN'S SERVICES POLICIES ===\n\n${corpusCache.dcsRelevant}\n\n`;
-    }
+  if (dcsKeywords.some(kw => queryLower.includes(kw)) && dcsRelevant) {
+    conditional += `=== DEPARTMENT OF CHILDREN'S SERVICES POLICIES ===\n\n${dcsRelevant}\n\n`;
   }
 
-  return corpus;
-}
-
-/**
- * Refresh legal corpus cache from pre-built JSON (edge runtime compatible)
- */
-async function refreshCorpusCache(): Promise<void> {
-  corpusCache.tcaTitle37 = prebuiltCorpus.tcaTitle37 || undefined;
-  corpusCache.tcaTitle36 = prebuiltCorpus.tcaTitle36 || undefined;
-  corpusCache.trjppRules = prebuiltCorpus.trjppRules || undefined;
-  corpusCache.dcsRelevant = prebuiltCorpus.dcsText || undefined;
-
-  corpusCache.citationIndex = buildCitationIndex(
-    corpusCache.tcaTitle37,
-    corpusCache.tcaTitle36,
-    corpusCache.trjppRules,
-    corpusCache.dcsRelevant
-  );
+  return { stable: stableText, conditional };
 }
 
 /**
@@ -351,7 +355,7 @@ async function refreshCorpusCache(): Promise<void> {
  */
 async function streamClaude(
   query: string,
-  legalCorpus: string,
+  legalCorpus: RelevantCorpus,
   previousMessages: Message[],
   model: string,
   useCache: boolean,
@@ -362,21 +366,34 @@ async function streamClaude(
     throw new Error('Anthropic client not initialized');
   }
 
-  // Build system prompt blocks with prompt caching
-  const systemBlocks: Anthropic.Messages.TextBlockParam[] = [
-    {
-      type: 'text' as const,
-      text: SYSTEM_PROMPT,
-      ...(useCache ? { cache_control: { type: 'ephemeral' as const } } : {}),
-    },
-  ];
+  // System blocks ordered stable-first so prompt-cache prefixes survive across
+  // queries: [prompt + always-loaded corpus] is byte-identical for every request,
+  // and the query-dependent corpus block sits after it with its own breakpoint.
+  const cacheControl = useCache ? { cache_control: { type: 'ephemeral' as const } } : {};
+  const systemBlocks: Anthropic.Messages.TextBlockParam[] = [];
 
-  // Add legal corpus as a separate cached block
-  if (legalCorpus) {
+  if (legalCorpus.stable) {
     systemBlocks.push({
       type: 'text' as const,
-      text: `You have access to the following Tennessee legal corpus for this query:\n\n${legalCorpus}\n\nIMPORTANT: Only cite legal provisions whose text appears in the corpus above. If a user asks about a statute or rule not found in this corpus, explicitly state that it is not available in the current legal database rather than citing from memory. Answer the user's question based on this legal information, citing specific statutes and rules where applicable.`,
-      ...(useCache ? { cache_control: { type: 'ephemeral' as const } } : {}),
+      text: `${SYSTEM_PROMPT}\n\nYou have access to the following Tennessee legal corpus for this query:\n\n${legalCorpus.stable}`,
+      ...cacheControl,
+    });
+  } else {
+    systemBlocks.push({ type: 'text' as const, text: SYSTEM_PROMPT, ...cacheControl });
+  }
+
+  if (legalCorpus.conditional) {
+    systemBlocks.push({
+      type: 'text' as const,
+      text: legalCorpus.conditional,
+      ...cacheControl,
+    });
+  }
+
+  if (legalCorpus.stable || legalCorpus.conditional) {
+    systemBlocks.push({
+      type: 'text' as const,
+      text: `IMPORTANT: Only cite legal provisions whose text appears in the corpus above. If a user asks about a statute or rule not found in this corpus, explicitly state that it is not available in the current legal database rather than citing from memory. Answer the user's question based on this legal information, citing specific statutes and rules where applicable.`,
     });
   }
 
@@ -417,10 +434,8 @@ async function streamClaude(
 
         // Send metadata event with token usage and cache stats
         const usage = finalMessage.usage;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const usageAny = usage as any;
-        const cacheCreation = usageAny.cache_creation_input_tokens || 0;
-        const cacheRead = usageAny.cache_read_input_tokens || 0;
+        const cacheCreation = usage.cache_creation_input_tokens ?? 0;
+        const cacheRead = usage.cache_read_input_tokens ?? 0;
 
         const meta = JSON.stringify({
           type: 'done',
@@ -435,7 +450,11 @@ async function streamClaude(
         // Run hallucination guard: verify citations and compute confidence
         let verifiedSources: VerifiedCitation[] = [];
         if (citationIndex) {
-          const guardResult = runHallucinationGuard(fullResponse, citationIndex, legalCorpus);
+          const guardResult = runHallucinationGuard(
+            fullResponse,
+            citationIndex,
+            legalCorpus.stable + legalCorpus.conditional
+          );
           verifiedSources = guardResult.citations;
 
           // Send sources event
@@ -479,20 +498,13 @@ async function streamClaude(
 async function trackResearchQuery(userId: string, query: string, sources: Source[]) {
   const supabase = createClient();
 
-  const sourcesData = sources.map(source => ({
-    title: source.title,
-    citation: source.citation,
-    type: source.type,
-    snippet: source.snippet.substring(0, 200)
-  }));
-
   const { error } = await supabase
     .from("research_queries")
     .insert({
       user_id: userId,
       query: query.substring(0, 1000),
       query_type: 'chat',
-      response_sources: sourcesData,
+      response_sources: sources,
     });
 
   if (error) {

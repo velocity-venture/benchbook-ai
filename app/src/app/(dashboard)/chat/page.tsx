@@ -61,6 +61,11 @@ interface ChatSession {
   updated_at: string;
 }
 
+// Server-side validation limits (see /api/chat): history beyond these gets a 400,
+// so clamp before sending — assistant replies alone can exceed 4000 chars.
+const MAX_HISTORY_MESSAGES = 20;
+const MAX_HISTORY_MESSAGE_CHARS = 4000;
+
 const suggestedQueries = [
   "What are the grounds for detention under T.C.A. § 37-1-114?",
   "When is a child entitled to appointed counsel?",
@@ -314,9 +319,9 @@ export default function ChatPage() {
         body: JSON.stringify({
           query,
           session_id: sessionId,
-          messages: messages.map((m) => ({
+          messages: messages.slice(-MAX_HISTORY_MESSAGES).map((m) => ({
             role: m.role,
-            content: m.content,
+            content: m.content.slice(0, MAX_HISTORY_MESSAGE_CHARS),
           })),
         }),
       });
