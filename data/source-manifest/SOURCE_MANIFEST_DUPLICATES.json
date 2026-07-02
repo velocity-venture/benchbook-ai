@@ -1,0 +1,203 @@
+{
+  "generated_at": "2026-06-12T11:54:08+00:00",
+  "duplicate_groups": [
+    {
+      "sha256": "00d078c291983bf1856899fd88bcedbd8fc03f86e8bbb14ddc0760bbb612cbd6",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch01_Admin/034_Protocol_Protocol_for_Employee_Code_of_Conduct.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch04_HR/099_Protocol_Protocol_for_Employee_Code_of_Conduct.pdf"
+      ]
+    },
+    {
+      "sha256": "06efb916330e51e065466a7d50886ceb25daf88d954384660f6f0cb34f79a193",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/297_Protocol_Protocol_for_Supportive_Living_Arrangements.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch20_Health/488_Protocol_Protocol_for_Supportive_Living_Arrangements.pdf"
+      ]
+    },
+    {
+      "sha256": "0bfaa6a4a073351c2089b0755c08ee2f74582ed50eeba768a3ffc692833731c5",
+      "count": 3,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch15_Adoption_Guardianship/260_Protocol_Protocol_for_Continuation_of_TennCare_Eligibility_for_Childr.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/302_Protocol_Protocol_for_Continuation_of_TennCare_Eligibility_for_Childr.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/312_Protocol_Protocol_for_Continuation_of_TennCare_Eligibility_for_Childr.pdf"
+      ]
+    },
+    {
+      "sha256": "0e7f304d9f76455265d5dfd0d42ea5edf80880a6c79855db03897f6dd1de1e77",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch04_HR/114_4.30_Department_of_Children_s_Services_Volunteer_Services_Program.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch04_HR/115_Manual_Department_of_Children_s_Services_Volunteer_Services_Program.pdf"
+      ]
+    },
+    {
+      "sha256": "1d435924400f878d39ba763201e38b09a2149bb4786104589bc94c39ad053f3d",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/275_Work_Aid_Work_Aid_for_Permanency_and_Service_Planning_for_Children_Yo.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/584_Work_Aid_Work_Aid_for_Permanency_and_Service_Planning_for_Children_Yo.pdf"
+      ]
+    },
+    {
+      "sha256": "27d54437918f9d48c6e909559a2d26a38e1c1ab31d715194830a365b149513b3",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/188_Protocol_Protocol_for_Health_Services_for_Trafficked_Youth.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch20_Health/436_Protocol_Protocol_for_Health_Services_for_Trafficked_Youth.pdf"
+      ]
+    },
+    {
+      "sha256": "3837be9148188f3a6ea556aafba96c54dc1753018e437417c7c1e8dd7ff71c05",
+      "count": 3,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch13_JJ_Regional/145_Work_Aid_Work_Aid_Juvenile_Justice_Family_Permanency_Plan_Quarterly_R.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/276_Work_Aid_Work_Aid_Juvenile_Justice_Family_Permanency_Plan_Quarterly_R.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/586_Work_Aid_Work_Aid_Juvenile_Justice_Family_Permanency_Plan_Quarterly_R.pdf"
+      ]
+    },
+    {
+      "sha256": "426df9ba51e025f1bf779a8bf7e3153bfafab597adff17fa02cb16f466b31235",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch15_Adoption_Guardianship/248_Protocol_Protocol_for_Developing_and_Utilizing_the_Archeological_Dig.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16B_Foster_Homes/325_Protocol_Protocol_for_Developing_and_Utilizing_the_Archeological_Dig.pdf"
+      ]
+    },
+    {
+      "sha256": "44e1e6139932a70589761fdd505364e45460fd37d95edb0f055bb00ee3cf28e0",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/207_Tip_Sheet_Non-Custodial_Waiver_Guide.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16B_Foster_Homes/330_Tip_Sheet_Non-Custodial_Waiver_Guide.pdf"
+      ]
+    },
+    {
+      "sha256": "46341af7d42a16b1bfcd605f5247cff899eb55edf8bc69b3e2d1c49be8e4fdef",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/189_Protocol_Protocol_for_Medical_Evaluations_for_Runaways_and_or_Commerc.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch20_Health/437_Protocol_Protocol_for_Medical_Evaluations_for_Runaways_and_or_Commerc.pdf"
+      ]
+    },
+    {
+      "sha256": "4d5059c570275d095649f2535bc9e2f9ef16e3554918ffcbeb2c70d1de93e474",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch13_JJ_Regional/171_Protocol_Case_Closure_Protocol.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/270_Protocol_Case_Closure_Protocol.pdf"
+      ]
+    },
+    {
+      "sha256": "50a5ab650f71d5367dddc240388eddab2c4b40637c6794f09d34a4d1e0bd6b35",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch13_JJ_Regional/173_Protocol_Protocol_for_Juvenile_Justice_Family_Permanency_Plan.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/587_Protocol_Protocol_for_Juvenile_Justice_Family_Permanency_Plan.pdf"
+      ]
+    },
+    {
+      "sha256": "591620f75f38152b331d62d0f4cb89e090bb25c196cd60edb966bde6a8295260",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch04_HR/098_Protocol_Protocol_for_Child_Abuse_Referrals_Against_DCS_Staff.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/181_Protocol_Protocol_for_Child_Abuse_Referrals_Against_DCS_Staff.pdf"
+      ]
+    },
+    {
+      "sha256": "6883c9edd9f6e6d87b6ca874ba87705d23df03066ae7bbd6c10287c76201e283",
+      "count": 3,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch04_HR/095_Work_Aid_Controlled_Substance_and_Medication_Work_Aid.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/205_Work_Aid_Controlled_Substance_and_Medication_Work_Aid.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16B_Foster_Homes/351_Work_Aid_Controlled_Substance_and_Medication_Work_Aid.pdf"
+      ]
+    },
+    {
+      "sha256": "771947f19a9f970c016a3351f9a21da419b9c8e2345ba6905185a3fb21dcf539",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/278_Guide_Family_Permanency_Plan_Development_Guide.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/600_Guide_Family_Permanency_Plan_Development_Guide.pdf"
+      ]
+    },
+    {
+      "sha256": "7aeedd2ad6f8f8415a29ad31e1312834c7a9cc54eaf11d6358d24f488cdcafcf",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch13_JJ_Regional/157_Protocol_Protocol_for_Dual_Adjudications.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/592_Protocol_Protocol_for_Dual_Adjudications.pdf"
+      ]
+    },
+    {
+      "sha256": "91c946c8ef29f27e54b930bba503993d6757af2211e68732d2176ca96d20e253",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch03_Fiscal/076_Guide_Case_Service_Request_Guide.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/626_Guide_Case_Service_Request_Guide.pdf"
+      ]
+    },
+    {
+      "sha256": "a1809dc91bfce8fa459013f183691f3dc2de9de386855f2751083574ec811701",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/206_Tip_Sheet_Waiver_Tip_Sheet_for_Employment_Volunteering_and_Custodial_P.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16B_Foster_Homes/331_Tip_Sheet_Waiver_Tip_Sheet_for_Employment_Volunteering_and_Custodial_P.pdf"
+      ]
+    },
+    {
+      "sha256": "a19dfb54c5fe44d054c34aabd845e58495d6f7302276ce7fe8ff37e6826c1631",
+      "count": 3,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch15_Adoption_Guardianship/264_N_A_CFTM_Guidelines_for_Identifying_an_Adoptive_Family.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/313_N_A_CFTM_Guidelines_for_Identifying_an_Adoptive_Family.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/619_Protocol_CFTM_Guidelines_for_Identifying_an_Adoptive_Family.pdf"
+      ]
+    },
+    {
+      "sha256": "baac18e4cdc9ac5aeb18fc9e3d0a155541551157e9ad2611db1069974fb81c4d",
+      "count": 4,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch13_JJ_Regional/174_Work_Aid_13_Work_Aid_13_DCS_Cases_Involving_Domestic_Violence.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/180_Work_Aid_13_Work_Aid_13_DCS_Cases_Involving_Domestic_Violence.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16A_Foster_Care/279_Work_Aid_13_Work_Aid_13_DCS_Cases_Involving_Domestic_Violence.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/582_Work_Aid_Work_Aid_13_DCS_Cases_Involving_Domestic_Violence.pdf"
+      ]
+    },
+    {
+      "sha256": "dd489872a70dafd935e2b0a4fe1ed665421728965cea478ab34593cad63080ce",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/186_Protocol_Protocol_for_Working_with_Hospitals.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/617_Protocol_Protocol_for_Working_with_Hospitals.pdf"
+      ]
+    },
+    {
+      "sha256": "f94bbcf4105c48aa0a2e601d026e1002756f37169248bab3c4a979de96a35b4a",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch01_Admin/031_Protocol_Protocol_for_Fingerprint_Processing_and_Analysis.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch04_HR/085_Protocol_Protocol_for_Fingerprint_Processing_and_Analysis.pdf"
+      ]
+    },
+    {
+      "sha256": "f97fa22f84d1615225e18af6a7100ca151c18f026794ae10360bedcab8ae8261",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch14_CPS/187_Protocol_Protocol_for_Reporting_Runaways_Absconders_and_Escapees.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch31_Field_Services/589_Protocol_Protocol_for_Reporting_Runaways_Absconders_and_Escapees.pdf"
+      ]
+    },
+    {
+      "sha256": "f9833ac3bd4421e7e9a7fb9049e2ed4fe30ba9e9c91358c04f6ddcb7f21baf43",
+      "count": 2,
+      "relative_paths": [
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch09_Child_Records/139_Guide_Guide_to_Document_Sharing_for_Staff_Foster_Parents_Advocates.pdf",
+        "Benchbook.ai Database Files/DCS P&P/TN_DCS_Policies/Ch16B_Foster_Homes/356_Guide_Guide_to_Document_Sharing_for_Staff_Foster_Parents_Advocates.pdf"
+      ]
+    }
+  ]
+}

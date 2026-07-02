@@ -1,0 +1,11 @@
+# BenchBook.AI ingestion pipeline dependencies (Phase C expansion).
+# Install into a project venv, e.g.:
+#   python3 -m venv .venv-ingestion && .venv-ingestion/bin/pip install -r scripts/ingestion/requirements.txt
+# (.venv* directories must stay out of git.)
+pypdf==6.13.2
+
+# OPTIONAL — NOT installed as of 2026-06-12 (installation requires explicit
+# authorization): pypdf needs `cryptography>=3.1` to open AES-encrypted PDFs.
+# Exactly one staged source requires it:
+#   DCS P&P/TN_DCS_Policies/Ch31_Field_Services/637_Handbook_Clients_Rights_Handbook.pdf
+# cryptography>=3.1

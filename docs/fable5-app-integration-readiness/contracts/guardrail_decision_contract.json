@@ -1,0 +1,65 @@
+{
+  "contract": "guardrail_decision",
+  "version": "1.0.0-f502",
+  "phase": "F5-02",
+  "nature": "schema_like_example_not_executable_code",
+  "metadata_only": true,
+  "body_text_included": false,
+  "spec_document": "docs/fable5-app-integration-readiness/06_JUDICIAL_GUARDRAIL_CONTRACT_SPEC.md",
+  "check_series": {
+    "pre_retrieval": ["GP-1", "GP-2", "GP-3", "GP-4", "GP-5", "GP-6", "GP-7", "GP-8", "GP-9"],
+    "post_retrieval": ["GQ-1", "GQ-2", "GQ-3", "GQ-4", "GQ-5"],
+    "post_generation": ["GA-1", "GA-2", "GA-3", "GA-4"]
+  },
+  "required_fields": [
+    "decision",
+    "stage",
+    "checks_run",
+    "classification",
+    "timing_ms"
+  ],
+  "field_rules": {
+    "decision": {
+      "enum": ["proceed", "refuse", "flag_reference_only"]
+    },
+    "fail_posture": {
+      "rule": "classifier error fails closed; every decision object persists with the retrieval log"
+    }
+  },
+  "example_proceed": {
+    "decision": "proceed",
+    "stage": "pre_retrieval",
+    "checks_run": [
+      {"id": "GP-2", "outcome": "pass"},
+      {"id": "GP-3", "outcome": "pass"},
+      {"id": "GP-4", "outcome": "pass"},
+      {"id": "GP-5", "outcome": "pass"},
+      {"id": "GP-6", "outcome": "pass"},
+      {"id": "GP-7", "outcome": "pass"},
+      {"id": "GP-8", "outcome": "pass"}
+    ],
+    "classification": {
+      "answer_scope_intent": "general_answer",
+      "family_filter": ["tca_title_37", "tca_title_36", "tenn_rules_juvenile_practice_procedure"],
+      "detected_citation_count": 1
+    },
+    "timing_ms": 4
+  },
+  "example_refuse": {
+    "decision": "refuse",
+    "stage": "pre_retrieval",
+    "checks_run": [
+      {"id": "GP-2", "outcome": "pass"},
+      {"id": "GP-3", "outcome": "pass"},
+      {"id": "GP-4", "outcome": "pass"},
+      {"id": "GP-5", "outcome": "fail", "matched_terms_hash": "0000000000000000000000000000000000000000000000000000000000000000"}
+    ],
+    "refusal": {
+      "refusal_kind": "safety_guardrail",
+      "refusal_variant": "ruling_recommendation",
+      "user_message_key": "refusal.ruling_recommendation.v1"
+    },
+    "classification": null,
+    "timing_ms": 3
+  }
+}

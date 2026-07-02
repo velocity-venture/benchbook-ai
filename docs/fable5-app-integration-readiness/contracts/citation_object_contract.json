@@ -1,0 +1,67 @@
+{
+  "contract": "citation_object",
+  "version": "1.0.0-f502",
+  "phase": "F5-02",
+  "nature": "schema_like_example_not_executable_code",
+  "metadata_only": true,
+  "body_text_included": false,
+  "spec_document": "docs/fable5-app-integration-readiness/04_MANDATORY_CITATION_CONTRACT_SPEC.md",
+  "required_fields": [
+    "source_family",
+    "authority_unit_id",
+    "authority_version_id",
+    "authority_chunk_id",
+    "canonical_citation",
+    "normalized_citation",
+    "source_file_sha256",
+    "display_status",
+    "answer_scope",
+    "effectivity",
+    "qa_signoff_status",
+    "verification",
+    "environment_tier"
+  ],
+  "field_rules": {
+    "canonical_citation": {
+      "rule": "constructed from database fields only; never model-generated"
+    },
+    "verification.level": {
+      "enum": ["verified_retrieved", "verified_resolved", "unresolved", "out_of_universe"],
+      "rule": "unresolved never renders as a citation; out_of_universe hard-refuses"
+    },
+    "effectivity.version_status": {
+      "rule": "must be current for answer citations"
+    },
+    "granularity": {
+      "rule": "display never exceeds database resolution; subsection claims render parent section with page span"
+    }
+  },
+  "example": {
+    "source_family": "tca_title_37",
+    "authority_unit_id": "00000000-0000-4000-8000-0000000000u1",
+    "authority_version_id": "00000000-0000-4000-8000-0000000000v1",
+    "authority_chunk_id": "00000000-0000-4000-8000-0000000000c1",
+    "canonical_citation": "T.C.A. 37-1-114",
+    "normalized_citation": "37-1-114",
+    "source_file_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "source_path_label": "Title 37/example-source-file.pdf",
+    "page_start": 12,
+    "page_end": 14,
+    "display_status": "internal_qa_only",
+    "answer_scope": "general_answer_authority",
+    "effectivity": {
+      "version_status": "current",
+      "effective_label": "current-through-label-from-version-row",
+      "as_of_date_used": "2026-07-02"
+    },
+    "qa_signoff_status": "signed_off",
+    "verification": {
+      "level": "verified_retrieved",
+      "exists_in_corpus": true,
+      "current_as_of_date": true,
+      "display_allowed": true,
+      "proposition_supported": null
+    },
+    "environment_tier": "internal_qa"
+  }
+}

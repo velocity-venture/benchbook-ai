@@ -1,0 +1,56 @@
+{
+  "blockers": [
+    {
+      "blocker": "identity_unresolved",
+      "rows": 38,
+      "status": "candidate_review_pending"
+    },
+    {
+      "blocker": "effectivity_unresolved",
+      "rows": 54,
+      "status": "candidate_review_pending"
+    },
+    {
+      "blocker": "qa_signoff_pending",
+      "rows": 439,
+      "status": "candidate_review_pending"
+    },
+    {
+      "blocker": "dcs_guardrail_only",
+      "rows": 1146,
+      "status": "production_answer_authority_prohibited"
+    },
+    {
+      "blocker": "restricted_lexis_non_displayable",
+      "rows": 2392,
+      "status": "license_and_owner_review_required"
+    },
+    {
+      "blocker": "pending_extraction_qa",
+      "rows": 4198,
+      "status": "candidate_review_pending"
+    },
+    {
+      "blocker": "dcs_handbook_reconciliation",
+      "rows": 8,
+      "status": "evidence_required"
+    },
+    {
+      "blocker": "embeddings_not_generated",
+      "rows": 0,
+      "status": "not_authorized"
+    },
+    {
+      "blocker": "app_not_integrated",
+      "rows": 0,
+      "status": "not_authorized"
+    },
+    {
+      "blocker": "display_gates_closed",
+      "rows": 0,
+      "status": "required"
+    }
+  ],
+  "generated_at": "2026-06-29",
+  "phase": "E14-B"
+}

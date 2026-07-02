@@ -1,0 +1,53 @@
+{
+  "artifact": "mock_legal_retrieval_route_contract",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "design_only_no_code_written_in_f5_03",
+  "target_file": "app/src/app/api/qa-research/route.ts",
+  "runtime": "edge",
+  "derives_from": "docs/fable5-app-integration-readiness/contracts/legal_qa_request_response_contract.json (C1, C2, C3)",
+  "request": {
+    "method": "POST",
+    "auth": "Supabase session required (same middleware chain as /api/chat); unauthenticated returns 401 envelope",
+    "body_fields": {
+      "query": "string, required, 1..4000 chars after trim; longer input rejected with input_invalid envelope",
+      "conversation_window": "optional array of prior turns, max 6, role+content only; used for guardrail context, never as authority",
+      "as_of_date": "optional ISO date string; defaults to request date; forwarded verbatim to the adapter",
+      "trace_id": "optional client-supplied UUID; server generates one when absent and echoes it in every envelope"
+    },
+    "rejected_fields": "unknown top-level fields cause input_invalid (fail closed on shape drift, C1)"
+  },
+  "response_envelopes": {
+    "shared_fields": ["envelope_kind", "trace_id", "environment_echo", "as_of_date_used", "audit_record_ref"],
+    "kinds": [
+      {"kind": "answer", "fields": ["answer_markdown", "citations[]", "confidence", "verification_level", "scope_notes[]"], "rule": "only emitted when every guardrail stage passed and citations verified against the adapter (C6, C7)"},
+      {"kind": "refusal", "fields": ["refusal_kind", "refusal_message", "refusal_record_ref"], "refusal_kinds": ["out_of_scope", "no_authority_support", "future_effective_only", "restricted_display_only", "unsupported_answer", "safety_guardrail"], "rule": "refusal_message drawn only from refusal-templates.json entries (owner review P6); never model-generated free text"},
+      {"kind": "error", "fields": ["error_class", "retriable"], "rule": "internal failures never leak stack traces, adapter internals, or partial answers; audit write failure converts the whole response to error (fail-closed audit, C12)"}
+    ]
+  },
+  "route_pipeline_order": [
+    "1 parse+validate body (types.ts schema guard)",
+    "2 bootValidate cached result check (environment.ts); invalid target = error envelope, no processing",
+    "3 pre-retrieval guardrails GP-1..GP-9 (guardrail.ts); trip = refusal envelope + refusal record",
+    "4 adapter.lookupAliases + adapter.searchChunks via LegalRetrievalAdapter interface only",
+    "5 post-retrieval guardrails GQ-1..GQ-5; empty or fully-gated result = refusal",
+    "6 prompt assembly (prompt-contract.ts) from adapter metadata envelopes only",
+    "7 model call via model-client.ts injected factory (mock in M1)",
+    "8 post-generation guardrails GA-1..GA-4 incl. citation verification (citation-verifier.ts)",
+    "9 audit writes (audit-logger.ts) then envelope emit; write failure = error envelope"
+  ],
+  "injection_seams": {
+    "adapter": "createRetrievalAdapter() factory resolved from environment target; M1 resolves mock only; type enum has no production member",
+    "model": "createModelClient() factory; tests inject deterministic mock",
+    "audit": "createAuditLogger() factory; M1 resolves mock sink",
+    "clock": "as_of_date passthrough keeps route pure for tests"
+  },
+  "hard_prohibitions_in_route": [
+    "no supabase client import anywhere in the qa-research module graph (static test enforced)",
+    "no import of legal-corpus-data.json or loadRelevantCorpus pattern",
+    "no embeddings calls",
+    "no general legal knowledge fallback: model prompt forbids answering beyond supplied envelopes and GA checks enforce it"
+  ]
+}

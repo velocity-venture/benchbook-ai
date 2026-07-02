@@ -1,0 +1,68 @@
+{
+  "contract": "legal_retrieval_response",
+  "version": "1.0.0-f502",
+  "phase": "F5-02",
+  "nature": "schema_like_example_not_executable_code",
+  "metadata_only": true,
+  "body_text_included": false,
+  "spec_document": "docs/fable5-app-integration-readiness/03_DATABASE_RETRIEVAL_CONTRACT_SPEC.md",
+  "required_fields": [
+    "request_id",
+    "environment_target",
+    "outcome",
+    "effective_basis",
+    "gate_attestation",
+    "audit"
+  ],
+  "field_rules": {
+    "outcome": {
+      "enum": ["results", "no_authority", "refused_pre_retrieval"]
+    },
+    "results.gated_chunk_passage": {
+      "rule": "runtime-only field carrying the gated span for prompt assembly; never persisted to logs; always a placeholder in contract and mock files"
+    },
+    "gate_attestation": {
+      "rule": "all four booleans must be true before any result use; any false is an internal-error refusal, never a degraded answer"
+    },
+    "envelopes": {
+      "rule": "answer_support and reference_material are disjoint; DCS rows appear only in reference_material"
+    }
+  },
+  "example": {
+    "request_id": "00000000-0000-4000-8000-000000000001",
+    "environment_target": "preview_internal_qa",
+    "outcome": "results",
+    "results": [
+      {
+        "authority_chunk_id": "00000000-0000-4000-8000-0000000000c1",
+        "authority_unit_id": "00000000-0000-4000-8000-0000000000u1",
+        "authority_version_id": "00000000-0000-4000-8000-0000000000v1",
+        "canonical_citation": "T.C.A. 37-1-114",
+        "authority_family": "tca_title_37",
+        "answer_scope": "general_answer_authority",
+        "chunk_type": "black_letter_text",
+        "page_start": 12,
+        "page_end": 14,
+        "text_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "rank": null,
+        "gated_chunk_passage": "<gated-span-delivered-at-runtime-only-never-in-artifacts>"
+      }
+    ],
+    "answer_support_count": 1,
+    "reference_material_count": 0,
+    "effective_basis": {
+      "as_of_date": "2026-07-02",
+      "all_version_status": "current"
+    },
+    "gate_attestation": {
+      "all_rows_displayable": true,
+      "no_restricted_rows": true,
+      "no_pending_rows": true,
+      "scope_filter_applied": true
+    },
+    "refusal": null,
+    "audit": {
+      "retrieval_log_id": "00000000-0000-4000-8000-0000000000l1"
+    }
+  }
+}

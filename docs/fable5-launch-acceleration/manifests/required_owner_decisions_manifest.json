@@ -1,0 +1,67 @@
+{
+  "manifest": "required_owner_decisions_manifest",
+  "phase": "fable5-launch-acceleration",
+  "generated_at": "2026-07-01",
+  "metadata_only": true,
+  "body_text_included": false,
+  "decisions": [
+    {
+      "id": "O1",
+      "title": "Approve E14C corpus-admin review execution",
+      "recommendation": "approve",
+      "urgency": "immediate",
+      "unblocks": ["identity_resolution", "effectivity_resolution", "qa_signoff_execution", "extraction_qa_execution"]
+    },
+    {
+      "id": "O2",
+      "title": "Define the internal-QA display tier (which rows, which tier, after reload)",
+      "recommendation": "approve_narrow_default_statutes_and_rules_internal_qa_tier_only",
+      "urgency": "before_E15_completion",
+      "unblocks": ["internal_qa_display_tier_promotion"]
+    },
+    {
+      "id": "O3",
+      "title": "TRE scope-filter mechanism (app-layer now vs RPC revision)",
+      "recommendation": "app_layer_filter_now_rpc_revision_later",
+      "urgency": "before_integration_build",
+      "unblocks": ["tre_limited_scope_retrieval_enforcement"]
+    },
+    {
+      "id": "O4",
+      "title": "Black-letter display ruling for Lexis-exported statute text",
+      "recommendation": "no_default_owner_or_counsel_judgment_required",
+      "urgency": "before_any_display_promotion",
+      "unblocks": ["internal_qa_display_tier_promotion"]
+    },
+    {
+      "id": "O5",
+      "title": "Fence E6 rehearsal migrations out of supabase/migrations/",
+      "recommendation": "approve",
+      "urgency": "before_any_future_db_push_by_anyone",
+      "unblocks": ["migration_history_caveat_resolution_partial"]
+    },
+    {
+      "id": "O6",
+      "title": "Approve E15 preview reload (rollback retained batch, load patched corpus, preview only)",
+      "recommendation": "defer_until_E14C_output_and_rehearsal_evidence",
+      "urgency": "after_E14C",
+      "unblocks": ["preview_reload_with_patched_metadata"]
+    },
+    {
+      "id": "O7",
+      "title": "Approve app-integration build under contract C1-C14",
+      "recommendation": "defer_until_reloaded_preview_passes_re_qa",
+      "urgency": "after_O6_executed",
+      "unblocks": ["app_integration_contract_implementation", "judicial_guardrails_proven_on_db_backed_path"]
+    },
+    {
+      "id": "O8",
+      "title": "Approve internal QA launch",
+      "recommendation": "defer_final_gate",
+      "urgency": "after_harness_green_twice",
+      "unblocks": ["internal_qa_sessions"]
+    }
+  ],
+  "single_decision_needed_today": "O1",
+  "detail_document": "docs/fable5-launch-acceleration/15_OWNER_DECISION_PACKET.md"
+}

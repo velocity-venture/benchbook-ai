@@ -1,0 +1,54 @@
+{
+  "artifact": "mock_guardrail_service_contract",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "design_only_no_code_written_in_f5_03",
+  "target_files": [
+    "app/src/lib/qa-research/guardrail.ts",
+    "app/src/lib/qa-research/guardrail-patterns.json"
+  ],
+  "derives_from": "docs/fable5-app-integration-readiness/contracts/guardrail_pipeline_contract.json (C8, C9) and mock-harness guardrail_gauntlet_scenarios (GG-01..GG-12); extends app/src/lib/scope-guard.ts pattern classes without modifying that file",
+  "stages": {
+    "pre_retrieval": [
+      {"id": "GP-1", "check": "excluded statutory titles 39/40/55 with statutory context"},
+      {"id": "GP-2", "check": "excluded topics: adult criminal, DUI/traffic"},
+      {"id": "GP-3", "check": "web retrieval / external source requests"},
+      {"id": "GP-4", "check": "general legal knowledge requests outside the closed universe"},
+      {"id": "GP-5", "check": "ruling requests: asks the system to decide the case"},
+      {"id": "GP-6", "check": "credibility determinations about parties or witnesses"},
+      {"id": "GP-7", "check": "extra-record fact requests about named individuals"},
+      {"id": "GP-8", "check": "prompt injection markers in query or conversation window"},
+      {"id": "GP-9", "check": "juvenile-context override rules borrowed from scope-guard JUVENILE_CONTEXT_PATTERN, extended per doc 07"}
+    ],
+    "post_retrieval": [
+      {"id": "GQ-1", "check": "zero displayable results = no_authority_support refusal"},
+      {"id": "GQ-2", "check": "all results future_effective = future_effective_only refusal"},
+      {"id": "GQ-3", "check": "all results gated/restricted = restricted_display_only refusal"},
+      {"id": "GQ-4", "check": "answer_scope mix validation: guardrail_reference_only rows cannot ground a general answer"},
+      {"id": "GQ-5", "check": "as-of-date window sanity vs effectivity metadata"}
+    ],
+    "post_generation": [
+      {"id": "GA-1", "check": "every citation in the draft resolves through citation-verifier.ts against adapter envelopes"},
+      {"id": "GA-2", "check": "no uncited authority claims (sentence-level support scan)"},
+      {"id": "GA-3", "check": "scope leakage scan: excluded titles/topics reintroduced by the model"},
+      {"id": "GA-4", "check": "refusal-conversion: any GA failure converts the response to unsupported_answer refusal, never a degraded answer"}
+    ]
+  },
+  "fail_closed_rules": [
+    "pattern file load failure disables answering entirely (error envelope), not guardrails (GG-11)",
+    "classifier exception = refusal, not pass-through (GG-12)",
+    "multi-turn window is re-screened every turn; a passing turn cannot whitelist a later tripping turn (GG-09, GG-10)"
+  ],
+  "pattern_data_design": {
+    "file": "guardrail-patterns.json",
+    "contains": "regex source strings + class labels + refusal_kind mapping; no legal body text; SYNTHETIC test triggers namespaced under synthetic_triggers",
+    "loading": "parsed once at module init with schema guard; compiled patterns cached"
+  },
+  "outputs": {
+    "type": "GuardrailVerdict",
+    "fields": ["stage", "rule_id", "verdict pass|refuse|error", "refusal_kind", "matched_class"],
+    "audit": "every refuse verdict produces a refusal record write before the envelope is emitted"
+  }
+}

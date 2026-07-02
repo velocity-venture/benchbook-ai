@@ -1,0 +1,33 @@
+{
+  "manifest": "mock_implementation_readiness_manifest",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "readiness_question": "can the M1 mock-only feature branch start as soon as the owner approves M-1?",
+  "readiness_verdict": "ready_pending_owner_decisions",
+  "prerequisites_met": [
+    {"item": "route/API boundary defined", "where": "mock-backend-design/mock_legal_retrieval_route_contract.json + doc 04"},
+    {"item": "adapter interface locked", "where": "mock-backend-design/mock_legal_retrieval_service_contract.json (LegalRetrievalAdapter)"},
+    {"item": "guardrail stage map locked", "where": "mock-backend-design/mock_guardrail_service_contract.json (GP-1..GP-9, GQ-1..GQ-5, GA-1..GA-4)"},
+    {"item": "citation verification rules locked", "where": "mock-backend-design/mock_citation_validator_contract.json"},
+    {"item": "audit record kinds and fail-closed rules locked", "where": "mock-backend-design/mock_audit_logger_contract.json"},
+    {"item": "environment target + labeling rules locked", "where": "mock-backend-design/mock_environment_label_contract.json"},
+    {"item": "fixture namespace + SYNTHETIC rules locked", "where": "mock-backend-design/mock_fixture_design.json"},
+    {"item": "scenario canon exists (57 scenarios)", "where": "docs/fable5-app-integration-readiness/mock-harness/ (F5-02, committed a918f6b)"},
+    {"item": "file-level create/modify/forbidden maps", "where": "file-maps/ (27 create, 3 modify, forbidden categories)"},
+    {"item": "13-step commit sequence S1-S13", "where": "15_MOCK_ONLY_IMPLEMENTATION_SEQUENCE.md"},
+    {"item": "implementer prompt drafted", "where": "17_NEXT_CODEX_MOCK_IMPLEMENTATION_PROMPT.md"}
+  ],
+  "blocking_owner_decisions": [
+    {"id": "M-1", "decision": "approve the mock-only implementation phase (F5-04/M1) strictly per this package's file maps and sequence", "blocking": true},
+    {"id": "M-2", "decision": "ratify the M1 policy defaults as a block (citation demote rule, participant-check default, flag default false, SYNTHETIC marker convention)", "blocking": true},
+    {"id": "M-3", "decision": "branch preference; defaults to feature/qa-research-mock-only if unstated", "blocking": false}
+  ],
+  "explicitly_not_ready_and_not_requested": [
+    "live database adapter (F5-05, gated O6+O2+O7)",
+    "preview corpus connection (0 displayable rows; corpus-side gates unchanged)",
+    "production display enablement (owner-only, separate launch approval)"
+  ],
+  "stop_conditions_inherited": "SC-1..SC-12 defined in docs/fable5-app-integration-readiness/14_APP_INTEGRATION_STOP_CONDITIONS.md; SC-11 scope-creep rule armed by the file-maps out-of-scope rule; M1 risks R1..R12 in 14_APP_CODE_CHANGE_RISK_REGISTER.md"
+}

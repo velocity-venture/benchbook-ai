@@ -84,7 +84,7 @@ export async function toggleFeedback(
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Unauthorized");
 
-  const { data: existing } = await supabase
+  const { data: existing, error: lookupError } = await supabase
     .from("chat_feedback")
     .select("id")
     .eq("message_id", messageId)
@@ -92,15 +92,19 @@ export async function toggleFeedback(
     .eq("user_id", user.id)
     .maybeSingle();
 
+  if (lookupError) throw new Error("Failed to toggle feedback");
+
   if (existing) {
-    await supabase.from("chat_feedback").delete().eq("id", existing.id);
+    const { error } = await supabase.from("chat_feedback").delete().eq("id", existing.id);
+    if (error) throw new Error("Failed to toggle feedback");
     return { action: "removed" as const };
   } else {
-    await supabase.from("chat_feedback").insert({
+    const { error } = await supabase.from("chat_feedback").insert({
       user_id: user.id,
       message_id: messageId,
       feedback_type: feedbackType,
     });
+    if (error) throw new Error("Failed to toggle feedback");
     return { action: "added" as const };
   }
 }

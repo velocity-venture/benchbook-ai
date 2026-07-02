@@ -1,0 +1,14 @@
+{
+  "artifact": "mock_environment_target_scenarios",
+  "phase": "F5-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "scenarios": [
+    {"scenario_id": "ME-01", "category": "qa_banner_presence", "setup": "internal-QA tier build renders any answer or refusal", "expected": {"banner_text": "INTERNAL QA - NOT FOR JUDICIAL RELIANCE", "banner_dismissable": false, "absence_is_stop_condition": "SC-7"}, "tiers": ["T1", "T3"]},
+    {"scenario_id": "ME-02", "category": "header_target_chip", "setup": "any request on a pinned target", "expected": {"target_rendered_in_header": true, "target_rendered_on_source_cards": true}, "tiers": ["T1", "T3"]},
+    {"scenario_id": "ME-03", "category": "target_echo_match", "setup": "response echo equals pinned config", "expected": {"match_verified_per_request": true}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "ME-04", "category": "production_sentinel_refusal", "setup": "config mistakenly pins production_prohibited", "expected": {"every_request_refuses": true, "variant": "target_control", "boot_alert": true}, "tiers": ["T1"]},
+    {"scenario_id": "ME-05", "category": "target_mismatch_refusal", "setup": "fixture returns an echo differing from the pinned target", "expected": {"refusal": true, "variant": "target_control", "alert": true, "stop_condition": "SC-1"}, "tiers": ["T1"]},
+    {"scenario_id": "ME-06", "category": "boot_time_validation", "setup": "boot with missing target pin, invalid model ids, or qa-mode flag defaulted on", "expected": {"boot_fails_fast": true, "route_unavailable": true, "stop_condition": "SC-9"}, "tiers": ["T1"]}
+  ]
+}

@@ -1,6 +1,6 @@
 # BenchBook.AI
 
-Premium judicial productivity platform designed by Judge M.O. Eckel III for modern court operations. AI-powered legal research assistant built specifically for Tennessee state court judges.
+Premium Tennessee judicial research platform designed by Judge M.O. Eckel III for live courtroom use. BenchBook.AI is focused on Tennessee Juvenile and Family Court research, not broad case management.
 
 ## What It Does
 
@@ -9,7 +9,7 @@ BenchBook.AI provides instant, bench-ready legal research using Claude AI with d
 **Key capabilities:**
 - **AI Legal Research** : Ask questions about TCA, TRJPP rules, DCS policies
 - **Citation Verification** : Every statute citation is cross-referenced against the loaded legal corpus
-- **Hallucination Guard** : Confidence scoring (HIGH/MEDIUM/LOW) flags unverified citations and case law
+- **Hallucination Guard** : Confidence scoring (HIGH/MEDIUM/LOW) flags unverified citations and unverifiable case references
 - **Smart Model Routing** : Complex queries use Claude Sonnet; simple lookups use Haiku for cost efficiency
 - **Bench Cards** : One-click common queries for detention, sentencing, DCS removal, and procedure
 
@@ -68,8 +68,8 @@ cp .env.example .env.local
 npm run dev
 ```
 
-### Without API Keys (Demo Mode)
-If `USE_CLAUDE_API` is not set or the Anthropic key is missing, the app runs in demo mode with hardcoded responses for common queries.
+### Without API Keys
+The chat API requires `USE_CLAUDE_API=true` and `ANTHROPIC_API_KEY`. Missing configuration returns a clear server error instead of an unverified demo answer.
 
 ## Legal Corpus
 
@@ -89,7 +89,8 @@ See [legal-corpus/README.md](legal-corpus/README.md) for details on expanding th
 | Plan | Price | Users |
 |------|-------|-------|
 | Solo | $69/month | Individual judge |
-| Court | $199/month | Up to 5 staff |
+| Court | $229/month or $2,290/year | Up to 4 named users |
+| Enterprise | Custom | 5 or more users, multi-judge deployments, or large court systems |
 
 ## Testing
 
@@ -101,9 +102,9 @@ npm run test:watch  # Watch mode
 
 ## Target Market
 
-- **Primary:** Tennessee state court judges (General Sessions, Circuit, Juvenile)
-- **Expansion:** Southeastern US, then national
-- **Positioning:** Judge-built, judge-priced alternative to enterprise solutions like Learned Hand
+- **Primary:** Tennessee juvenile court and family-court-adjacent judges
+- **Secondary:** Small court teams within plan limits
+- **Enterprise:** Larger counties or court systems that need 5 or more users
 
 ---
 

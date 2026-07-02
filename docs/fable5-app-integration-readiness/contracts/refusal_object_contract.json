@@ -1,0 +1,64 @@
+{
+  "contract": "refusal_object",
+  "version": "1.0.0-f502",
+  "phase": "F5-02",
+  "nature": "schema_like_example_not_executable_code",
+  "metadata_only": true,
+  "body_text_included": false,
+  "spec_document": "docs/fable5-app-integration-readiness/05_REFUSAL_AND_NO_AUTHORITY_CONTRACT_SPEC.md",
+  "required_fields": [
+    "refusal_id",
+    "refusal_kind",
+    "refusal_variant",
+    "stage",
+    "user_message_key",
+    "permissible_help",
+    "audit",
+    "environment_target"
+  ],
+  "field_rules": {
+    "refusal_kind": {
+      "enum": [
+        "out_of_scope",
+        "no_authority_support",
+        "future_effective_only",
+        "restricted_display_only",
+        "unsupported_answer",
+        "safety_guardrail"
+      ],
+      "rule": "must match the refusal_records schema enum exactly"
+    },
+    "stage": {
+      "enum": ["pre_retrieval", "retrieval", "post_generation"]
+    },
+    "user_message_key": {
+      "rule": "template key only; user-facing wording comes from owner-reviewed template files, never free generation"
+    },
+    "matched_terms": {
+      "rule": "hashed in production mode; plain terms only in QA mode under owner flag"
+    },
+    "invariants": [
+      "every refusal writes a refusal_records row including pre-model refusals",
+      "refusal wording never contains legal substance or restricted metadata",
+      "permissible help is always offered",
+      "a refusal never blocks the next valid query"
+    ]
+  },
+  "example": {
+    "refusal_id": "00000000-0000-4000-8000-0000000000r1",
+    "refusal_kind": "out_of_scope",
+    "refusal_variant": "excluded_title",
+    "stage": "pre_retrieval",
+    "user_message_key": "refusal.excluded_title.v1",
+    "permissible_help": [
+      "locate_authorities_within_v1_corpus",
+      "open_corpus_browsers"
+    ],
+    "matched_terms_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "audit": {
+      "retrieval_log_id": null,
+      "refusal_record_id": "00000000-0000-4000-8000-0000000000r1"
+    },
+    "environment_target": "preview_internal_qa"
+  }
+}

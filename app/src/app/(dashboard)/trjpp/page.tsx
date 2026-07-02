@@ -16,10 +16,10 @@ import {
 import { trjppRules, searchTRJPP, type TRJPPRule } from "@/lib/trjpp-data";
 
 const partGroups = [
-  { partNum: 1, label: "Part 1 — General Provisions", color: "text-orange-400 border-orange-500" },
-  { partNum: 2, label: "Part 2 — Delinquent and Unruly Children", color: "text-orange-400 border-orange-500" },
-  { partNum: 3, label: "Part 3 — Dependent, Neglected, and Abused Children", color: "text-orange-400 border-orange-500" },
-  { partNum: 4, label: "Part 4 — Foster Care Review Board", color: "text-orange-400 border-orange-500" },
+  { partNum: 1, label: "Part 1 - General Provisions", color: "text-orange-400 border-orange-500" },
+  { partNum: 2, label: "Part 2 - Delinquent and Unruly Children", color: "text-orange-400 border-orange-500" },
+  { partNum: 3, label: "Part 3 - Dependent, Neglected, and Abused Children", color: "text-orange-400 border-orange-500" },
+  { partNum: 4, label: "Part 4 - Foster Care Review Board", color: "text-orange-400 border-orange-500" },
 ];
 
 export default function TRJPPPage() {
@@ -123,7 +123,7 @@ export default function TRJPPPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">TRJPP Rules</h1>
           <p className="text-slate-400">
-            {trjppRules.length} rules — Tennessee Rules of Juvenile Practice and Procedure
+            {trjppRules.length} rules - Tennessee Rules of Juvenile Practice and Procedure
           </p>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-500">

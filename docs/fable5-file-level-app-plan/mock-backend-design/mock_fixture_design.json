@@ -1,0 +1,35 @@
+{
+  "artifact": "mock_fixture_design",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "design_only_no_code_written_in_f5_03",
+  "target_file": "app/src/lib/qa-research/mock-fixtures.json",
+  "derives_from": "docs/fable5-app-integration-readiness/mock-harness/ scenario canon (57 scenarios: MR, RF, MC, GG, MA, ME families)",
+  "cardinal_rule": "every fixture is SYNTHETIC: invented section numbers in reserved ranges, citation_display strings prefixed 'SYNTHETIC', and no text copied from any real statute, rule, policy, or the generated corpus under data/ingestion-expanded/",
+  "synthetic_namespace": {
+    "tca_like": "TCA 36-9-9xx and 37-9-9xx reserved fake ranges (no real sections exist there)",
+    "trjpp_like": "TRJPP Rule 9xx fake range",
+    "tre_like": "TRE Rule 9xx fake range, answer_scope limited_evidentiary_procedural",
+    "dcs_like": "DCS-SYN-xxx policy ids, answer_scope guardrail_reference_only",
+    "body_stub": "fixture 'excerpt' fields, where a scenario requires one, contain lorem-style SYNTHETIC sentences only"
+  },
+  "fixture_groups": [
+    {"group": "displayable_answerable", "count_estimate": 12, "serves": "MR-01..MR-03, MC-01..MC-03, MA-01..MA-02, happy-path answer envelopes"},
+    {"group": "gated_rows", "count_estimate": 8, "serves": "MR-04..MR-05, RF-05, restricted_display_only refusals; envelopes expose gate flags, never content"},
+    {"group": "scope_restricted", "count_estimate": 8, "serves": "MR-06, RF-12 (DCS guardrail_reference_only), RF-13 (TRE limited scope), GQ-4 mix validation"},
+    {"group": "future_effective", "count_estimate": 4, "serves": "MR-08, RF-11, GQ-2 as-of-date refusals; effectivity windows straddling the test as_of_date"},
+    {"group": "granularity_ladder", "count_estimate": 6, "serves": "MC-04..MC-05 parent/child clamp cases; parent chunk plus claimed-subsection mismatch"},
+    {"group": "empty_and_miss", "count_estimate": 4, "serves": "MR-07, RF-01 no_authority_support; queries mapped to zero envelopes"},
+    {"group": "failure_triggers", "count_estimate": 5, "serves": "MR-09 timeout, MR-10 malformed, MA-06..MA-07 sink rejection, GG-11 pattern-load failure; reserved SYNTHETIC trigger query strings"},
+    {"group": "environment_probe", "count_estimate": 2, "serves": "ME-02..ME-03 healthProbe payloads with fixture_manifest_hash"}
+  ],
+  "shape": {
+    "top_level": ["fixture_manifest_hash", "generated_from_scenario_canon", "aliases[]", "chunks[]", "trigger_queries[]", "health"],
+    "alias_entry": "normalized_alias, authority_key, family_code, answer_scope, gate flags, effectivity window",
+    "chunk_entry": "chunk_ref, authority_key, citation_display (SYNTHETIC-prefixed), answer_scope, verification_level, gate flags, optional synthetic excerpt",
+    "sync_rule": "scenario ids referenced by fixtures must exist in the synced scenario copies under app/src/__tests__/qa-research/scenarios/; scenario-sync.test.ts enforces sha256 equality with the F5-02 canon"
+  },
+  "maintenance": "fixtures change only alongside a scenario-canon change in a reviewed commit; fixture_manifest_hash recomputed and surfaced through healthProbe so drift is visible in the UI target chip"
+}

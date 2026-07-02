@@ -26,6 +26,12 @@ legal-corpus/tca/*.html
 legal-corpus/dcs/*.pdf
 legal-corpus/trjpp/all-rules.txt
 
+# Source-of-record raw files — licensed LexisNexis exports and DCS PDFs.
+# Never commit these to ordinary git. The committed record is the manifest
+# under data/source-manifest/ (see docs/source-manifest/).
+Benchbook.ai Database Files/
+legal-corpus/source-of-record/
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -40,3 +46,10 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# BenchBook.AI generated ingestion pilot outputs containing derivative legal text
+data/ingestion-pilot/
+
+# BenchBook.AI Phase C expansion outputs (derivative legal text — not committed
+# pending the storage/licensing decision)
+data/ingestion-expanded/

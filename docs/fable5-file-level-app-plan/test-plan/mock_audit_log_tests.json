@@ -1,0 +1,23 @@
+{
+  "artifact": "mock_audit_log_tests",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "test_file": "app/src/__tests__/qa-research/qa-route-audit.test.ts",
+  "scenario_source": "synced scenario copy of mock_audit_scenarios.json (MA-01..MA-07)",
+  "cases": [
+    {"id": "MA-01", "asserts": "answer path writes retrieval_log then citation_verification_records then answer_audit_record, in that order, before the envelope is emitted"},
+    {"id": "MA-02", "asserts": "refusal path writes retrieval_log (when adapter was reached) and refusal_record; pre-retrieval refusals write refusal_record only"},
+    {"id": "MA-03", "asserts": "hash-only default: records contain query sha256, no raw query text, no excerpt fields"},
+    {"id": "MA-04", "asserts": "excerpt opt-in flag adds bounded excerpt; flag absent or non-'true' stays hash-only"},
+    {"id": "MA-05", "asserts": "trace_id identical across all records of one request; getRecords(trace_id) reconstructs the full sequence"},
+    {"id": "MA-06", "asserts": "sink rejection on answer_audit_record converts the response to error envelope; no unaudited answer escapes"},
+    {"id": "MA-07", "asserts": "partial-sequence failure (later write fails after earlier succeeded) also converts to error; earlier records remain for forensics"}
+  ],
+  "invariants": [
+    "no audit record ever contains legal body text or fixture excerpt content in hash-only mode",
+    "audit_record_ref in every envelope resolves to a record in the mock sink"
+  ]
+}

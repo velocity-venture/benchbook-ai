@@ -1,0 +1,27 @@
+{
+  "artifact": "mock_retrieval_tests",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "test_file": "app/src/__tests__/qa-research/qa-route-retrieval.test.ts",
+  "harness": "vitest defaults via npm test; importRouteWithMocks pattern; adapter/model/audit/environment injected via factories; vi.mock only for Supabase auth boundary",
+  "scenario_source": "synced scenario copy of mock_retrieval_scenarios.json (MR-01..MR-10)",
+  "cases": [
+    {"id": "MR-01", "asserts": "single-alias displayable hit returns answer envelope with that authority's citation_display and environment_echo.mock=true"},
+    {"id": "MR-02", "asserts": "multi-alias query returns envelopes for each resolved alias; unresolved alias appears as miss, not error"},
+    {"id": "MR-03", "asserts": "searchChunks path returns clamped list; limit request of 200 yields at most 50 envelopes"},
+    {"id": "MR-04", "asserts": "gated row (deny_until_approved) yields restricted_display_only refusal; response contains no chunk metadata beyond gate summary"},
+    {"id": "MR-05", "asserts": "row with production_display_status blocking yields the same gated refusal; no partial content leak"},
+    {"id": "MR-06", "asserts": "guardrail_reference_only (DCS-like) rows alone cannot produce a general answer envelope"},
+    {"id": "MR-07", "asserts": "zero-envelope query returns no_authority_support refusal, never a model-knowledge answer"},
+    {"id": "MR-08", "asserts": "future-effective-only result set with earlier as_of_date returns future_effective_only refusal and echoes as_of_date_used"},
+    {"id": "MR-09", "asserts": "adapter timeout trigger returns error envelope with retriable=true; no answer, no refusal misclassification"},
+    {"id": "MR-10", "asserts": "malformed adapter payload fails schema guard and returns error envelope; nothing from the malformed payload reaches the prompt"}
+  ],
+  "cross_checks": [
+    "every answer envelope in this file also asserts audit_record_ref present",
+    "as_of_date passthrough verified by fixed date injection, no wall-clock reads"
+  ]
+}

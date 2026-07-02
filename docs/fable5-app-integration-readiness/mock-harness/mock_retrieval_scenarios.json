@@ -1,0 +1,109 @@
+{
+  "artifact": "mock_retrieval_scenarios",
+  "phase": "F5-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "schema_note": "fixture rows carry metadata and placeholder passages only; scripted_generation_profile drives the mock model client",
+  "scenarios": [
+    {
+      "scenario_id": "MR-01",
+      "category": "exact_citation_hit",
+      "description": "Query names one in-corpus Title 37 citation; alias lookup resolves; one displayable current chunk returned",
+      "request": {"retrieval_mode": "exact_citation", "family_filter": ["tca_title_37"], "answer_scope_intent": "general_answer"},
+      "fixture": {"alias_resolutions": 1, "fts_rows": 0, "gate_flags_all_true": true},
+      "scripted_generation_profile": "well_behaved",
+      "expected": {"outcome": "results", "response_class": "ANSWER", "citation_levels": ["verified_retrieved"], "audit_calls": ["retrieval_logs", "answer_audit_records", "citation_verification_records"]},
+      "tiers": ["T1", "T2", "T3"]
+    },
+    {
+      "scenario_id": "MR-02",
+      "category": "full_text_hit",
+      "description": "Topical Title 36 query with no citation; FTS returns three displayable rows",
+      "request": {"retrieval_mode": "full_text", "family_filter": ["tca_title_36"], "answer_scope_intent": "general_answer"},
+      "fixture": {"alias_resolutions": 0, "fts_rows": 3, "gate_flags_all_true": true},
+      "scripted_generation_profile": "well_behaved",
+      "expected": {"outcome": "results", "response_class": "ANSWER", "citation_levels": ["verified_retrieved"]},
+      "tiers": ["T1", "T2", "T3"]
+    },
+    {
+      "scenario_id": "MR-03",
+      "category": "combined_exact_plus_fts",
+      "description": "Citation plus topical terms; exact anchor plus FTS support merge without duplicates",
+      "request": {"retrieval_mode": "exact_citation", "family_filter": ["tca_title_37"], "answer_scope_intent": "general_answer"},
+      "fixture": {"alias_resolutions": 1, "fts_rows": 2, "duplicate_chunk_between_paths": true},
+      "scripted_generation_profile": "well_behaved",
+      "expected": {"outcome": "results", "deduplicated": true},
+      "tiers": ["T1", "T2"]
+    },
+    {
+      "scenario_id": "MR-04",
+      "category": "tre_in_scope",
+      "description": "Evidentiary intent query (hearsay-topic category); TRE family included; TRE rows allowed in answer_support",
+      "request": {"family_filter": ["tenn_rules_evidence"], "answer_scope_intent": "evidentiary_procedural"},
+      "fixture": {"fts_rows": 2, "all_rows_family": "tenn_rules_evidence"},
+      "scripted_generation_profile": "well_behaved",
+      "expected": {"outcome": "results", "answer_support_families": ["tenn_rules_evidence"], "scope_tags": ["evidentiary"]},
+      "tiers": ["T1", "T2", "T3"]
+    },
+    {
+      "scenario_id": "MR-05",
+      "category": "tre_out_of_intent",
+      "description": "General intent query; TRE excluded from family_filter at request time; a TRE row injected into the fixture result set must be dropped by GQ-2",
+      "request": {"family_filter": ["tca_title_37"], "answer_scope_intent": "general_answer"},
+      "fixture": {"fts_rows": 2, "injected_out_of_filter_family": "tenn_rules_evidence"},
+      "scripted_generation_profile": "well_behaved",
+      "expected": {"tre_rows_in_answer_support": 0, "gq2_drop_logged": true},
+      "tiers": ["T1"]
+    },
+    {
+      "scenario_id": "MR-06",
+      "category": "dcs_reference_divert",
+      "description": "DCS policy topic query; DCS rows returned; all divert to reference_material envelope",
+      "request": {"family_filter": ["dcs_policies_procedures"], "answer_scope_intent": "reference_only"},
+      "fixture": {"fts_rows": 2, "all_rows_family": "dcs_policies_procedures", "all_rows_scope": "guardrail_reference_only"},
+      "scripted_generation_profile": "well_behaved",
+      "expected": {"response_class": "REFERENCE", "answer_support_count": 0, "reference_material_count": 2, "reference_labels": ["not_controlling_authority"]},
+      "tiers": ["T1", "T2", "T3"]
+    },
+    {
+      "scenario_id": "MR-07",
+      "category": "zero_results_refusal",
+      "description": "Valid in-scope query; retrieval returns zero rows; mandatory no-authority refusal with no fallback prose",
+      "request": {"retrieval_mode": "full_text", "family_filter": ["tca_title_36"], "answer_scope_intent": "general_answer"},
+      "fixture": {"alias_resolutions": 0, "fts_rows": 0},
+      "scripted_generation_profile": "not_called",
+      "expected": {"outcome": "no_authority", "response_class": "REFUSE_NO_AUTHORITY", "refusal_kind": "no_authority_support", "model_called": false, "audit_calls": ["retrieval_logs", "refusal_records"]},
+      "tiers": ["T1", "T2", "T3"]
+    },
+    {
+      "scenario_id": "MR-08",
+      "category": "retrieval_error_fail_closed",
+      "description": "Mock adapter throws; route fails closed with retrieval_error refusal variant; audit still written",
+      "request": {"retrieval_mode": "full_text", "family_filter": ["tca_title_37"], "answer_scope_intent": "general_answer"},
+      "fixture": {"adapter_throws": true},
+      "scripted_generation_profile": "not_called",
+      "expected": {"response_class": "REFUSE_NO_AUTHORITY", "refusal_variant": "retrieval_error", "model_called": false, "no_partial_answer": true},
+      "tiers": ["T1", "T2"]
+    },
+    {
+      "scenario_id": "MR-09",
+      "category": "as_of_conformity",
+      "description": "Fixture returns a row whose version window excludes the as-of date; GQ-4 raises internal-error refusal",
+      "request": {"as_of_date_category": "today", "family_filter": ["tca_title_37"], "answer_scope_intent": "general_answer"},
+      "fixture": {"fts_rows": 1, "row_version_window_excludes_as_of": true},
+      "scripted_generation_profile": "not_called",
+      "expected": {"gq4_failure": true, "response_class": "REFUSE_NO_AUTHORITY", "defect_alert": true},
+      "tiers": ["T1", "T2"]
+    },
+    {
+      "scenario_id": "MR-10",
+      "category": "result_limit_clamp",
+      "description": "Request limit above cap is clamped to 50 before the adapter call",
+      "request": {"result_limit_category": "above_cap", "family_filter": ["tca_title_36"], "answer_scope_intent": "general_answer"},
+      "fixture": {"fts_rows": 5},
+      "scripted_generation_profile": "well_behaved",
+      "expected": {"adapter_called_with_limit": 50},
+      "tiers": ["T1"]
+    }
+  ]
+}

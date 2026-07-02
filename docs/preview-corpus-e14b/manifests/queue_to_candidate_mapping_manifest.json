@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-06-29",
+  "mappings": [
+    {
+      "candidate_artifact": "unresolved_identity_patch_map_candidate.csv",
+      "default_decision_status": "pending_corpus_admin_review",
+      "default_production_impact": "blocks_app_integration_or_display_until_resolved",
+      "default_proposed_action": "review_identity_metadata",
+      "expected_rows": 38,
+      "observed_rows": 38,
+      "source_queues": [
+        "unresolved_identity_units.csv",
+        "unresolved_identity_chunks.csv"
+      ]
+    },
+    {
+      "candidate_artifact": "unknown_effectivity_patch_map_candidate.csv",
+      "default_decision_status": "pending_effectivity_review",
+      "default_production_impact": "exclude_from_display_until_resolved",
+      "default_proposed_action": "verify_effective_date_or_exclude_from_production",
+      "expected_rows": 54,
+      "observed_rows": 54,
+      "source_queues": [
+        "unknown_effectivity_versions.csv",
+        "unknown_effectivity_chunks.csv"
+      ]
+    },
+    {
+      "candidate_artifact": "qa_signoff_decision_register_candidate.csv",
+      "default_decision_status": "pending_qa_signoff",
+      "default_production_impact": "non_displayable_until_signoff",
+      "default_proposed_action": "corpus_admin_signoff_required",
+      "expected_rows": 439,
+      "observed_rows": 439,
+      "source_queues": [
+        "qa_signoff_required_versions_summary.csv"
+      ]
+    },
+    {
+      "candidate_artifact": "dcs_document_anchored_mapping_candidate.csv",
+      "default_decision_status": "guardrail_reference_only_pending_mapping",
+      "default_production_impact": "production_answer_authority_prohibited",
+      "default_proposed_action": "manual_dcs_mapping_or_keep_guardrail_only",
+      "expected_rows": 1146,
+      "observed_rows": 1146,
+      "source_queues": [
+        "dcs_document_anchored_summary.csv"
+      ]
+    },
+    {
+      "candidate_artifact": "restricted_lexis_disposition_register_candidate.csv",
+      "default_decision_status": "restricted_internal_qa_only",
+      "default_production_impact": "non_displayable",
+      "default_proposed_action": "license_display_review_required",
+      "expected_rows": 2392,
+      "observed_rows": 2392,
+      "source_queues": [
+        "restricted_lexis_content_summary.csv"
+      ]
+    },
+    {
+      "candidate_artifact": "pending_extraction_qa_decision_register_candidate.csv",
+      "default_decision_status": "pending_extraction_qa",
+      "default_production_impact": "non_displayable",
+      "default_proposed_action": "verify_extraction_before_any_display",
+      "expected_rows": 4198,
+      "observed_rows": 4198,
+      "source_queues": [
+        "pending_extraction_qa_summary.csv"
+      ]
+    },
+    {
+      "candidate_artifact": "dcs_handbook_reconciliation_evidence_register_candidate.csv",
+      "default_decision_status": "evidence_required",
+      "default_production_impact": "blocks_resolution_of_historical_dcs_source_gap",
+      "default_proposed_action": "verify_source_status_and_extraction_path",
+      "expected_rows": 8,
+      "observed_rows": 8,
+      "source_queues": [
+        "dcs_handbook_reconciliation_checklist.csv"
+      ]
+    }
+  ],
+  "phase": "E14-B"
+}

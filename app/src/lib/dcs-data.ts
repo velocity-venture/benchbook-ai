@@ -13,7 +13,7 @@ export interface DCSPolicy {
 
 export const dcsPolicies: DCSPolicy[] = [
   // ========================================
-  // CHAPTER 9 — CONFIDENTIALITY
+  // CHAPTER 9 - CONFIDENTIALITY
   // ========================================
   {
     id: "9.5",
@@ -36,7 +36,7 @@ export const dcsPolicies: DCSPolicy[] = [
   },
 
   // ========================================
-  // CHAPTER 14 — CHILD PROTECTIVE SERVICES
+  // CHAPTER 14 - CHILD PROTECTIVE SERVICES
   // ========================================
   {
     id: "14.1",
@@ -359,7 +359,7 @@ export const dcsPolicies: DCSPolicy[] = [
   },
 
   // ========================================
-  // CHAPTER 16 — FOSTER CARE
+  // CHAPTER 16 - FOSTER CARE
   // ========================================
   {
     id: "16.2",

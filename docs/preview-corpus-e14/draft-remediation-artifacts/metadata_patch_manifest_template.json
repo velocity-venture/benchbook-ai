@@ -1,0 +1,53 @@
+{
+  "phase": "E14-A",
+  "artifact_status": "template_only",
+  "metadata_only": true,
+  "body_text_allowed": false,
+  "remote_write_allowed": false,
+  "corpus_load_allowed": false,
+  "embedding_generation_allowed": false,
+  "app_integration_allowed": false,
+  "display_gate_change_allowed": false,
+  "v1_scope": [
+    "tca_title_36",
+    "tca_title_37",
+    "tenn_rules_juvenile_practice_procedure",
+    "tenn_rules_evidence_limited_scope",
+    "dcs_policies_guardrail_reference_only",
+    "optional_private_local_juvenile_rules_future_overlay"
+  ],
+  "required_csv_artifacts": [
+    "unresolved_identity_patch_map_template.csv",
+    "unknown_effectivity_patch_map_template.csv",
+    "qa_signoff_decision_register_template.csv",
+    "dcs_document_anchored_mapping_template.csv",
+    "restricted_lexis_disposition_register_template.csv",
+    "pending_extraction_qa_decision_register_template.csv",
+    "dcs_handbook_reconciliation_evidence_register_template.csv"
+  ],
+  "required_decision_fields": [
+    "proposed_action",
+    "decision_status",
+    "reviewer_role",
+    "reviewer_name",
+    "review_date",
+    "owner_escalation_required",
+    "production_impact",
+    "stop_condition"
+  ],
+  "allowed_decisions": [
+    "Adopt",
+    "Adopt with revision",
+    "Archive",
+    "Reject",
+    "Needs further review"
+  ],
+  "default_stop_conditions": [
+    "No legal body text in committed artifacts",
+    "No remote commands",
+    "No display promotion",
+    "No DCS production-answer authority without later approval",
+    "No restricted Lexis display without license and owner approval",
+    "No future or unknown-effectivity exposure before verification"
+  ]
+}

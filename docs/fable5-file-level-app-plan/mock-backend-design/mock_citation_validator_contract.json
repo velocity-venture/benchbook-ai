@@ -1,0 +1,34 @@
+{
+  "artifact": "mock_citation_validator_contract",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "design_only_no_code_written_in_f5_03",
+  "target_file": "app/src/lib/qa-research/citation-verifier.ts",
+  "derives_from": "docs/fable5-app-integration-readiness/contracts/citation_verification_contract.json (C6, C7) and mock-harness mock_citation_scenarios (MC-01..MC-08); patterns adapted from app/src/lib/citation-validator.ts without modifying that file",
+  "pipeline": [
+    "1 extract citation strings from the model draft (TCA sections, TRJPP rules, TRE rules, DCS policy ids)",
+    "2 normalize each to the alias normal form used by lookup_citation_alias",
+    "3 resolve each against the adapter envelopes already fetched for this request; a citation not present in this request's envelopes fails even if it exists in the corpus (no out-of-band authority)",
+    "4 clamp granularity: a chunk-level envelope cannot support a subsection-level citation claim (MC-04)",
+    "5 assign verification_level per citation: verified_exact, verified_parent, unverified",
+    "6 verdict: any unverified citation, or an answer with zero citations, converts to unsupported_answer refusal (T-CIT-MISSING, MC-08)"
+  ],
+  "verification_levels": {
+    "verified_exact": "alias resolved to the same authority_key and granularity as claimed",
+    "verified_parent": "resolved at parent granularity; rendered citation must display the parent form, not the claimed child form",
+    "unverified": "no resolution in this request's envelopes; fatal to the answer"
+  },
+  "rendering_rules": {
+    "display": "citation_display string from the adapter envelope verbatim; the model's own citation text is never rendered",
+    "synthetic_marker": "SYNTHETIC prefix on mock fixture citations must survive to the UI unaltered so no mock output can be mistaken for real authority (MC-06)",
+    "confidence_honesty": "answer confidence is capped by the weakest citation verification_level (MC-07)"
+  },
+  "audit": "each request writes citation verification records: one row per citation with level and resolution ref; write failure is fail-closed per audit contract",
+  "non_goals_m1": [
+    "no fuzzy matching beyond the normal form rules",
+    "no bluebook formatting engine; display strings come from envelopes",
+    "no cross-request citation cache"
+  ]
+}

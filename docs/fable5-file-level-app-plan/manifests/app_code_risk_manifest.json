@@ -1,0 +1,31 @@
+{
+  "manifest": "app_code_risk_manifest",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "mirrors": "14_APP_CODE_CHANGE_RISK_REGISTER.md",
+  "scope_note": "risks scored for the FUTURE M1 mock-only phase; no app code changed in F5-03",
+  "risks": [
+    {"id": "R1", "risk": "scope creep wires a real backend or flat-JSON corpus into the new graph", "likelihood": "medium", "impact": "critical", "mitigation": "structural blocks (doc 12); static tests first in sequence; prohibition list; SC-11"},
+    {"id": "R2", "risk": "legacy route regression via shared imports", "likelihood": "low", "impact": "high", "mitigation": "import-only use of trust libs; existing 14-file suite green every commit"},
+    {"id": "R3", "risk": "sidebar nav change breaks dashboard layout", "likelihood": "low", "impact": "low", "mitigation": "single conditional block; visual review"},
+    {"id": "R4", "risk": "types.ts drifts from F5-02 contract JSONs", "likelihood": "medium", "impact": "high", "mitigation": "contract-shape drift test in first commit; contracts amend first, code second"},
+    {"id": "R5", "risk": "local scenario copies edited without canon update", "likelihood": "medium", "impact": "medium", "mitigation": "scenario-sync sha256 test"},
+    {"id": "R6", "risk": "mock fixtures mistaken for real authority", "likelihood": "low", "impact": "medium", "mitigation": "SYNTHETIC marker mandatory; preservation test; fixture review"},
+    {"id": "R7", "risk": "Node-only API breaks edge runtime build", "likelihood": "medium", "impact": "medium", "mitigation": "edge constraints doc; next build gate; no new dependencies"},
+    {"id": "R8", "risk": "prompt contract drifts from spec", "likelihood": "medium", "impact": "medium", "mitigation": "SYSTEM_PROMPT_VERSION constant plus pinning test"},
+    {"id": "R9", "risk": "feature flag widens behavior (violates C13 narrow-only)", "likelihood": "low", "impact": "high", "mitigation": "flag gates availability/visibility only; flag-off 404 test"},
+    {"id": "R10", "risk": "touch-point files pick up unrelated edits", "likelihood": "medium", "impact": "low", "mitigation": "isolated commits in sequence; diff review"},
+    {"id": "R11", "risk": "test runtime bloat", "likelihood": "low", "impact": "low", "mitigation": "pure unit tests; under-30s target"},
+    {"id": "R12", "risk": "cloud-vs-Mac execution drift splits M1 work", "likelihood": "medium", "impact": "medium", "mitigation": "M1 designated single-environment work in the Codex prompt"}
+  ],
+  "top_watch": ["R1", "R4", "R8"],
+  "stop_conditions_reference": "docs/fable5-app-integration-readiness/14_APP_INTEGRATION_STOP_CONDITIONS.md (SC-1..SC-12)",
+  "f5_03_attestation": {
+    "app_code_modified": false,
+    "migrations_modified": false,
+    "database_contacted": false,
+    "secrets_used_or_printed": false
+  }
+}

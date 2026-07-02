@@ -1,0 +1,29 @@
+{
+  "artifact": "no_general_fallback_tests",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "objective": "prove the system never answers from model memory or any source outside the request's adapter envelopes",
+  "covered_by_files": [
+    "qa-route-retrieval.test.ts (MR-07)",
+    "qa-route-refusals.test.ts (RF-01, RF-14)",
+    "qa-route-citations.test.ts (MC-08, T-CIT-MISSING)",
+    "qa-route-static-safety.test.ts (static import scans)"
+  ],
+  "behavioral_cases": [
+    {"case": "zero_envelope_no_answer", "maps_to": "MR-07 / RF-01", "asserts": "zero adapter envelopes always yields no_authority_support refusal; the mock model client is never invoked"},
+    {"case": "model_volunteers_uncited_claims", "maps_to": "GA-2", "asserts": "scripted model output containing authority-style claims without citations converts to unsupported_answer"},
+    {"case": "model_cites_outside_request", "maps_to": "MC-08", "asserts": "citation existing in fixtures but not in this request's envelopes is unverified and fatal"},
+    {"case": "citationless_answer", "maps_to": "T-CIT-MISSING", "asserts": "zero-citation draft never reaches the user as an answer"},
+    {"case": "prompt_contract_confinement", "maps_to": "prompt-contract unit test", "asserts": "assembled system prompt contains the confinement instruction block and only envelope-derived authority content"}
+  ],
+  "static_cases": [
+    {"case": "no_flat_corpus_import", "asserts": "no file in the qa-research graph imports legal-corpus-data.json, tca-data.ts, trjpp-data.ts, dcs-data.ts, or references loadRelevantCorpus"},
+    {"case": "no_supabase_in_graph", "asserts": "no supabase client import inside app/src/lib/qa-research/ or the qa-research route/page"},
+    {"case": "no_embeddings_call", "asserts": "no embeddings API usage anywhere in the graph"},
+    {"case": "adapter_is_sole_authority_seam", "asserts": "only retrieval-adapter.ts types flow into prompt-contract.ts authority slots (type-level check + grep)"}
+  ],
+  "release_rule": "M1 exit requires every case in this file green; any red case is a stop condition because it means a general-fallback path exists"
+}

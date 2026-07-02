@@ -44,8 +44,9 @@ export default function TermsOfService() {
             <p>
               BenchBook.AI is a subscription-based AI legal research platform designed for Tennessee
               judicial officers. The Service provides AI-powered research assistance using Tennessee
-              statutes (T.C.A.), Rules of Juvenile Practice and Procedure (TRJPP), Department of
-              Children&apos;s Services (DCS) policies, and local court rules.
+              statutes (T.C.A.) Titles 36 and 37, Rules of Juvenile Practice and Procedure (TRJPP),
+              Department of Children&apos;s Services (DCS) policies, and optional court-specific local
+              juvenile rules when provided by an authorized court.
             </p>
           </Section>
 
@@ -82,8 +83,9 @@ export default function TermsOfService() {
           <Section title="5. Subscription Plans and Billing">
             <p><strong className="text-white">Plans:</strong></p>
             <ul className="list-disc list-inside space-y-2">
-              <li><strong className="text-white">Solo Judge</strong> &mdash; $79/month or $790/year (save $158). Single user license.</li>
-              <li><strong className="text-white">Court Package</strong> &mdash; $229/month or $2,290/year (save $458). Up to 5 user seats with court-specific customization.</li>
+              <li><strong className="text-white">Solo Judge</strong> - $69/month or $690/year. Single named judicial user.</li>
+              <li><strong className="text-white">Court Package</strong> - $229/month or $2,290/year. Up to 4 named users for a small court team.</li>
+              <li><strong className="text-white">Enterprise</strong> - Custom pricing for 5 or more users, multi-judge deployments, or larger court systems.</li>
             </ul>
             <p>
               Subscriptions are billed in advance on a monthly or annual basis. All fees are non-refundable
@@ -121,8 +123,8 @@ export default function TermsOfService() {
               <li>Not use the Service for any unlawful purpose</li>
             </ul>
             <p>
-              Court Package seat licenses are for named judicial officers and court staff within a single
-              court. Sharing credentials outside the licensed court is prohibited.
+              Court Package seat licenses are capped at 4 named judicial officers or approved court staff
+              within a single small court team. Sharing credentials outside the licensed court is prohibited.
             </p>
           </Section>
 

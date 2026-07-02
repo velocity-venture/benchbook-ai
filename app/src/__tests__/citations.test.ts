@@ -171,6 +171,61 @@ describe('verifyCitations', () => {
   });
 });
 
+describe('excluded-title cross-references', () => {
+  // Realistic Title 37 text: the transfer statute cross-references
+  // criminal-code sections from Titles 39, 40, and 55. Those references
+  // appear in the corpus text but the sections themselves are not in
+  // the V1 corpus and must never verify.
+  const TCA_37_WITH_CROSS_REFS = `
+Title 37 Juveniles
+37-1-134. Transfer from juvenile court.
+(a) The court may transfer the child if the child was charged with
+conduct that would constitute rape of a child under § 39-13-522 if
+committed by an adult, subject to sentencing under section 40-35-101.
+Driving offenses are governed by § 55-10-401.
+`;
+
+  it('does not index excluded-title sections cross-referenced inside Title 37 text', () => {
+    const index = buildCitationIndex(TCA_37_WITH_CROSS_REFS);
+    expect(index.tcaSections.has('37-1-134')).toBe(true);
+    expect(index.tcaSections.has('39-13-522')).toBe(false);
+    expect(index.tcaSections.has('40-35-101')).toBe(false);
+    expect(index.tcaSections.has('55-10-401')).toBe(false);
+  });
+
+  it('does not verify a T.C.A. § 39 citation as in-scope V1 authority', () => {
+    const index = buildCitationIndex(TCA_37_WITH_CROSS_REFS);
+    const response =
+      'Transfer applies to rape of a child under T.C.A. § 39-13-522.';
+    const citations = verifyCitations(response, index, TCA_37_WITH_CROSS_REFS);
+    const cite = citations.find(c => c.citation === 'T.C.A. § 39-13-522');
+    expect(cite).toBeDefined();
+    expect(cite!.verified).toBe(false);
+    expect(cite!.snippet).toBe('');
+  });
+
+  it('never verifies Title 39/40/55 citations even if the index contains them', () => {
+    // Defense in depth: simulate a stale or externally built index that
+    // already holds an excluded-title section.
+    const index = buildCitationIndex(TCA_37_WITH_CROSS_REFS);
+    index.tcaSections.add('40-35-101');
+    const response = 'Sentencing follows T.C.A. § 40-35-101.';
+    const citations = verifyCitations(response, index, TCA_37_WITH_CROSS_REFS);
+    const cite = citations.find(c => c.citation === 'T.C.A. § 40-35-101');
+    expect(cite).toBeDefined();
+    expect(cite!.verified).toBe(false);
+  });
+
+  it('keeps in-scope Title 37 citations verified alongside cross-references', () => {
+    const index = buildCitationIndex(TCA_37_WITH_CROSS_REFS);
+    const response = 'Transfer is governed by T.C.A. § 37-1-134.';
+    const citations = verifyCitations(response, index, TCA_37_WITH_CROSS_REFS);
+    const cite = citations.find(c => c.citation === 'T.C.A. § 37-1-134');
+    expect(cite).toBeDefined();
+    expect(cite!.verified).toBe(true);
+  });
+});
+
 describe('computeConfidence', () => {
   const corpus = SAMPLE_TCA_37 + SAMPLE_TRJPP;
   const index = buildCitationIndex(SAMPLE_TCA_37, undefined, SAMPLE_TRJPP);
@@ -197,8 +252,9 @@ describe('computeConfidence', () => {
     expect(confidence.level).toBe('MEDIUM');
   });
 
-  it('returns HIGH with no citations', () => {
+  it('returns LOW with no citations', () => {
     const confidence = computeConfidence([]);
-    expect(confidence.level).toBe('HIGH');
+    expect(confidence.level).toBe('LOW');
+    expect(confidence.reason).toMatch(/No citations were provided/i);
   });
 });

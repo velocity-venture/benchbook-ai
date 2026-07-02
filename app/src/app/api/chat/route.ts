@@ -1,15 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { buildCitationIndex, type CitationIndex, type VerifiedCitation } from "@/lib/citation-validator";
+import { buildCitationIndex, type CitationIndex } from "@/lib/citation-validator";
 import { runHallucinationGuard, HALLUCINATION_GUARDRAILS } from "@/lib/hallucination-guard";
 import { classifyQueryComplexity } from "@/lib/query-router";
+import {
+  annotateCoverage,
+  buildCoverageReport,
+  coverageSummaryLine,
+  type CorpusCoverageReport,
+  type VerifiedCitationWithCoverage,
+} from "@/lib/corpus-coverage";
+import { buildScopeRefusal, detectOutOfScopeQuery, type ScopeGuardResult } from "@/lib/scope-guard";
 
 export const runtime = 'edge';
 
 // Cloudflare Workers / Edge runtime: legal corpus is pre-built at build time into a JSON file.
 // This eliminates all filesystem access at runtime.
-import prebuiltCorpus from "@/lib/legal-corpus-data.json";
+interface PrebuiltLegalCorpus {
+  tcaTitle37?: unknown;
+  tcaTitle36?: unknown;
+  trjppRules?: unknown;
+  dcsText?: unknown;
+}
 
 // Types
 interface Message {
@@ -22,6 +35,9 @@ interface Source {
   citation: string;
   type: "TCA" | "DCS" | "TRJPP" | "LOCAL" | "CASELAW";
   snippet: string;
+  verified?: boolean;
+  coverageScope?: "covered" | "stub" | "unknown";
+  coverageWarning?: string;
 }
 
 // Validation limits
@@ -58,13 +74,13 @@ async function checkRateLimit(userId: string): Promise<boolean> {
       p_max_requests: RATE_LIMIT_MAX,
     });
     if (error) {
-      console.error('Supabase rate limit check failed, allowing request:', error);
-      return true; // Fail open
+      console.error('Supabase rate limit check failed:', error);
+      return false;
     }
     return data as boolean;
   } catch (err) {
-    console.error('Rate limit RPC error, allowing request:', err);
-    return true; // Fail open
+    console.error('Rate limit RPC error:', err);
+    return false;
   }
 }
 
@@ -73,7 +89,7 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const USE_CLAUDE_API = process.env.USE_CLAUDE_API === 'true';
 const ENABLE_PROMPT_CACHING = process.env.ENABLE_PROMPT_CACHING !== 'false';
 
-// Model configuration — latest Claude models
+// Model configuration: latest Claude models
 const HAIKU_MODEL = process.env.CLAUDE_HAIKU_MODEL || 'claude-haiku-4-5-20250414';
 const SONNET_MODEL = process.env.CLAUDE_SONNET_MODEL || 'claude-sonnet-4-5-20250414';
 
@@ -89,6 +105,8 @@ interface CorpusCache {
   trjppRules?: string;
   dcsRelevant?: string;
   citationIndex?: CitationIndex;
+  coverageReport?: CorpusCoverageReport;
+  loadError?: boolean;
   lastUpdated: number;
 }
 
@@ -97,8 +115,9 @@ const corpusCache: CorpusCache = {
 };
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let prebuiltCorpusCache: PrebuiltLegalCorpus | null | undefined;
 
-// System prompt for legal research — bench-ready judicial responses
+// System prompt for legal research: bench-ready judicial responses
 const SYSTEM_PROMPT = `You are BenchBook.AI, a judicial research assistant for Tennessee state court judges. Responses must be concise, authoritative, and immediately actionable from the bench.
 
 You have direct access to the Tennessee legal corpus including:
@@ -106,7 +125,7 @@ You have direct access to the Tennessee legal corpus including:
 - Department of Children's Services (DCS) policies
 - Tennessee Rules of Juvenile Practice and Procedure (TRJPP)
 
-RESPONSE FORMAT — Structure every answer as follows:
+RESPONSE FORMAT: Structure every answer as follows:
 1. Direct answer in 1-2 sentences
 2. Applicable statute with section number (T.C.A. § [title]-[chapter]-[section])
 3. Key procedural requirements or elements
@@ -221,6 +240,20 @@ export async function POST(request: NextRequest) {
       messages = rawMessages as Message[];
     }
 
+    const scopeResult = detectOutOfScopeQuery(query);
+    if (scopeResult) {
+      const stream = streamScopeRefusal(scopeResult);
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'X-Model-Used': 'scope-guard',
+          'X-Processing-Start': startTime.toString(),
+        },
+      });
+    }
+
     // Require Claude API to be enabled and configured
     if (!USE_CLAUDE_API) {
       return NextResponse.json(
@@ -241,6 +274,12 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Load relevant legal corpus into context
     const legalCorpus = await loadRelevantCorpus(query);
+    if (corpusCache.loadError) {
+      return NextResponse.json(
+        { error: "Legal corpus is temporarily unavailable. Please try again later." },
+        { status: 503 }
+      );
+    }
 
     // Step 3: Stream Claude response with citation verification
     const stream = await streamClaude(
@@ -250,6 +289,7 @@ export async function POST(request: NextRequest) {
       modelToUse,
       ENABLE_PROMPT_CACHING,
       corpusCache.citationIndex,
+      corpusCache.coverageReport,
       (verifiedSources) => {
         // Track research query with real verified sources
         const sources: Source[] = verifiedSources.map(s => ({
@@ -257,6 +297,9 @@ export async function POST(request: NextRequest) {
           citation: s.citation,
           type: s.type,
           snippet: s.snippet.substring(0, 200),
+          verified: s.verified,
+          coverageScope: s.coverageScope,
+          coverageWarning: s.coverageWarning,
         }));
         trackResearchQuery(user.id, query, sources).catch((err) => {
           console.error("Research tracking error:", err);
@@ -285,6 +328,50 @@ export async function POST(request: NextRequest) {
 }
 
 // classifyQueryComplexity is in lib/query-router.ts for testability
+
+function streamScopeRefusal(scopeResult: ScopeGuardResult): ReadableStream {
+  const encoder = new TextEncoder();
+
+  return new ReadableStream({
+    start(controller) {
+      const answer = buildScopeRefusal(scopeResult);
+      const deltaEvent = JSON.stringify({ type: 'delta', text: answer });
+      controller.enqueue(encoder.encode(`data: ${deltaEvent}\n\n`));
+
+      const confidenceEvent = JSON.stringify({
+        type: 'confidence',
+        level: 'LOW',
+        reason: scopeResult.reason,
+        warnings: [
+          'This response is a scope refusal, not a legal answer.',
+          'BenchBook.AI V1 does not retrieve or answer from T.C.A. Titles 39, 40, or 55.',
+        ],
+      });
+      controller.enqueue(encoder.encode(`data: ${confidenceEvent}\n\n`));
+
+      const coverageEvent = JSON.stringify({
+        type: 'coverage',
+        summary:
+          'V1 corpus: T.C.A. Titles 36 and 37, TRJPP, selected DCS policies, and optional private local juvenile rules when provided. Titles 39, 40, and 55 are excluded.',
+        warnings: [
+          'No internet search or outside legal database was used.',
+        ],
+      });
+      controller.enqueue(encoder.encode(`data: ${coverageEvent}\n\n`));
+
+      const doneEvent = JSON.stringify({
+        type: 'done',
+        tokens_used: 0,
+        cache_creation_input_tokens: 0,
+        cache_read_input_tokens: 0,
+        cache_hit: false,
+        model_used: 'scope-guard',
+      });
+      controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`));
+      controller.close();
+    },
+  });
+}
 
 /**
  * Load relevant legal corpus sections based on query content
@@ -333,10 +420,18 @@ async function loadRelevantCorpus(query: string): Promise<string> {
  * Refresh legal corpus cache from pre-built JSON (edge runtime compatible)
  */
 async function refreshCorpusCache(): Promise<void> {
-  corpusCache.tcaTitle37 = prebuiltCorpus.tcaTitle37 || undefined;
-  corpusCache.tcaTitle36 = prebuiltCorpus.tcaTitle36 || undefined;
-  corpusCache.trjppRules = prebuiltCorpus.trjppRules || undefined;
-  corpusCache.dcsRelevant = prebuiltCorpus.dcsText || undefined;
+  const prebuiltCorpus = await loadPrebuiltCorpus();
+
+  corpusCache.tcaTitle37 = stringField(prebuiltCorpus?.tcaTitle37);
+  corpusCache.tcaTitle36 = stringField(prebuiltCorpus?.tcaTitle36);
+  corpusCache.trjppRules = stringField(prebuiltCorpus?.trjppRules);
+  corpusCache.dcsRelevant = stringField(prebuiltCorpus?.dcsText);
+  corpusCache.loadError = !(
+    corpusCache.tcaTitle37 ||
+    corpusCache.tcaTitle36 ||
+    corpusCache.trjppRules ||
+    corpusCache.dcsRelevant
+  );
 
   corpusCache.citationIndex = buildCitationIndex(
     corpusCache.tcaTitle37,
@@ -344,6 +439,37 @@ async function refreshCorpusCache(): Promise<void> {
     corpusCache.trjppRules,
     corpusCache.dcsRelevant
   );
+  corpusCache.coverageReport = buildCoverageReport(corpusCache.citationIndex);
+}
+
+async function loadPrebuiltCorpus(): Promise<PrebuiltLegalCorpus | null> {
+  if (prebuiltCorpusCache !== undefined) {
+    return prebuiltCorpusCache;
+  }
+
+  try {
+    const corpusModule = await import("@/lib/legal-corpus-data.json");
+    const corpus = corpusModule.default;
+    if (!corpus || typeof corpus !== "object" || Array.isArray(corpus)) {
+      console.error("Prebuilt legal corpus data is invalid.");
+      prebuiltCorpusCache = null;
+      return prebuiltCorpusCache;
+    }
+    prebuiltCorpusCache = corpus as PrebuiltLegalCorpus;
+    return prebuiltCorpusCache;
+  } catch (error) {
+    console.error("Failed to load prebuilt legal corpus data:", error);
+    prebuiltCorpusCache = null;
+    return prebuiltCorpusCache;
+  }
+}
+
+function stringField(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
 }
 
 /**
@@ -356,7 +482,8 @@ async function streamClaude(
   model: string,
   useCache: boolean,
   citationIndex?: CitationIndex,
-  onComplete?: (sources: VerifiedCitation[]) => void
+  coverageReport?: CorpusCoverageReport,
+  onComplete?: (sources: VerifiedCitationWithCoverage[]) => void
 ): Promise<ReadableStream> {
   if (!anthropic) {
     throw new Error('Anthropic client not initialized');
@@ -415,28 +542,14 @@ async function streamClaude(
         // Wait for final message to get usage stats
         const finalMessage = await stream.finalMessage();
 
-        // Send metadata event with token usage and cache stats
-        const usage = finalMessage.usage;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const usageAny = usage as any;
-        const cacheCreation = usageAny.cache_creation_input_tokens || 0;
-        const cacheRead = usageAny.cache_read_input_tokens || 0;
-
-        const meta = JSON.stringify({
-          type: 'done',
-          tokens_used: usage.input_tokens + usage.output_tokens,
-          cache_creation_input_tokens: cacheCreation,
-          cache_read_input_tokens: cacheRead,
-          cache_hit: cacheRead > 0,
-          model_used: model.includes('haiku') ? 'haiku' : 'sonnet',
-        });
-        controller.enqueue(encoder.encode(`data: ${meta}\n\n`));
-
         // Run hallucination guard: verify citations and compute confidence
-        let verifiedSources: VerifiedCitation[] = [];
-        if (citationIndex) {
+        let verifiedSources: VerifiedCitationWithCoverage[] = [];
+        if (citationIndex && coverageReport) {
           const guardResult = runHallucinationGuard(fullResponse, citationIndex, legalCorpus);
-          verifiedSources = guardResult.citations;
+          verifiedSources = annotateCoverage(guardResult.citations, coverageReport);
+          const coverageWarnings = verifiedSources
+            .map((source) => source.coverageWarning)
+            .filter((warning): warning is string => Boolean(warning));
 
           // Send sources event
           if (verifiedSources.length > 0) {
@@ -452,10 +565,37 @@ async function streamClaude(
             type: 'confidence',
             level: guardResult.confidence,
             reason: guardResult.confidenceReason,
-            warnings: guardResult.warnings,
+            warnings: [...guardResult.warnings, ...coverageWarnings],
           });
           controller.enqueue(encoder.encode(`data: ${confidenceEvent}\n\n`));
+
+          const coverageEvent = JSON.stringify({
+            type: 'coverage',
+            summary: coverageSummaryLine(coverageReport),
+            warnings: coverageWarnings,
+          });
+          controller.enqueue(encoder.encode(`data: ${coverageEvent}\n\n`));
         }
+
+        // Send final metadata after trust events so clients do not mark
+        // the response complete before verification data arrives.
+        const usage = finalMessage.usage;
+        const usageWithCache = usage as typeof usage & {
+          cache_creation_input_tokens?: number;
+          cache_read_input_tokens?: number;
+        };
+        const cacheCreation = usageWithCache.cache_creation_input_tokens || 0;
+        const cacheRead = usageWithCache.cache_read_input_tokens || 0;
+
+        const meta = JSON.stringify({
+          type: 'done',
+          tokens_used: usage.input_tokens + usage.output_tokens,
+          cache_creation_input_tokens: cacheCreation,
+          cache_read_input_tokens: cacheRead,
+          cache_hit: cacheRead > 0,
+          model_used: model.includes('haiku') ? 'haiku' : 'sonnet',
+        });
+        controller.enqueue(encoder.encode(`data: ${meta}\n\n`));
 
         controller.close();
 
@@ -506,4 +646,3 @@ async function trackResearchQuery(userId: string, query: string, sources: Source
     .then(() => { console.log('Research patterns updated'); })
     .catch((err: unknown) => { console.error('Failed to update research patterns:', err); });
 }
-

@@ -26,6 +26,11 @@ const TN_COUNTIES = [
 
 const COURT_TYPES = ["General Sessions", "Juvenile", "Combined"];
 const TITLES = ["Judge", "Magistrate", "Referee"];
+const LOCAL_RULES_OPTIONS = [
+  { value: "unknown", label: "Not sure yet" },
+  { value: "not_applicable", label: "No local juvenile rules or not applicable" },
+  { value: "available", label: "Local juvenile rules are available for later private upload" },
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -33,6 +38,7 @@ export default function OnboardingPage() {
   const [county, setCounty] = useState("");
   const [courtType, setCourtType] = useState("");
   const [title, setTitle] = useState("Judge");
+  const [localRulesStatus, setLocalRulesStatus] = useState("unknown");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -64,6 +70,9 @@ export default function OnboardingPage() {
           county,
           title,
           organization: courtType,
+          settings: {
+            localRulesStatus,
+          },
         })
         .eq("id", user.id);
 
@@ -170,6 +179,27 @@ export default function OnboardingPage() {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Local Rules */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              Local Juvenile Rules
+            </label>
+            <select
+              value={localRulesStatus}
+              onChange={(e) => setLocalRulesStatus(e.target.value)}
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-950"
+            >
+              {LOCAL_RULES_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-xs text-slate-500">
+              This does not enable local rules by itself. Uploaded local rules stay private to your court after approval.
+            </p>
           </div>
 
           {error && (

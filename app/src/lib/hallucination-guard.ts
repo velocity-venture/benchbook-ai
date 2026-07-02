@@ -33,6 +33,12 @@ export function runHallucinationGuard(
   const { level: confidence, reason: confidenceReason } = computeConfidence(citations);
   const warnings: string[] = [];
 
+  if (citations.length === 0) {
+    warnings.push(
+      'No citations were returned. Do not rely on this response as a legal answer without checking the loaded Tennessee corpus or an authorized source.'
+    );
+  }
+
   // Flag unverified statutes
   const unverifiedStatutes = citations.filter(
     c => c.type !== 'CASELAW' && !c.verified

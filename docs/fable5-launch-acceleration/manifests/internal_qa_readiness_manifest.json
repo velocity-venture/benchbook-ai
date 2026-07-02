@@ -1,0 +1,53 @@
+{
+  "manifest": "internal_qa_readiness_manifest",
+  "phase": "fable5-launch-acceleration",
+  "generated_at": "2026-07-01",
+  "branch": "refactor/codex-gpt55-launch-prep",
+  "metadata_only": true,
+  "body_text_included": false,
+  "classification_scale": [
+    "Ready",
+    "Ready after owner review",
+    "Blocked",
+    "Deferred",
+    "Needs further review"
+  ],
+  "categories": [
+    {"id": 1, "category": "source_of_record_manifest_and_provenance", "status": "Ready"},
+    {"id": 2, "category": "ingestion_pipeline", "status": "Ready"},
+    {"id": 3, "category": "extraction_qa_execution", "status": "Blocked"},
+    {"id": 4, "category": "authority_schema_and_gates_preview", "status": "Ready"},
+    {"id": 5, "category": "preview_corpus_load_tooling", "status": "Ready"},
+    {"id": 6, "category": "metadata_remediation_queues_e13a", "status": "Ready"},
+    {"id": 7, "category": "candidate_remediation_artifacts_e14b", "status": "Ready after owner review"},
+    {"id": 8, "category": "corpus_admin_review_execution_e14c", "status": "Blocked"},
+    {"id": 9, "category": "identity_resolution", "status": "Blocked"},
+    {"id": 10, "category": "effectivity_resolution", "status": "Blocked"},
+    {"id": 11, "category": "qa_signoff_execution", "status": "Blocked"},
+    {"id": 12, "category": "patch_application_tooling", "status": "Blocked"},
+    {"id": 13, "category": "preview_reload_with_patched_metadata", "status": "Blocked"},
+    {"id": 14, "category": "internal_qa_display_tier_promotion", "status": "Blocked"},
+    {"id": 15, "category": "dcs_launch_posture_guardrail_reference_only", "status": "Ready"},
+    {"id": 16, "category": "restricted_lexis_launch_posture_non_display", "status": "Ready"},
+    {"id": 17, "category": "tre_limited_scope_retrieval_enforcement", "status": "Needs further review"},
+    {"id": 18, "category": "citation_alias_integrity", "status": "Ready"},
+    {"id": 19, "category": "embeddings_semantic_retrieval", "status": "Deferred"},
+    {"id": 20, "category": "app_integration_contract_implementation", "status": "Blocked"},
+    {"id": 21, "category": "judicial_guardrails_proven_on_db_backed_path", "status": "Blocked"},
+    {"id": 22, "category": "golden_query_and_refusal_qa_harness", "status": "Blocked"},
+    {"id": 23, "category": "security_and_rls_posture", "status": "Ready"},
+    {"id": 24, "category": "audit_logging_schema", "status": "Ready"},
+    {"id": 25, "category": "target_control_and_production_prohibition", "status": "Ready after owner review"},
+    {"id": 26, "category": "migration_history_caveat_resolution", "status": "Needs further review"},
+    {"id": 27, "category": "owner_decision_packet", "status": "Ready after owner review"},
+    {"id": 28, "category": "internal_qa_launch_definition", "status": "Ready after owner review"}
+  ],
+  "totals": {
+    "Ready": 10,
+    "Ready after owner review": 4,
+    "Blocked": 11,
+    "Deferred": 1,
+    "Needs further review": 2
+  },
+  "detail_document": "docs/fable5-launch-acceleration/08_INTERNAL_QA_LAUNCH_READINESS_SCORECARD.md"
+}

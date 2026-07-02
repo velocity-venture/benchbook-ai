@@ -1,0 +1,35 @@
+{
+  "artifact": "mock_environment_label_contract",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "design_only_no_code_written_in_f5_03",
+  "target_file": "app/src/lib/qa-research/environment.ts",
+  "derives_from": "docs/fable5-app-integration-readiness/contracts/environment_target_contract.json (C13, C14) and mock-harness mock_environment_scenarios (ME-01..ME-06); boot validation copies the fail-fast named-variable pattern of app/src/lib/supabase/env.ts without modifying that file",
+  "env_vars": {
+    "QA_RESEARCH_TARGET": "required when QA_RESEARCH_ENABLED=true; M1 accepted values: 'mock' only",
+    "QA_RESEARCH_ENABLED": "feature flag; absent or false hides the page, nav block, and returns 404-style envelope from the route",
+    "QA_MODE_EXCERPT_LOGGING": "optional; default false; audit excerpt opt-in"
+  },
+  "boot_validation": {
+    "function": "bootValidate(): EnvironmentVerdict, module-init cached",
+    "checks": [
+      "target present and in the M1 enum; missing or unknown = invalid verdict, route answers error envelope only (ME-01)",
+      "production sentinel: any target value containing 'prod' is rejected structurally because the type enum has no production member; the check exists as defense in depth and its failure message names the variable (ME-04)",
+      "model id allowlist check for model-client config (invalid ids fail boot, not first request)",
+      "excerpt flag parsed strictly; any value other than 'true' is false"
+    ],
+    "failure_behavior": "invalid verdict is cached and every request short-circuits to error envelope; no partial feature operation"
+  },
+  "labeling": {
+    "banner": "qa-research page renders a persistent MOCK_ONLY banner sourced from the verdict, not from a hardcoded string (ME-02)",
+    "target_chip": "adapter healthProbe target label + fixture_manifest_hash shown in the page header (ME-03)",
+    "envelope_echo": "every response envelope carries environment_echo { target, mock: true }; UI cross-checks echo against banner state and surfaces mismatch as an error banner (ME-05)",
+    "purpose": "a judge or QA reviewer can never mistake mock output for live corpus output"
+  },
+  "non_goals_m1": [
+    "no preview or production target values in the enum, config examples, or fixtures",
+    "no runtime target switching; changing target requires restart and re-boot-validation (ME-06)"
+  ]
+}

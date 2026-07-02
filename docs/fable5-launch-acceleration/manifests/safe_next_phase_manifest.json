@@ -1,0 +1,92 @@
+{
+  "manifest": "safe_next_phase_manifest",
+  "phase": "fable5-launch-acceleration",
+  "generated_at": "2026-07-01",
+  "metadata_only": true,
+  "body_text_included": false,
+  "phases": [
+    {
+      "id": "X1",
+      "name": "Verify and commit the Fable 5 package",
+      "executor": "codex_mac_studio",
+      "gate": "owner_review_of_decision_packet",
+      "prompt": "docs/fable5-launch-acceleration/16_NEXT_CODEX_EXECUTION_PROMPT.md",
+      "remote_commands": false,
+      "supabase_commands": false,
+      "app_changes": false
+    },
+    {
+      "id": "FABLE_D2",
+      "name": "App-integration readiness design and QA harness plan (design only)",
+      "executor": "claude_fable5",
+      "gate": "none_design_only",
+      "deadline": "2026-07-07",
+      "prompt": "docs/fable5-launch-acceleration/17_NEXT_CLAUDE_FABLE5_PROMPT.md",
+      "remote_commands": false,
+      "supabase_commands": false,
+      "app_changes": false
+    },
+    {
+      "id": "E14C",
+      "name": "Corpus-admin review execution over E14B candidate artifacts",
+      "executor": "corpus_admin_local",
+      "gate": "O1",
+      "remote_commands": false,
+      "supabase_commands": false,
+      "app_changes": false
+    },
+    {
+      "id": "X2",
+      "name": "Patch-application tooling plus Mac Studio rehearsal (static validation, disposable dry run, SQL regeneration to /tmp)",
+      "executor": "codex_mac_studio",
+      "gate": "E14C_substantially_complete",
+      "remote_commands": false,
+      "supabase_commands": false,
+      "app_changes": false
+    },
+    {
+      "id": "E15",
+      "name": "Preview reload with patched metadata plus post-load read-only QA",
+      "executor": "codex_mac_studio_with_owner_approval_document",
+      "gate": "O6",
+      "remote_commands": true,
+      "remote_scope": "preview_ref_clerihqbjyczarqkiqnb_only_per_runbook",
+      "supabase_commands": "only_the_approved_load_transport",
+      "app_changes": false
+    },
+    {
+      "id": "X3",
+      "name": "Internal-QA display tier promotion plus re-QA",
+      "executor": "codex_mac_studio_with_owner_approval_document",
+      "gate": "O2_and_O4",
+      "remote_commands": true,
+      "remote_scope": "preview_only",
+      "app_changes": false
+    },
+    {
+      "id": "X4",
+      "name": "QA route implementation under contract C1-C14 with mock and fixture harness tiers",
+      "executor": "codex_or_approved_agent",
+      "gate": "O7",
+      "remote_commands": false,
+      "app_changes": true,
+      "app_change_scope": "new_qa_route_and_harness_only_legacy_route_untouched"
+    },
+    {
+      "id": "X5",
+      "name": "Preview-tier harness green twice; guardrail acceptance signed",
+      "executor": "codex_plus_corpus_admin",
+      "gate": "X4_complete",
+      "app_changes": false
+    },
+    {
+      "id": "LAUNCH_INTERNAL_QA",
+      "name": "Internal QA sessions begin",
+      "executor": "owner_and_named_participants",
+      "gate": "O8",
+      "definition": "docs/fable5-launch-acceleration/08_INTERNAL_QA_LAUNCH_READINESS_SCORECARD.md section 3"
+    }
+  ],
+  "immediate_safe_phases": ["X1", "FABLE_D2", "E14C_pending_O1"],
+  "detail_document": "docs/fable5-launch-acceleration/14_PHASED_LAUNCH_RUNWAY_TO_INTERNAL_QA.md"
+}

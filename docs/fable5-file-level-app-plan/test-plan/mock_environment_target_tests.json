@@ -1,0 +1,31 @@
+{
+  "artifact": "mock_environment_target_tests",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "test_files": [
+    "app/src/__tests__/qa-research/qa-route-environment.test.ts (ME scenarios)",
+    "app/src/__tests__/qa-research/qa-boot-checks.test.ts (boot matrix)"
+  ],
+  "scenario_source": "synced scenario copy of mock_environment_scenarios.json (ME-01..ME-06)",
+  "route_cases": [
+    {"id": "ME-01", "asserts": "missing QA_RESEARCH_TARGET with flag enabled: every request returns error envelope naming the variable; no processing occurs"},
+    {"id": "ME-02", "asserts": "banner event data sourced from bootValidate verdict reports MOCK_ONLY; not a hardcoded UI string"},
+    {"id": "ME-03", "asserts": "target chip data comes from adapter healthProbe including fixture_manifest_hash"},
+    {"id": "ME-04", "asserts": "production-like target value rejected at boot (defense in depth over the enum); error names the variable and offending value shape without echoing secrets"},
+    {"id": "ME-05", "asserts": "envelope environment_echo mismatch versus banner state is detected and surfaced as error state in the page contract"},
+    {"id": "ME-06", "asserts": "target change without restart has no effect: verdict is module-init cached (documented restart requirement)"}
+  ],
+  "boot_matrix_cases": [
+    {"case": "flag_disabled", "asserts": "QA_RESEARCH_ENABLED unset: route returns not-enabled envelope; nav block hidden"},
+    {"case": "unknown_target", "asserts": "value outside the M1 'mock' enum fails boot"},
+    {"case": "invalid_model_id", "asserts": "model-client config with a non-allowlisted model id fails boot, not first request"},
+    {"case": "excerpt_default", "asserts": "QA_MODE_EXCERPT_LOGGING absent resolves to false"}
+  ],
+  "invariants": [
+    "no test sets a preview or production-shaped target value beyond the ME-04 rejection probe string",
+    "boot failures are per-variable named errors copying the app/src/lib/supabase/env.ts style"
+  ]
+}

@@ -3,7 +3,7 @@
  *
  * Builds an index of real legal citations from the loaded corpus,
  * then verifies citations in AI responses against that index.
- * A judge cannot rely on unverified citations — this is the safety net.
+ * A judge cannot rely on unverified citations. This is the safety net.
  */
 
 export interface CitationIndex {
@@ -14,6 +14,19 @@ export interface CitationIndex {
   tcaSnippets: Map<string, string>;
   trjppSnippets: Map<string, string>;
   dcsSnippets: Map<string, string>;
+}
+
+/**
+ * TCA Titles outside the V1 closed universe (39 criminal offenses,
+ * 40 criminal procedure, 55 motor vehicles). Title 36/37 statutes
+ * cross-reference these titles, so their section numbers appear in the
+ * loaded corpus text — but the referenced sections themselves are not
+ * in the corpus and must never verify as V1 authority.
+ */
+export const EXCLUDED_TCA_TITLES: readonly string[] = ["39", "40", "55"];
+
+function isExcludedTcaSection(section: string): boolean {
+  return EXCLUDED_TCA_TITLES.includes(section.split("-")[0]);
 }
 
 export interface VerifiedCitation {
@@ -54,6 +67,7 @@ export function buildCitationIndex(
     const pattern1 = new RegExp(tcaPattern.source, tcaPattern.flags);
     while ((match = pattern1.exec(text)) !== null) {
       const section = match[1];
+      if (isExcludedTcaSection(section)) continue;
       tcaSections.add(section);
       if (!tcaSnippets.has(section)) {
         const start = Math.max(0, match.index);
@@ -65,6 +79,7 @@ export function buildCitationIndex(
     const pattern2 = new RegExp(tcaBarePattern.source, tcaBarePattern.flags);
     while ((match = pattern2.exec(text)) !== null) {
       const section = match[1];
+      if (isExcludedTcaSection(section)) continue;
       tcaSections.add(section);
       if (!tcaSnippets.has(section)) {
         const start = Math.max(0, match.index);
@@ -113,7 +128,7 @@ export function buildCitationIndex(
 }
 
 /**
- * TCA citation patterns — handles format variations judges might see:
+ * TCA citation patterns, handling format variations judges might see:
  *   T.C.A. § 37-1-114
  *   T.C.A. section 37-1-114
  *   TCA § 37-1-114
@@ -139,7 +154,7 @@ const TRJPP_PATTERN = /(?:TRJPP\s+)?Rule\s+(\d+)/gi;
 const DCS_PATTERN = /DCS\s+Policy\s+([0-9.]+)/gi;
 
 /**
- * Case law patterns — detect case citations that we cannot verify
+ * Case law patterns detect case citations that we cannot verify.
  *   Smith v. Jones
  *   In re Smith
  *   State of Tennessee v. Jones
@@ -175,7 +190,7 @@ export function verifyCitations(
     if (seen.has(key)) continue;
     seen.add(key);
 
-    const verified = index.tcaSections.has(sectionNum);
+    const verified = !isExcludedTcaSection(sectionNum) && index.tcaSections.has(sectionNum);
     const snippet = verified
       ? (index.tcaSnippets.get(sectionNum) || extractCorpusSnippet(corpusText, sectionNum)).substring(0, 200)
       : '';
@@ -233,7 +248,7 @@ export function verifyCitations(
     });
   }
 
-  // Detect case law citations — these cannot be verified
+  // Detect case law citations. These cannot be verified.
   for (const pattern of CASE_LAW_PATTERNS) {
     const caseRegex = new RegExp(pattern.source, pattern.flags);
     while ((match = caseRegex.exec(responseText)) !== null) {
@@ -285,14 +300,17 @@ export type ConfidenceLevel = 'HIGH' | 'MEDIUM' | 'LOW';
  *
  * HIGH:   All statute/rule citations verified, no unverifiable case law
  * MEDIUM: All statutes verified, but case law references present
- * LOW:    One or more statute/rule citations could not be verified
+ * LOW:    No citations, or one or more statute/rule citations could not be verified
  */
 export function computeConfidence(citations: VerifiedCitation[]): {
   level: ConfidenceLevel;
   reason: string;
 } {
   if (citations.length === 0) {
-    return { level: 'HIGH', reason: 'No citations to verify' };
+    return {
+      level: 'LOW',
+      reason: 'No citations were provided for verification against the loaded legal corpus.',
+    };
   }
 
   const statuteCitations = citations.filter(c => c.type !== 'CASELAW');

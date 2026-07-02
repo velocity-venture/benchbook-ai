@@ -1,0 +1,153 @@
+{
+  "manifest": "launch_blocker_manifest",
+  "phase": "fable5-launch-acceleration",
+  "generated_at": "2026-07-01",
+  "branch": "refactor/codex-gpt55-launch-prep",
+  "baseline_head": "660967a",
+  "metadata_only": true,
+  "body_text_included": false,
+  "blocker_classes": [
+    "hard_legal_citation",
+    "metadata",
+    "retrieval_display",
+    "security_target_control",
+    "app_integration",
+    "qa",
+    "owner_decision",
+    "deferred_post_internal_qa"
+  ],
+  "blockers": [
+    {
+      "id": "unresolved_identity",
+      "class": "hard_legal_citation",
+      "rows": 38,
+      "detail": "17 units and 21 chunks lack resolved canonical identity; quarantined; E14B candidates pending corpus-admin review",
+      "status": "blocked_pending_review",
+      "unblocked_by": ["O1", "E14C"]
+    },
+    {
+      "id": "unknown_effectivity",
+      "class": "hard_legal_citation",
+      "rows": 54,
+      "detail": "15 versions and 39 chunks with unknown effectivity; excluded from any display until resolved",
+      "status": "blocked_pending_review",
+      "unblocked_by": ["O1", "E14C"]
+    },
+    {
+      "id": "qa_signoff_pending",
+      "class": "metadata",
+      "rows": 439,
+      "detail": "439 versions require corpus-admin QA signoff before any display eligibility",
+      "status": "blocked_pending_review",
+      "unblocked_by": ["O1", "E14C"]
+    },
+    {
+      "id": "dcs_guardrail_only",
+      "class": "hard_legal_citation",
+      "rows": 2014,
+      "detail": "All DCS chunks are guardrail/reference only; production-answer authority prohibited; 1,146 document-anchored chunks additionally pending optional mapping",
+      "status": "launch_posture_by_design",
+      "unblocked_by": ["owner_approval_per_mapped_row_only"]
+    },
+    {
+      "id": "restricted_lexis_non_display",
+      "class": "hard_legal_citation",
+      "rows": 2392,
+      "detail": "Restricted Lexis annotation/case-note/advisory chunks are internal-QA only and non-displayable pending license review and owner approval",
+      "status": "launch_posture_by_design",
+      "unblocked_by": ["license_review_workstream", "O4_for_black_letter_question"]
+    },
+    {
+      "id": "pending_extraction_qa",
+      "class": "metadata",
+      "rows": 4198,
+      "detail": "Chunks pending extraction QA; sampled family-level QA workflow exists but has not been executed",
+      "status": "blocked_pending_review",
+      "unblocked_by": ["O1", "E14C_sampled_extraction_qa"]
+    },
+    {
+      "id": "dcs_handbook_reconciliation",
+      "class": "metadata",
+      "rows": 8,
+      "detail": "8 evidence-register rows for 1 historical DCS source gap; evidence required to close",
+      "status": "blocked_pending_evidence",
+      "unblocked_by": ["owner_evidence_review"]
+    },
+    {
+      "id": "embeddings_not_generated",
+      "class": "deferred_post_internal_qa",
+      "rows": 0,
+      "detail": "No embeddings populated by design; semantic retrieval deferred; internal QA launches on exact-citation plus FTS",
+      "status": "deferred_by_design",
+      "unblocked_by": ["separate_owner_approval_not_requested"]
+    },
+    {
+      "id": "app_integration_not_implemented",
+      "class": "app_integration",
+      "rows": 0,
+      "detail": "App has zero references to legal_authority; integration contract C1-C14 defined in doc 07; build not authorized",
+      "status": "blocked_pending_owner_decision",
+      "unblocked_by": ["O6_executed", "O7"]
+    },
+    {
+      "id": "display_gates_closed",
+      "class": "retrieval_display",
+      "rows": 0,
+      "detail": "Displayable rows are 0 across all views and RPC probes; internal-QA tier promotion requires owner decision O2 after reload",
+      "status": "launch_posture_until_O2",
+      "unblocked_by": ["E15", "O2"]
+    },
+    {
+      "id": "preview_reload_not_executed_after_patch_review",
+      "class": "retrieval_display",
+      "rows": 0,
+      "detail": "Retained preview batch predates metadata remediation; patched reload (E15) requires E14C output, patch tooling P3, rehearsal, and owner approval O6",
+      "status": "blocked_pending_dependencies",
+      "unblocked_by": ["E14C", "X2_patch_tooling", "O6"]
+    },
+    {
+      "id": "production_untouched",
+      "class": "security_target_control",
+      "rows": 0,
+      "detail": "Production remains untouched and prohibited; this is a standing control, listed so no launch plan forgets it is not an available shortcut",
+      "status": "standing_prohibition",
+      "unblocked_by": ["distinct_production_launch_approval_not_requested"]
+    },
+    {
+      "id": "migration_history_caveat",
+      "class": "security_target_control",
+      "rows": 0,
+      "detail": "Preview schema applied via db query --file is invisible to the Supabase migration ledger; object-verification stance adopted; E6 rehearsal migrations in supabase/migrations/ are a db-push hazard pending fence decision O5",
+      "status": "needs_further_review",
+      "unblocked_by": ["O5_fence", "optional_owner_approved_ledger_action"]
+    },
+    {
+      "id": "judicial_guardrail_app_path",
+      "class": "qa",
+      "rows": 0,
+      "detail": "Judicial guardrail integration not yet proven in any database-backed app path; spec doc 09, matrices docs 10-11, harness not built",
+      "status": "blocked_pending_build",
+      "unblocked_by": ["O7", "X4_X5_harness_green"]
+    },
+    {
+      "id": "owner_decisions_pending",
+      "class": "owner_decision",
+      "rows": 0,
+      "detail": "O1 (E14C approval) is the immediate unblocker; O2-O8 sequenced in doc 15",
+      "status": "awaiting_owner",
+      "unblocked_by": ["owner_review_of_doc_15"]
+    }
+  ],
+  "top_10_order": [
+    "owner_decisions_pending",
+    "unresolved_identity",
+    "unknown_effectivity",
+    "qa_signoff_pending",
+    "pending_extraction_qa",
+    "preview_reload_not_executed_after_patch_review",
+    "display_gates_closed",
+    "app_integration_not_implemented",
+    "judicial_guardrail_app_path",
+    "migration_history_caveat"
+  ]
+}
