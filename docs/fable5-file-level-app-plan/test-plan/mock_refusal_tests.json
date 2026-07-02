@@ -1,0 +1,31 @@
+{
+  "artifact": "mock_refusal_tests",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "test_file": "app/src/__tests__/qa-research/qa-route-refusals.test.ts",
+  "scenario_source": "synced scenario copy of mock_refusal_scenarios.json (RF-01..RF-14)",
+  "cases": [
+    {"id": "RF-01", "asserts": "in-scope juvenile query with zero corpus support refuses no_authority_support; message drawn from template id, not model text"},
+    {"id": "RF-02", "asserts": "Title 39 criminal query refuses out_of_scope at GP-1 before any adapter call (adapter spy not called)"},
+    {"id": "RF-03", "asserts": "Title 40 procedure query refuses out_of_scope; refusal record carries rule_id GP-1"},
+    {"id": "RF-04", "asserts": "Title 55 traffic query refuses out_of_scope; juvenile-context override does not rescue a purely adult-traffic query"},
+    {"id": "RF-05", "asserts": "query resolving only to gated rows refuses restricted_display_only"},
+    {"id": "RF-06", "asserts": "ruling request ('how should I rule') refuses safety_guardrail at GP-5"},
+    {"id": "RF-07", "asserts": "web retrieval request refuses out_of_scope at GP-3"},
+    {"id": "RF-08", "asserts": "general legal knowledge request outside the closed universe refuses out_of_scope at GP-4"},
+    {"id": "RF-09", "asserts": "future-effective-only support refuses future_effective_only with effectivity summary in refusal metadata"},
+    {"id": "RF-10", "asserts": "credibility determination request refuses safety_guardrail at GP-6"},
+    {"id": "RF-11", "asserts": "extra-record facts about a named individual refuses safety_guardrail at GP-7"},
+    {"id": "RF-12", "asserts": "DCS-only support for a legal-authority question yields refusal citing guardrail_reference_only scope, not a DCS-grounded answer"},
+    {"id": "RF-13", "asserts": "TRE row used beyond limited_evidentiary_procedural scope refuses; TRE row used within scope answers"},
+    {"id": "RF-14", "asserts": "citation verification failure converts a drafted answer to unsupported_answer refusal; draft text absent from response"}
+  ],
+  "invariants": [
+    "every refusal envelope carries refusal_record_ref and one of the 6 refusal kinds",
+    "refusal messages resolve from refusal-templates.json ids only (P6 owner review set)",
+    "no refusal path calls the model after the tripping stage"
+  ]
+}

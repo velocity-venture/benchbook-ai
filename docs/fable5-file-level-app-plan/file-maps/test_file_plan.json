@@ -1,0 +1,26 @@
+{
+  "map": "test_file_plan",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "conventions": "vitest defaults via npm test; importRouteWithMocks pattern; factory injection for adapter/model/logger/environment; vi.mock only for the Supabase auth and rate-limit boundary",
+  "test_files": [
+    {"file": "scenario-sync.test.ts", "purpose": "sha256 equality of local scenario copies vs docs/fable5-app-integration-readiness/mock-harness canon", "scenarios": "all 6 files"},
+    {"file": "qa-route-retrieval.test.ts", "purpose": "retrieval envelope behavior", "scenarios": "MR-01..MR-10"},
+    {"file": "qa-route-refusals.test.ts", "purpose": "all refusal variants including excluded titles 39/40/55, web/general, guardrail classes, gated classes, citation-failure conversion", "scenarios": "RF-01..RF-14"},
+    {"file": "qa-route-citations.test.ts", "purpose": "verification levels, mandatory citations, granularity clamp, SYNTHETIC preservation, confidence honesty", "scenarios": "MC-01..MC-08 plus T-CIT-MISSING"},
+    {"file": "qa-route-guardrails.test.ts", "purpose": "GP/GQ/GA pipeline, multi-turn window, recovery, injection, fail-closed classifier", "scenarios": "GG-01..GG-12"},
+    {"file": "qa-route-audit.test.ts", "purpose": "write sequences, both modes, trace propagation, sink rejections, fail-closed audit", "scenarios": "MA-01..MA-07"},
+    {"file": "qa-route-environment.test.ts", "purpose": "banner event, target chip data, echo match, production sentinel, mismatch, boot integration", "scenarios": "ME-01..ME-06"},
+    {"file": "qa-route-static-safety.test.ts", "purpose": "source scans: no supabase import in qa-research graph, no service-role naming, no db URL schemes, no embeddings call, no flat-JSON corpus import, no loadRelevantCorpus reference; contract-shape drift vs contract JSONs", "scenarios": "static"},
+    {"file": "qa-boot-checks.test.ts", "purpose": "bootValidate matrix: missing/unknown target, production sentinel, invalid model IDs, excerpt flag default", "scenarios": "boot matrix"}
+  ],
+  "objective_question_map": {
+    "no_general_legal_fallback": ["qa-route-static-safety.test.ts", "qa-route-retrieval.test.ts:MR-07", "qa-route-refusals.test.ts:RF-01"],
+    "excluded_titles_refused": ["qa-route-refusals.test.ts:RF-02..04", "qa-route-guardrails.test.ts:GG-02"],
+    "citations_mandatory": ["qa-route-citations.test.ts:T-CIT-MISSING", "qa-route-citations.test.ts:MC-08"],
+    "guardrails_stop_impermissible": ["qa-route-guardrails.test.ts:GG-03..05,GG-08", "qa-route-refusals.test.ts:RF-06,RF-12,RF-13"]
+  }
+}

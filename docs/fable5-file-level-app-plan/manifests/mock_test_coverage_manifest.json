@@ -1,0 +1,28 @@
+{
+  "manifest": "mock_test_coverage_manifest",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "scenario_canon": "docs/fable5-app-integration-readiness/mock-harness/ (57 scenarios)",
+  "planned_test_files": 9,
+  "coverage_by_family": [
+    {"family": "MR mock retrieval", "scenarios": 10, "planned_file": "qa-route-retrieval.test.ts", "plan_artifact": "test-plan/mock_retrieval_tests.json", "covered": "10/10"},
+    {"family": "RF refusals", "scenarios": 14, "planned_file": "qa-route-refusals.test.ts", "plan_artifact": "test-plan/mock_refusal_tests.json", "covered": "14/14"},
+    {"family": "MC citations", "scenarios": 8, "planned_file": "qa-route-citations.test.ts", "plan_artifact": "test-plan/mock_citation_tests.json", "covered": "8/8 plus T-CIT-MISSING"},
+    {"family": "GG guardrail gauntlet", "scenarios": 12, "planned_file": "qa-route-guardrails.test.ts", "plan_artifact": "test-plan/mock_guardrail_tests.json", "covered": "12/12"},
+    {"family": "MA audit", "scenarios": 7, "planned_file": "qa-route-audit.test.ts", "plan_artifact": "test-plan/mock_audit_log_tests.json", "covered": "7/7"},
+    {"family": "ME environment", "scenarios": 6, "planned_files": "qa-route-environment.test.ts + qa-boot-checks.test.ts", "plan_artifact": "test-plan/mock_environment_target_tests.json", "covered": "6/6 plus 4 boot matrix cases"}
+  ],
+  "objective_suites": [
+    {"objective": "closed universe holds (Titles 39/40/55, web, non-authorized sources excluded)", "plan_artifact": "test-plan/excluded_scope_tests.json", "cases": "8 behavioral + 2 static"},
+    {"objective": "no general legal fallback (model memory never grounds an answer)", "plan_artifact": "test-plan/no_general_fallback_tests.json", "cases": "5 behavioral + 4 static"}
+  ],
+  "static_safety_file": {
+    "file": "qa-route-static-safety.test.ts",
+    "scans": ["no supabase import in qa-research graph", "no service-role naming", "no db URL schemes", "no embeddings call", "no flat-JSON corpus import", "no loadRelevantCorpus reference", "contract-shape drift vs contract JSONs", "no excluded-title fixtures"]
+  },
+  "sync_integrity": "scenario-sync.test.ts sha256-pins local scenario copies to the F5-02 canon",
+  "totals": {"scenario_cases": 57, "scenario_cases_covered": 57, "additional_planned_cases": 20, "coverage_percent_of_canon": 100},
+  "execution_note": "all counts are PLANNED coverage; no test files exist yet; M1 exit requires every planned case green under npm test"
+}

@@ -1,0 +1,35 @@
+{
+  "artifact": "mock_audit_logger_contract",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "design_only_no_code_written_in_f5_03",
+  "target_files": [
+    "app/src/lib/qa-research/audit-logger.ts (interface + factory)",
+    "app/src/lib/qa-research/mock-audit-logger.ts (M1 in-memory sink)"
+  ],
+  "derives_from": "docs/fable5-app-integration-readiness/contracts/audit_logging_contract.json (C11, C12) and mock-harness mock_audit_scenarios (MA-01..MA-07); mirrors legal_authority audit tables without any database connection in M1",
+  "record_kinds": [
+    {"kind": "retrieval_log", "mirrors": "retrieval_logs", "written": "once per adapter call pair, before model call", "fields": "trace_id, query_hash, as_of_date, alias_hits, chunk_refs, gate_summary; no query text by default, no body text ever"},
+    {"kind": "refusal_record", "mirrors": "refusal_records via log_refusal_record()", "written": "on every refusal envelope", "fields": "trace_id, refusal_kind (6-kind enum), stage, rule_id, template_id"},
+    {"kind": "answer_audit_record", "mirrors": "answer_audit_records", "written": "on every answer envelope", "fields": "trace_id, citation_count, min_verification_level, confidence, guardrail_pass_summary"},
+    {"kind": "citation_verification_record", "mirrors": "citation_verification_records", "written": "one per citation on answer or unsupported_answer conversion", "fields": "trace_id, normalized_alias, resolution_ref, verification_level"}
+  ],
+  "modes": {
+    "hash_only_default": "query stored as sha256 hash; excerpt fields absent (MA-03)",
+    "excerpt_opt_in": "QA_MODE_EXCERPT_LOGGING=true adds bounded query excerpt for internal QA triage only; boot check logs the active mode; default off (MA-04)"
+  },
+  "fail_closed_rules": [
+    "sink write rejection converts the in-flight response to an error envelope; an answer is never returned unaudited (MA-06)",
+    "partial sequence failure (e.g. retrieval_log ok, answer_audit fails) also converts; sequencing is write-then-emit (MA-07)",
+    "trace_id propagates through every record of a request so a request is reconstructable from the sink alone (MA-05)"
+  ],
+  "mock_sink_design": {
+    "storage": "in-memory array per request context plus optional dev-only console.debug summary line",
+    "inspection": "getRecords(trace_id) test hook exported only under NODE_ENV=test guard",
+    "rejection_triggers": "reserved SYNTHETIC trigger inputs force write rejection so fail-closed paths are unit-testable",
+    "no_persistence": "nothing written to disk, network, or database in M1"
+  },
+  "future_binding_not_in_m1": "supabase audit sink arrives with F5-05 adapter work under the same O6+O2+O7 gate chain; factory enum in M1 is 'mock' only"
+}

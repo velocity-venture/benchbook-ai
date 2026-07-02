@@ -1,0 +1,28 @@
+{
+  "artifact": "excluded_scope_tests",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "objective": "prove the closed universe holds: Titles 39/40/55, web retrieval, and non-authorized sources can never ground an answer",
+  "covered_by_files": [
+    "qa-route-refusals.test.ts (RF-02, RF-03, RF-04, RF-07, RF-08)",
+    "qa-route-guardrails.test.ts (GG-02, GG-06)",
+    "qa-route-static-safety.test.ts (static import scans)"
+  ],
+  "behavioral_cases": [
+    {"case": "title_39_direct", "maps_to": "RF-02", "asserts": "refused pre-retrieval; adapter never called"},
+    {"case": "title_40_direct", "maps_to": "RF-03", "asserts": "refused pre-retrieval"},
+    {"case": "title_55_direct", "maps_to": "RF-04", "asserts": "refused; adult-traffic context does not gain juvenile override"},
+    {"case": "excluded_title_mid_query", "maps_to": "GG-02", "asserts": "detection is not prefix-anchored"},
+    {"case": "juvenile_cross_reference", "maps_to": "GG-06", "asserts": "override admits legitimate juvenile query mentioning an excluded title as context; answer still cites only authorized-universe envelopes"},
+    {"case": "web_retrieval_request", "maps_to": "RF-07", "asserts": "refused out_of_scope; no fetch occurs (no fetch spy calls beyond model client)"},
+    {"case": "general_knowledge_request", "maps_to": "RF-08", "asserts": "refused out_of_scope at GP-4"},
+    {"case": "model_reintroduces_excluded_title", "maps_to": "GA-3 conversion", "asserts": "mock model client scripted to cite an excluded title; GA-3 converts to unsupported_answer refusal"}
+  ],
+  "static_cases": [
+    {"case": "no_web_fetch_in_graph", "asserts": "qa-research module graph contains no fetch to non-model hosts; model-client is the only network seam"},
+    {"case": "no_excluded_title_fixtures", "asserts": "mock-fixtures.json contains no authority_key or alias in Titles 39/40/55 namespaces (fixture lint inside static-safety test)"}
+  ]
+}

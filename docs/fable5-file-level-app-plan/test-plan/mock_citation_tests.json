@@ -1,0 +1,25 @@
+{
+  "artifact": "mock_citation_tests",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "test_file": "app/src/__tests__/qa-research/qa-route-citations.test.ts",
+  "scenario_source": "synced scenario copy of mock_citation_scenarios.json (MC-01..MC-08) plus T-CIT-MISSING",
+  "cases": [
+    {"id": "MC-01", "asserts": "exact alias resolution yields verified_exact and the envelope's citation_display verbatim in the rendered answer"},
+    {"id": "MC-02", "asserts": "multiple citations each get independent verification records; one verified_exact does not vouch for others"},
+    {"id": "MC-03", "asserts": "model-drafted citation text is replaced by envelope citation_display (model text never rendered)"},
+    {"id": "MC-04", "asserts": "subsection claim supported only by parent chunk clamps to verified_parent and renders the parent citation form"},
+    {"id": "MC-05", "asserts": "granularity clamp does not silently upgrade: parent envelope cannot render child-level pinpoint"},
+    {"id": "MC-06", "asserts": "SYNTHETIC prefix on fixture citations survives to the response unaltered"},
+    {"id": "MC-07", "asserts": "confidence is capped by the weakest citation level: any verified_parent caps confidence below the exact-only ceiling"},
+    {"id": "MC-08", "asserts": "citation not present in this request's envelopes is unverified and fatal even if another fixture contains it (no out-of-band authority)"},
+    {"id": "T-CIT-MISSING", "asserts": "drafted answer with zero citations converts to unsupported_answer refusal with GA-1 rule_id"}
+  ],
+  "invariants": [
+    "citation verification records written one per citation on both answer and conversion paths",
+    "unsupported_answer conversion leaves no draft fragments in the envelope"
+  ]
+}

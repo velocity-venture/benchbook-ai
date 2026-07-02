@@ -1,0 +1,33 @@
+{
+  "map": "future_mock_only_files_to_modify",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "plan_only",
+  "files": [
+    {
+      "path": "app/src/components/sidebar.tsx",
+      "planned_change": "single conditional nav block for QA Research, visible only when environment module reports a QA tier and flag enabled",
+      "risk": "low",
+      "sequence_step": "S12",
+      "f5_03_status": "not_modified_in_f5_03"
+    },
+    {
+      "path": "app/package.json",
+      "planned_change": "optional test:qa convenience script; no dependency changes",
+      "risk": "trivial",
+      "sequence_step": "S12",
+      "f5_03_status": "not_modified_in_f5_03"
+    },
+    {
+      "path": "app/.env.example",
+      "planned_change": "document QA_RESEARCH_TARGET, QA_RESEARCH_ENABLED, QA_MODE_EXCERPT_LOGGING (default off); documentation-only file",
+      "risk": "trivial",
+      "sequence_step": "S3",
+      "f5_03_status": "not_modified_in_f5_03"
+    }
+  ],
+  "count": 3,
+  "rule": "any file not listed here or in future_mock_only_files_to_create.json is out of M1 scope; unexpected diffs stop the phase (SC-11)"
+}

@@ -1,0 +1,19 @@
+{
+  "map": "files_forbidden_until_live_db_phase",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "note": "forbidden throughout F5-03 and M1; several remain forbidden even in the live-DB phase except under their own named approvals",
+  "categories": [
+    {"category": "migrations", "paths": ["supabase/migrations/", "supabase/migrations_draft/", "supabase/migrations_preview/", "supabase/config.toml", "supabase/seed-demo-data.sql"], "unfreeze": "never for app phases; corpus-side only under owner-approved reload/fence actions"},
+    {"category": "loader_scripts", "paths": ["scripts/database_load/validate_expanded_chunks_for_load.py", "scripts/database_load/dry_run_load_legal_authority.py", "scripts/database_load/build_preview_corpus_load_sql.py"], "unfreeze": "never for app phases"},
+    {"category": "ingestion_scripts", "paths": ["scripts/ingestion/", "scripts/ingestion_pilot/", "scripts/source_manifest/"], "unfreeze": "never for app phases"},
+    {"category": "metadata_qa_scripts_existing", "paths": ["scripts/metadata_qa/"], "unfreeze": "corpus-side phases only"},
+    {"category": "source_pdfs", "paths": ["Benchbook.ai Database Files/ (untracked, Mac Studio only)"], "unfreeze": "never"},
+    {"category": "generated_corpus_sources", "paths": ["data/ingestion-expanded/", "data/source-manifest/"], "unfreeze": "corpus-side phases only (new overlay outputs only)"},
+    {"category": "live_database_connection_files", "paths": ["app/src/lib/supabase/client.ts", "app/src/lib/supabase/server.ts", "app/src/lib/supabase/middleware.ts", "app/src/lib/supabase/env.ts", "future app/src/lib/qa-research/supabase-retrieval-adapter.ts"], "unfreeze": "F5-05 under O6+O2+O7 gate chain; the adapter file may then be CREATED; existing supabase libs still only change under review"},
+    {"category": "production_target_config", "paths": ["app/wrangler.toml", "scripts/deploy-production.sh", "scripts/deploy_supabase.sh", "scripts/setup_supabase.sh", "scripts/deploy_infra.sh", "scripts/deploy_rag.sh"], "unfreeze": "deploy-hardening phase with owner approval; production values never before a distinct production launch approval"},
+    {"category": "legacy_answer_path", "paths": ["app/src/app/api/chat/route.ts", "app/src/app/(dashboard)/chat/page.tsx", "app/src/lib/scope-guard.ts", "app/src/lib/citation-validator.ts", "app/src/lib/hallucination-guard.ts", "app/src/lib/corpus-coverage.ts", "app/src/lib/query-router.ts", "app/src/lib/legal-corpus-data.json", "scripts/prebuild-corpus.js", "legal-corpus/"], "unfreeze": "cutover/retirement decision after internal QA parity, owner-approved"}
+  ]
+}

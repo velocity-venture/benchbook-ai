@@ -1,0 +1,44 @@
+{
+  "manifest": "owner_decision_manifest",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "mirrors": "16_OWNER_DECISION_PACKET.md",
+  "owner": "Judge M.O. Eckel III",
+  "decisions": [
+    {
+      "id": "M-1",
+      "title": "Approve the mock-only implementation phase (F5-04/M1)",
+      "recommendation": "approve",
+      "blocking": true,
+      "authorizes": "app code changes strictly per this package: 26 new files (route, page, 15 lib modules, 9 test files) plus synced scenario copies, 3 low-risk touch points, on feature branch feature/qa-research-mock-only, following the 13-step sequence (doc 15); mock backend only",
+      "does_not_authorize": "live database binding, preview or production contact, embeddings, display-gate changes, migration/loader/ingestion/PDF changes, legacy route or chat page changes, new dependencies",
+      "rollback": "delete one directory plus revert three one-line-scale edits"
+    },
+    {
+      "id": "M-2",
+      "title": "Ratify the M1 policy defaults",
+      "recommendation": "ratify as a block",
+      "blocking": true,
+      "items": [
+        "verified_resolved citations demote in M1 (no mid-answer span fetch); F5-05 revisits",
+        "QA-page participant check ships as a hook, allow-all-authenticated default in M1 (synthetic data), tightened before any live target",
+        "QA_RESEARCH_ENABLED defaults false; dev enablement at owner discretion",
+        "fixture SYNTHETIC marker convention mandatory"
+      ]
+    },
+    {
+      "id": "M-3",
+      "title": "Branch preference",
+      "recommendation": "default feature/qa-research-mock-only",
+      "blocking": false,
+      "note": "identical sequence either way; state a preference only to override the default"
+    }
+  ],
+  "prior_packets_standing": {
+    "f5_01": "O1-O8 (O1 E14C corpus review remains the program critical path, independent of M1)",
+    "f5_02": "P1-P6 (P1/P2 contract signatures should accompany M-1; P6 refusal templates reviewed inside the M1 PR)"
+  },
+  "single_action_summary": "M-1 with M-2 ratified as a block is the last approval needed to start writing mock-only code"
+}

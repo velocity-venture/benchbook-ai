@@ -1,0 +1,23 @@
+{
+  "map": "existing_app_file_inventory",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "baseline_head": "a918f6b",
+  "metadata_only": true,
+  "body_text_included": false,
+  "legal_authority_references_in_app_src": 0,
+  "groups": [
+    {"group": "api_routes", "files": ["app/src/app/api/chat/route.ts", "app/src/app/api/research-patterns/route.ts", "app/src/app/api/waitlist/route.ts", "app/src/app/auth/callback/route.ts"], "classification": "Adopt with revision (chat plumbing); retrieval core Reject", "m1_action": "read_only_pattern_source"},
+    {"group": "dashboard_pages", "files": ["app/src/app/(dashboard)/chat/page.tsx", "app/src/app/(dashboard)/dashboard/page.tsx", "app/src/app/(dashboard)/tca/page.tsx", "app/src/app/(dashboard)/trjpp/page.tsx", "app/src/app/(dashboard)/dcs-policies/page.tsx", "app/src/app/(dashboard)/onboarding/page.tsx", "app/src/app/(dashboard)/settings/page.tsx", "app/src/app/(dashboard)/layout.tsx", "app/src/app/(dashboard)/error.tsx"], "classification": "Adopt / Adopt with revision", "m1_action": "untouched"},
+    {"group": "marketing_auth_pages", "files": ["app/src/app/page.tsx", "app/src/app/layout.tsx", "app/src/app/login/page.tsx", "app/src/app/privacy/page.tsx", "app/src/app/terms/page.tsx"], "classification": "Adopt (landing copy revision later)", "m1_action": "untouched"},
+    {"group": "trust_libs", "files": ["app/src/lib/scope-guard.ts", "app/src/lib/citation-validator.ts", "app/src/lib/hallucination-guard.ts", "app/src/lib/corpus-coverage.ts", "app/src/lib/query-router.ts"], "classification": "Adopt with revision", "m1_action": "imported_never_modified"},
+    {"group": "infra_libs", "files": ["app/src/lib/chat-persistence.ts", "app/src/lib/supabase/client.ts", "app/src/lib/supabase/server.ts", "app/src/lib/supabase/middleware.ts", "app/src/lib/supabase/env.ts", "app/src/lib/utils.ts", "app/src/middleware.ts"], "classification": "Adopt", "m1_action": "imported_never_modified"},
+    {"group": "flat_json_corpus_chain", "files": ["app/src/lib/legal-corpus-data.json", "app/src/lib/tca-data.ts", "app/src/lib/trjpp-data.ts", "app/src/lib/dcs-data.ts", "scripts/prebuild-corpus.js", "scripts/validate-corpus.js", "legal-corpus/"], "classification": "Adopt with revision then Archive; Reject as authority", "m1_action": "excluded_from_new_module_graph_by_static_test"},
+    {"group": "components", "files": ["app/src/components/sidebar.tsx", "app/src/components/research-patterns.tsx", "app/src/components/voice-input.tsx", "app/src/components/ui/badge.tsx", "app/src/components/ui/button.tsx", "app/src/components/ui/card.tsx", "app/src/components/ui/input.tsx", "app/src/components/ui/textarea.tsx", "app/src/contexts/preferences-context.tsx"], "classification": "Adopt (voice-input Needs further review)", "m1_action": "sidebar_single_block_modify_only"},
+    {"group": "tests_existing", "files": ["app/src/__tests__/ (14 files)"], "classification": "Adopt", "m1_action": "must_stay_green_every_commit"},
+    {"group": "configs", "files": ["app/package.json", "app/tsconfig.json", "app/next.config.mjs", "app/postcss.config.mjs", "app/tailwind.config.ts", "app/wrangler.toml", "app/capacitor.config.ts"], "classification": "Adopt / Adopt with revision (wrangler, package.json)", "m1_action": "package_json_optional_script_only"},
+    {"group": "supabase_schema_files", "files": ["supabase/migrations/", "supabase/migrations_draft/", "supabase/migrations_preview/", "supabase/config.toml", "supabase/seed-demo-data.sql"], "classification": "Adopt (read-only context)", "m1_action": "forbidden"},
+    {"group": "pipeline_scripts", "files": ["scripts/database_load/", "scripts/ingestion/", "scripts/ingestion_pilot/", "scripts/metadata_qa/", "scripts/source_manifest/", "scripts/database_design/", "scripts/database_load_design/"], "classification": "Adopt (corpus pipeline)", "m1_action": "forbidden"},
+    {"group": "legacy_stack", "files": ["scripts/ingest_local.py", "scripts/search_server.py", "scripts/deploy_rag.sh", "scripts/deploy_infra.sh", "benchbook-ai-infra/"], "classification": "Archive", "m1_action": "untouched"}
+  ]
+}

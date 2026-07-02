@@ -1,0 +1,48 @@
+{
+  "artifact": "mock_legal_retrieval_service_contract",
+  "phase": "F5-03",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "status": "design_only_no_code_written_in_f5_03",
+  "target_files": [
+    "app/src/lib/qa-research/retrieval-adapter.ts (interface + factory)",
+    "app/src/lib/qa-research/mock-retrieval-adapter.ts (M1 binding)"
+  ],
+  "derives_from": "docs/fable5-app-integration-readiness/contracts/retrieval_adapter_contract.json (C4, C5) and mock-harness mock_retrieval_scenarios (MR-01..MR-10)",
+  "interface": {
+    "name": "LegalRetrievalAdapter",
+    "methods": [
+      {
+        "name": "lookupAliases",
+        "signature": "(normalizedAliases: string[], asOfDate: string) => Promise<AliasLookupEnvelope>",
+        "mirrors_rpc": "lookup_citation_alias(p_normalized_alias, p_as_of_date)",
+        "returns": "per-alias hit/miss with authority_key, family_code, answer_scope, display_gate_status, effectivity window; no body text fields exist on the type"
+      },
+      {
+        "name": "searchChunks",
+        "signature": "(query: string, asOfDate: string, familyCodes: string[] | null, limit: number) => Promise<ChunkSearchEnvelope>",
+        "mirrors_rpc": "search_displayable_chunks(p_query, p_as_of_date, p_family_codes, p_limit)",
+        "limit_rule": "clamped to 50 in the adapter regardless of caller input, matching the RPC cap",
+        "returns": "chunk metadata envelopes: chunk_ref, authority_key, citation_display, answer_scope, verification_level, gate flags; excerpt field is opt-in and absent by default"
+      },
+      {
+        "name": "healthProbe",
+        "signature": "() => Promise<AdapterHealth>",
+        "returns": "target label, corpus_state summary counts, fixture_manifest_hash for mock; used by the environment banner"
+      }
+    ],
+    "gate_semantics": "adapter only ever returns rows that would pass retrieval_display_gate + production_display_status + approval_status in the real schema; the mock encodes gated rows as distinct scenarios that return gated_refusal_hint envelopes, never content (MR-04, MR-05)",
+    "scope_semantics": "answer_scope preserved verbatim: guardrail_reference_only (DCS) and limited_evidentiary_procedural (TRE) rows carry their restriction and the route must honor it (MR-06, RF-12, RF-13)"
+  },
+  "mock_binding": {
+    "data_source": "app/src/lib/qa-research/mock-fixtures.json only; SYNTHETIC-marked, checked into the app tree, no generated corpus imports",
+    "determinism": "same inputs always return same envelopes; scenario selection keys on normalized query and alias sets from the F5-02 mock-harness canon",
+    "latency_model": "none; synchronous resolution wrapped in Promise.resolve for interface parity",
+    "failure_scenarios": "MR-09 adapter_timeout and MR-10 adapter_malformed are triggered by reserved SYNTHETIC trigger queries so failure paths are testable without network"
+  },
+  "future_bindings_not_in_m1": {
+    "supabase-retrieval-adapter.ts": "forbidden until F5-05 under O6+O2+O7 gate chain; listed in files_forbidden_until_live_db_phase.json",
+    "rule": "factory type enum in M1 is 'mock' only; adding any other member is an M1 stop condition (SC-11)"
+  }
+}
