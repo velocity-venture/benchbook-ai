@@ -1,0 +1,72 @@
+{
+  "manifest": "implemented_file_manifest",
+  "phase": "F5-04",
+  "generated_at": "2026-07-02",
+  "branch": "feature/qa-research-mock-only",
+  "base_branch": "refactor/codex-gpt55-launch-prep",
+  "base_commit": "d3533bd",
+  "metadata_only": true,
+  "body_text_included": false,
+  "created_app_files": {
+    "lib_modules": [
+      "app/src/lib/qa-research/types.ts",
+      "app/src/lib/qa-research/environment.ts",
+      "app/src/lib/qa-research/retrieval-adapter.ts",
+      "app/src/lib/qa-research/mock-retrieval-adapter.ts",
+      "app/src/lib/qa-research/mock-fixtures.json",
+      "app/src/lib/qa-research/guardrail.ts",
+      "app/src/lib/qa-research/guardrail-patterns.json",
+      "app/src/lib/qa-research/refusals.ts",
+      "app/src/lib/qa-research/refusal-templates.json",
+      "app/src/lib/qa-research/citation-verifier.ts",
+      "app/src/lib/qa-research/audit-logger.ts",
+      "app/src/lib/qa-research/mock-audit-logger.ts",
+      "app/src/lib/qa-research/model-client.ts",
+      "app/src/lib/qa-research/mock-model-client.ts",
+      "app/src/lib/qa-research/prompt-contract.ts",
+      "app/src/lib/qa-research/route-handler.ts"
+    ],
+    "route": ["app/src/app/api/qa-research/route.ts"],
+    "page": ["app/src/app/(dashboard)/qa-research/page.tsx"],
+    "tests": [
+      "app/src/__tests__/qa-research/scenario-sync.test.ts",
+      "app/src/__tests__/qa-research/qa-boot-checks.test.ts",
+      "app/src/__tests__/qa-research/qa-route-static-safety.test.ts",
+      "app/src/__tests__/qa-research/qa-route-retrieval.test.ts",
+      "app/src/__tests__/qa-research/qa-route-refusals.test.ts",
+      "app/src/__tests__/qa-research/qa-route-citations.test.ts",
+      "app/src/__tests__/qa-research/qa-route-guardrails.test.ts",
+      "app/src/__tests__/qa-research/qa-route-audit.test.ts",
+      "app/src/__tests__/qa-research/qa-route-environment.test.ts",
+      "app/src/__tests__/qa-research/support/harness.ts"
+    ],
+    "scenario_copies_checksum_synced": [
+      "app/src/__tests__/qa-research/scenarios/mock_retrieval_scenarios.json",
+      "app/src/__tests__/qa-research/scenarios/mock_refusal_scenarios.json",
+      "app/src/__tests__/qa-research/scenarios/mock_citation_validation_scenarios.json",
+      "app/src/__tests__/qa-research/scenarios/mock_guardrail_scenarios.json",
+      "app/src/__tests__/qa-research/scenarios/mock_audit_log_scenarios.json",
+      "app/src/__tests__/qa-research/scenarios/mock_environment_target_scenarios.json"
+    ]
+  },
+  "modified_app_files": [
+    {"path": "app/src/components/sidebar.tsx", "change": "single conditional nav block, hidden by default"},
+    {"path": "app/package.json", "change": "test:qa script only; no dependency changes"},
+    {"path": "app/.env.example", "change": "four documented QA variables, all default off"}
+  ],
+  "docs_and_validation_files": [
+    "docs/fable5-mock-app-implementation/ (13 docs + 5 manifests)",
+    "scripts/launch_readiness/validate_f5_04_mock_app_implementation.py"
+  ],
+  "created_count_app": 34,
+  "modified_count_app": 3,
+  "deviations_from_f5_03_map": [
+    {"id": "D1", "item": "lib/qa-research/route-handler.ts added; route.ts is a thin wrapper", "reason": "Next.js route modules may only export route fields"},
+    {"id": "D2", "item": "__tests__/qa-research/support/harness.ts added", "reason": "shared deps builder and SSE parser"},
+    {"id": "D3", "item": "adapter method getChunkMetadata added", "reason": "MC-02 verified_resolved metadata-only lookup (M-2 demotion)"},
+    {"id": "D4", "item": "no live model binding in M1", "reason": "keeps the module graph free of any network path"},
+    {"id": "D5", "item": "NEXT_PUBLIC_QA_RESEARCH_ENABLED documented", "reason": "client nav visibility; route stays server-flag-gated"},
+    {"id": "D6", "item": "relative imports instead of @/ alias", "reason": "vitest setup has no alias resolution; suites test real modules"}
+  ],
+  "forbidden_paths_touched": []
+}

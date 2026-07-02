@@ -1,0 +1,136 @@
+{
+  "artifact": "refusal_templates",
+  "phase": "F5-04",
+  "version": "1.0.0-m1",
+  "owner_review": "P6: these user-facing texts require owner review in the M1 PR",
+  "metadata_only": true,
+  "body_text_included": false,
+  "templates": {
+    "refusal.excluded_title.v1": {
+      "kind": "out_of_scope",
+      "title": "Outside the V1 corpus",
+      "message": "This question involves material excluded from the V1 BenchBook.AI corpus (T.C.A. Titles 39, 40, and 55, adult criminal, or traffic law). I cannot answer it from the closed corpus. Please verify these issues through an authorized source outside BenchBook.AI.",
+      "permissible_help": ["locate_authorities_within_v1_corpus", "open_corpus_browsers"]
+    },
+    "refusal.general_legal_or_web.v1": {
+      "kind": "out_of_scope",
+      "title": "Closed-universe research only",
+      "message": "BenchBook.AI answers only from its authorized Tennessee corpus. It does not search the web, use other states' law, or answer from general legal knowledge. Please rephrase the question against the V1 corpus.",
+      "permissible_help": ["locate_authorities_within_v1_corpus", "rephrase_within_corpus"]
+    },
+    "refusal.ruling_recommendation.v1": {
+      "kind": "safety_guardrail",
+      "title": "Judicial decision reserved to the court",
+      "message": "BenchBook.AI does not recommend rulings, dispositions, or outcomes in any matter. It can locate, organize, summarize, compare, and cite permissible authorities to support your own analysis.",
+      "permissible_help": ["locate_authorities_within_v1_corpus", "summarize_cited_authorities"]
+    },
+    "refusal.credibility_evaluation.v1": {
+      "kind": "safety_guardrail",
+      "title": "Credibility determinations reserved to the court",
+      "message": "BenchBook.AI does not evaluate witness or party credibility. Credibility determinations belong to the court alone. It can locate authorities on evidentiary standards to support your own assessment.",
+      "permissible_help": ["locate_authorities_within_v1_corpus"]
+    },
+    "refusal.extra_record_facts.v1": {
+      "kind": "safety_guardrail",
+      "title": "No extra-record factfinding",
+      "message": "BenchBook.AI does not investigate facts outside the record, look up parties, or supply extra-record adjudicative facts. It can help locate legal authorities on the issues before the court.",
+      "permissible_help": ["locate_authorities_within_v1_corpus"]
+    },
+    "refusal.dcs_authority_demand.v1": {
+      "kind": "safety_guardrail",
+      "title": "DCS policy is reference material, not controlling authority",
+      "message": "DCS policies and procedures are available for reference only. They are not controlling legal authority and cannot dictate a ruling. Statutes and rules in the V1 corpus can be cited as authority where applicable.",
+      "permissible_help": ["open_dcs_reference_material", "locate_authorities_within_v1_corpus"]
+    },
+    "refusal.prompt_injection.v1": {
+      "kind": "safety_guardrail",
+      "title": "Request declined",
+      "message": "This request attempts to alter the system's operating rules. BenchBook.AI's guardrails cannot be modified from the conversation. Please ask a research question within the V1 corpus.",
+      "permissible_help": ["rephrase_within_corpus"]
+    },
+    "refusal.classifier_error.v1": {
+      "kind": "safety_guardrail",
+      "title": "Unable to evaluate this request safely",
+      "message": "The request could not be screened by the safety checks, so it was not processed. Please try rephrasing the question.",
+      "permissible_help": ["rephrase_within_corpus"]
+    },
+    "refusal.none_found.v1": {
+      "kind": "no_authority_support",
+      "title": "No supporting authority found",
+      "message": "No authority in the V1 corpus supports an answer to this question as asked. BenchBook.AI does not answer without corpus support. Try different terms or browse the corpus directly.",
+      "permissible_help": ["open_corpus_browsers", "rephrase_within_corpus"]
+    },
+    "refusal.pending_qa_only.v1": {
+      "kind": "no_authority_support",
+      "title": "Matching material not yet cleared for display",
+      "message": "The only material matching this question has not completed quality review and cannot be displayed or relied on. No displayable authority supports an answer.",
+      "permissible_help": ["open_corpus_browsers", "rephrase_within_corpus"]
+    },
+    "refusal.unknown_effectivity.v1": {
+      "kind": "no_authority_support",
+      "title": "Matching material has unverified effectivity",
+      "message": "The only material matching this question lacks a verified effective-date window and cannot be displayed or relied on. No displayable authority supports an answer.",
+      "permissible_help": ["open_corpus_browsers", "rephrase_within_corpus"]
+    },
+    "refusal.future_effective.v1": {
+      "kind": "future_effective_only",
+      "title": "Only future-effective material matches",
+      "message": "The material matching this question is not yet effective as of the research date. BenchBook.AI does not present future-effective text as current law.",
+      "permissible_help": ["adjust_as_of_date_guidance", "open_corpus_browsers"]
+    },
+    "refusal.restricted_lexis.v1": {
+      "kind": "restricted_display_only",
+      "title": "Licensed material cannot be displayed",
+      "message": "The material matching this question is license-restricted and cannot be displayed in BenchBook.AI. Please consult the licensed source directly.",
+      "permissible_help": ["locate_authorities_within_v1_corpus"]
+    },
+    "refusal.citation_validation_failure.v1": {
+      "kind": "no_authority_support",
+      "title": "Answer withheld: citations could not be verified",
+      "message": "A draft answer was produced but its citations could not be verified against the corpus, so the answer was withheld. BenchBook.AI does not present unverified citations.",
+      "permissible_help": ["rephrase_within_corpus", "open_corpus_browsers"]
+    },
+    "refusal.retrieval_error.v1": {
+      "kind": "no_authority_support",
+      "title": "Research could not be completed",
+      "message": "The retrieval step failed, so no answer was produced. No partial or unsourced answer is shown. Please try again.",
+      "permissible_help": ["retry_request"]
+    },
+    "refusal.internal_gate_error.v1": {
+      "kind": "no_authority_support",
+      "title": "Research halted by an internal safety check",
+      "message": "An internal consistency check failed during retrieval, so no answer was produced. The event has been recorded for review.",
+      "permissible_help": ["retry_request"]
+    },
+    "refusal.target_control.v1": {
+      "kind": "safety_guardrail",
+      "title": "Environment target refused",
+      "message": "The research environment target failed validation, so no request can be processed. This build serves synthetic mock data only and cannot connect to production.",
+      "permissible_help": ["contact_administrator"]
+    },
+    "refusal.audit_write_failure.v1": {
+      "kind": "no_authority_support",
+      "title": "Research halted: audit record could not be written",
+      "message": "The audit record for this request could not be written, so no answer was produced. BenchBook.AI does not answer unaudited requests.",
+      "permissible_help": ["retry_request"]
+    },
+    "refusal.input_invalid.v1": {
+      "kind": "out_of_scope",
+      "title": "Request not understood",
+      "message": "The request was malformed or exceeded input limits and was not processed. Please submit a single research question within the length limits.",
+      "permissible_help": ["rephrase_within_corpus"]
+    },
+    "refusal.model_no_support.v1": {
+      "kind": "unsupported_answer",
+      "title": "No supported answer",
+      "message": "The retrieved material does not support an answer to this question, so none is given. BenchBook.AI does not answer beyond its corpus support.",
+      "permissible_help": ["rephrase_within_corpus", "open_corpus_browsers"]
+    },
+    "refusal.leakage_suppressed.v1": {
+      "kind": "safety_guardrail",
+      "title": "Answer withheld by a safety check",
+      "message": "The draft answer failed a response-side safety check and was withheld. No partial answer is shown.",
+      "permissible_help": ["rephrase_within_corpus"]
+    }
+  }
+}

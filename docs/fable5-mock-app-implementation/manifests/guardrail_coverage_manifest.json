@@ -1,0 +1,37 @@
+{
+  "manifest": "guardrail_coverage_manifest",
+  "phase": "F5-04",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "pre_retrieval": [
+    {"check": "GP-2 target control", "implemented_in": "environment.ts boot + refuse posture; route sentinel path", "tested_by": ["GG-01", "ME-04", "boot matrix"]},
+    {"check": "GP-3 excluded titles/topics (window-wide)", "implemented_in": "guardrail.ts via scope-guard.ts (unmodified)", "tested_by": ["RF-02", "RF-03", "RF-04", "GG-02"]},
+    {"check": "GP-4 web/general legal", "implemented_in": "guardrail-patterns.json class web_or_general_legal", "tested_by": ["RF-05"]},
+    {"check": "GP-5 ruling recommendation", "implemented_in": "class ruling_recommendation", "tested_by": ["RF-06", "GG-03", "GG-10"]},
+    {"check": "GP-6 credibility evaluation", "implemented_in": "class credibility_evaluation", "tested_by": ["RF-12", "GG-04"]},
+    {"check": "GP-7 extra-record factfinding", "implemented_in": "class extra_record_facts", "tested_by": ["RF-13", "GG-05"]},
+    {"check": "GP-8 prompt injection", "implemented_in": "class prompt_injection + fail-closed wrapper", "tested_by": ["GG-12", "plain GP-8 test"]},
+    {"check": "GP-9 DCS authority demand", "implemented_in": "class dcs_authority_demand", "tested_by": ["RF-07"]}
+  ],
+  "post_retrieval": [
+    {"check": "GQ-1 displayability attestation", "tested_by": ["MR-09 (attestation path)", "gate attestation in every ANSWER scenario"]},
+    {"check": "GQ-2 scope filter and envelope separation", "tested_by": ["MR-05", "MR-06", "GG-06", "MC-07"]},
+    {"check": "GQ-3 zero-authority resolution", "tested_by": ["MR-07", "RF-01", "RF-08", "RF-09", "RF-10", "RF-11"]},
+    {"check": "GQ-4 as-of conformity (defect alert)", "tested_by": ["MR-09", "GG-07"]},
+    {"check": "GQ-5 dedupe", "tested_by": ["MR-03"]}
+  ],
+  "post_generation": [
+    {"check": "GA-1 citation verification", "tested_by": ["MC-01..MC-08", "T-CIT-MISSING", "RF-14"]},
+    {"check": "GA-2 response-side ruling scan", "tested_by": ["GG-08"]},
+    {"check": "GA-3 leakage scan (markers + excluded titles)", "tested_by": ["GG-09", "MC-04"]},
+    {"check": "GA-4 conversion rule (refusal, never degraded answer)", "tested_by": ["RF-14", "MC-08", "GG-08", "GG-09"]}
+  ],
+  "fail_closed_backstops": [
+    {"backstop": "classifier exception refuses", "tested_by": ["GG-12"]},
+    {"backstop": "adapter failure refuses with audit intact", "tested_by": ["MR-08"]},
+    {"backstop": "audit write failure blocks the answer", "tested_by": ["MA-07", "answer-audit failure test"]},
+    {"backstop": "post-refusal recovery (no lock-in)", "tested_by": ["GG-11"]}
+  ],
+  "refusal_kind_enum_locked": ["out_of_scope", "no_authority_support", "future_effective_only", "restricted_display_only", "unsupported_answer", "safety_guardrail"]
+}

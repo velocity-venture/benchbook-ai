@@ -1,0 +1,37 @@
+{
+  "manifest": "forbidden_path_scan_manifest",
+  "phase": "F5-04",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "changed_file_scan": {
+    "scope": "all files created or modified in F5-04",
+    "tokens_scanned": ["@supabase (spliced in scanners)", "createClient", "SUPABASE", "DATABASE_URL", "service-role naming", "postgres URL schemes", "embedding", "fetch(\"http", "fetch('http", "axios", "openai", "live model SDK import", "web search", "Title 39", "Title 40", "Title 55"],
+    "mock_implementation_graph_result": "CLEAN: zero hits across app/src/lib/qa-research/, app/src/app/api/qa-research/, app/src/app/(dashboard)/qa-research/, and the qa-research test sources",
+    "known_benign_hits": [
+      {"file": "app/src/components/sidebar.tsx", "tokens": ["@supabase import", "createClient"], "assessment": "pre-existing sign-out code, present at baseline d3533bd; the F5-04 diff adds only the nav block; not part of the mock implementation graph"},
+      {"file": "app/package.json", "tokens": ["@supabase dependencies"], "assessment": "pre-existing dependency list; the F5-04 diff adds only the test:qa script; no dependency changed"},
+      {"file": "app/.env.example", "tokens": ["SUPABASE (pre-existing lines)"], "assessment": "pre-existing documentation lines; F5-04 appended only the four QA variables"},
+      {"file": "app/src/__tests__/qa-research/scenarios/mock_guardrail_scenarios.json", "tokens": ["embedding (English participle)"], "assessment": "checksum-locked F5-02 canon copy; the word appears in scenario prose ('a crafted input embedding ignore-your-rules instructions'), not as an API call"},
+      {"file": "qa-research tests, guardrail-patterns.json, citation-verifier.ts, refusal-templates.json", "tokens": ["Title 39/40/55 shapes"], "assessment": "refusal-detection and refusal-test contexts only, per the owner rule; the fixture lint asserts no excluded-title authority exists in fixtures"},
+      {"file": "app/src/lib/qa-research/mock-model-client.ts", "tokens": ["Title 39 (adversarial script)", "39-13-101 shape (adversarial script)"], "assessment": "the leaks_restricted_marker and cites_excluded_title scripted profiles deliberately produce excluded-title output so GG-09 and MC-04 can prove SUPPRESSION; the strings exist to be refused, never as allowed authorities"}
+    ]
+  },
+  "forbidden_path_categories_untouched": {
+    "migrations": "supabase/ directories: untouched",
+    "loader_scripts": "scripts/database_load/: untouched",
+    "ingestion_scripts": "scripts/ingestion*/, scripts/source_manifest/: untouched",
+    "source_pdfs": "not present in cloud clone; untouched",
+    "generated_corpus_sources": "data/ingestion-expanded/, data/source-manifest/: untouched",
+    "production_target_config": "app/wrangler.toml, deploy scripts: untouched",
+    "legacy_answer_path": "api/chat/route.ts, chat/page.tsx, trust libs, flat-JSON corpus chain: untouched",
+    "supabase_libs": "app/src/lib/supabase/: untouched",
+    "lockfiles_and_dependencies": "package-lock.json and dependency lists: untouched"
+  },
+  "secret_scan": {
+    "patterns": "key blocks, access tokens, service-role naming, postgres URLs, password assignments, authorization-header token shapes, bulk-copy statements (assembled spliced in scanners)",
+    "scope": "docs/fable5-mock-app-implementation/, scripts/launch_readiness/, and all changed app files",
+    "result": "CLEAN"
+  },
+  "enforcement_continuity": "the same scans run on every npm test via qa-route-static-safety.test.ts and on demand via validate_f5_04_mock_app_implementation.py"
+}
