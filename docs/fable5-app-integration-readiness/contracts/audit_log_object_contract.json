@@ -1,0 +1,60 @@
+{
+  "contract": "audit_log_object",
+  "version": "1.0.0-f502",
+  "phase": "F5-02",
+  "nature": "schema_like_example_not_executable_code",
+  "metadata_only": true,
+  "body_text_included": false,
+  "spec_document": "docs/fable5-app-integration-readiness/09_AUDIT_LOGGING_AND_TRACEABILITY_SPEC.md",
+  "write_points": [
+    {"event": "every_retrieval_attempt", "table": "legal_authority.retrieval_logs", "timing": "before_response_streams"},
+    {"event": "every_refusal_all_stages", "table": "legal_authority.refusal_records", "timing": "at_refusal_emission"},
+    {"event": "every_answer", "table": "legal_authority.answer_audit_records", "timing": "after_stream_completion"},
+    {"event": "every_displayed_citation", "table": "legal_authority.citation_verification_records", "timing": "with_answer_persistence"}
+  ],
+  "content_rules": [
+    "production mode stores query hashes only, never excerpts",
+    "qa mode excerpts require the owner flag, default off, purge-first retention",
+    "no legal chunk passages in any log field; chunk ids and hashes only",
+    "no juvenile or party names in any log field",
+    "audit write failure on the answer path fails closed"
+  ],
+  "example_answer_chain": {
+    "retrieval_log": {
+      "retrieval_log_id": "00000000-0000-4000-8000-0000000000l1",
+      "user_id": "00000000-0000-4000-8000-0000000000aa",
+      "corpus_build_id": "00000000-0000-4000-8000-0000000000b1",
+      "query_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "retrieval_mode": "exact_citation",
+      "as_of_date": "2026-07-02",
+      "filters": {"families": ["tca_title_37"], "answer_scope_intent": "general_answer"},
+      "candidate_chunk_ids_count": 3,
+      "returned_chunk_ids_count": 1,
+      "refused_before_generation": false
+    },
+    "answer_audit_record": {
+      "answer_audit_record_id": "00000000-0000-4000-8000-0000000000d1",
+      "retrieval_log_id": "00000000-0000-4000-8000-0000000000l1",
+      "model_provider": "anthropic",
+      "model_name": "resolved-at-runtime-from-validated-env",
+      "prompt_package_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "system_prompt_version": "qa-route-prompt-contract-v1",
+      "retrieved_chunk_ids_count": 1,
+      "displayed_citation_alias_ids_count": 1,
+      "answer_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "trust_metadata_keys": ["confidence_level", "verification_levels", "coverage_basis"],
+      "unsupported_proposition_count": null,
+      "refusal_record_id": null
+    },
+    "citation_verification_record": {
+      "citation_verification_record_id": "00000000-0000-4000-8000-0000000000e1",
+      "answer_audit_record_id": "00000000-0000-4000-8000-0000000000d1",
+      "normalized_citation": "37-1-114",
+      "exists_in_corpus": true,
+      "current_as_of_date": true,
+      "display_allowed": true,
+      "supporting_chunk_ids_count": 1
+    }
+  },
+  "reconstruction_requirement": "an auditor holding only these rows reconstructs question hash, guardrail decision, retrieval set, prompt hash, answer hash, citations with verification levels, and serving environment"
+}

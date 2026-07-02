@@ -1,0 +1,71 @@
+{
+  "contract": "legal_retrieval_request",
+  "version": "1.0.0-f502",
+  "phase": "F5-02",
+  "nature": "schema_like_example_not_executable_code",
+  "metadata_only": true,
+  "body_text_included": false,
+  "spec_document": "docs/fable5-app-integration-readiness/03_DATABASE_RETRIEVAL_CONTRACT_SPEC.md",
+  "required_fields": [
+    "request_id",
+    "user_id",
+    "environment_target",
+    "corpus_scope",
+    "query_classification",
+    "retrieval_mode",
+    "family_filter",
+    "answer_scope_intent",
+    "as_of_date",
+    "result_limit"
+  ],
+  "field_rules": {
+    "environment_target": {
+      "enum": ["preview_internal_qa", "local_fixture", "production_prohibited"],
+      "rule": "production_prohibited is an always-refuse sentinel; no production value is configurable"
+    },
+    "corpus_scope": {
+      "const": "tn_closed_universe_v1",
+      "rule": "any other value refuses; future local-rules overlay extends by owner approval only"
+    },
+    "retrieval_mode": {
+      "enum": ["exact_citation", "full_text", "hybrid_future"],
+      "rule": "hybrid_future refuses until embeddings are separately approved"
+    },
+    "family_filter": {
+      "allowed_values": [
+        "tca_title_36",
+        "tca_title_37",
+        "tenn_rules_juvenile_practice_procedure",
+        "tenn_rules_evidence",
+        "dcs_policies_procedures"
+      ],
+      "rule": "never empty; never outside this set; tenn_rules_evidence only with evidentiary intent"
+    },
+    "answer_scope_intent": {
+      "enum": ["general_answer", "evidentiary_procedural", "reference_only"]
+    },
+    "as_of_date": {
+      "rule": "explicit ISO date, defaults to today at route layer, never a future date"
+    },
+    "result_limit": {
+      "rule": "integer 1-50, mirrors RPC hard cap"
+    }
+  },
+  "example": {
+    "request_id": "00000000-0000-4000-8000-000000000001",
+    "user_id": "00000000-0000-4000-8000-0000000000aa",
+    "environment_target": "preview_internal_qa",
+    "corpus_scope": "tn_closed_universe_v1",
+    "query_classification": {
+      "guardrail_decision": "proceed",
+      "answer_scope_intent": "general_answer",
+      "detected_citation_count": 1
+    },
+    "retrieval_mode": "exact_citation",
+    "detected_citations": ["37-1-114"],
+    "family_filter": ["tca_title_37", "tca_title_36", "tenn_rules_juvenile_practice_procedure"],
+    "answer_scope_intent": "general_answer",
+    "as_of_date": "2026-07-02",
+    "result_limit": 20
+  }
+}

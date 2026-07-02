@@ -1,0 +1,66 @@
+{
+  "manifest": "implementation_phase_manifest",
+  "phase": "F5-02",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "recommended_next_phase": "F5-03",
+  "phases": [
+    {
+      "id": "F5-03",
+      "name": "Local-only app integration design review and file-level implementation plan",
+      "executor": "claude_fable5_or_codex",
+      "gate": "owner_P2",
+      "app_code_changes": false,
+      "database_contact": false,
+      "prompt": "docs/fable5-app-integration-readiness/18_NEXT_FABLE5_PROMPT.md"
+    },
+    {
+      "id": "F5-04",
+      "name": "App code integration on a feature branch with mock backend only",
+      "executor": "codex",
+      "gate": "owner_O7_design_approval_of_F5-03_output",
+      "app_code_changes": true,
+      "app_change_scope": "feature_branch_qa_route_and_harness_only_no_legacy_route_changes",
+      "database_contact": "local_disposable_fixtures_only_no_supabase_connection",
+      "exit_criteria": "T1 harness green twice plus existing 14-file suite green"
+    },
+    {
+      "id": "E15-B",
+      "name": "Owner-approved preview reload target verification and dry-run planning",
+      "executor": "codex_plus_corpus_admin",
+      "gate": "E14C_substantially_complete",
+      "app_code_changes": false,
+      "database_contact": "none_in_planning; object verification rehearsed locally",
+      "explicit_exclusion": "no reload execution unless separately approved (O6)"
+    },
+    {
+      "id": "E15",
+      "name": "Preview reload execution per runbook",
+      "gate": "owner_O6_signed",
+      "database_contact": "preview_only_per_approval_document"
+    },
+    {
+      "id": "X3",
+      "name": "Internal-QA display tier promotion plus re-QA",
+      "gate": "owner_O2_and_O4"
+    },
+    {
+      "id": "F5-05",
+      "name": "Point feature branch at reloaded preview; T2/T3 harness green; golden suite first run",
+      "gate": "owner_O7_signed_and_E15_X3_complete"
+    },
+    {
+      "id": "internal_qa_launch",
+      "name": "Internal QA sessions begin",
+      "gate": "owner_O8"
+    }
+  ],
+  "explicitly_not_next": [
+    "production_anything",
+    "embeddings_generation",
+    "display_gate_opening",
+    "live_app_database_connection"
+  ],
+  "detail_document": "docs/fable5-app-integration-readiness/15_IMPLEMENTATION_PHASE_PLAN.md"
+}

@@ -1,0 +1,16 @@
+{
+  "artifact": "mock_citation_validation_scenarios",
+  "phase": "F5-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "scenarios": [
+    {"scenario_id": "MC-01", "category": "verified_retrieved", "setup": "generation cites the citation of a retrieved chunk", "scripted_generation_profile": "well_behaved", "expected": {"level": "verified_retrieved", "badge": "verified", "citation_verification_record_written": true}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "MC-02", "category": "verified_resolved_not_retrieved", "setup": "generation cites an in-corpus citation whose chunk was not in the retrieval set; alias lookup resolves it", "scripted_generation_profile": "cites_adjacent_authority", "expected": {"level": "verified_resolved", "behavior": "follow_up_lookup_or_demotion", "never_full_verified_badge": true}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "MC-03", "category": "unresolved_model_claim", "setup": "generation cites a citation-shaped string that does not resolve", "scripted_generation_profile": "fabricates_citation", "expected": {"level": "unresolved", "rendered_as_citation": false, "rendered_as_warning": true}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "MC-04", "category": "out_of_universe_claim", "setup": "generation cites an excluded-title pattern", "scripted_generation_profile": "cites_excluded_title", "expected": {"level": "out_of_universe", "hard_refusal_or_suppression": true, "leakage": false}, "tiers": ["T1"]},
+    {"scenario_id": "MC-05", "category": "granularity_clamp", "setup": "generation cites a subsection finer than database resolution", "scripted_generation_profile": "cites_subsection", "expected": {"displayed_granularity": "parent_section_with_page_span"}, "tiers": ["T1"]},
+    {"scenario_id": "MC-06", "category": "tre_scope_tag", "setup": "verified TRE citation in an evidentiary answer", "scripted_generation_profile": "well_behaved", "expected": {"scope_tag": "evidentiary", "tag_rendered": true}, "tiers": ["T1", "T3"]},
+    {"scenario_id": "MC-07", "category": "dcs_reference_tag", "setup": "DCS reference card rendered alongside a statute-supported answer", "scripted_generation_profile": "well_behaved", "expected": {"dcs_in_reference_envelope_only": true, "reference_tag": "not_controlling_authority", "dcs_counts_toward_confidence": false}, "tiers": ["T1", "T3"]},
+    {"scenario_id": "MC-08", "category": "all_support_unresolved", "setup": "every citation in the generation is unresolved", "scripted_generation_profile": "fabricates_citation", "expected": {"conversion": "refusal", "refusal_variant": "citation_validation_failure", "answer_suppressed": true}, "tiers": ["T1"]}
+  ]
+}

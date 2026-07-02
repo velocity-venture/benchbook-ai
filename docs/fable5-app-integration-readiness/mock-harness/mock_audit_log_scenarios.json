@@ -1,0 +1,15 @@
+{
+  "artifact": "mock_audit_log_scenarios",
+  "phase": "F5-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "scenarios": [
+    {"scenario_id": "MA-01", "category": "answer_full_chain", "setup": "MR-01-shaped answer", "expected": {"writes_in_order": ["retrieval_logs", "answer_audit_records", "citation_verification_records"], "query_stored_as": "hash_only", "chunk_passages_in_logs": false}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "MA-02", "category": "pre_model_refusal_chain", "setup": "RF-06-shaped guardrail refusal", "expected": {"writes": ["refusal_records"], "retrieval_log": "absent_or_flagged_refused_before_generation", "model_called": false}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "MA-03", "category": "retrieval_gate_refusal_chain", "setup": "RF-01-shaped zero-result refusal", "expected": {"writes_in_order": ["retrieval_logs", "refusal_records"], "refused_before_generation": true}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "MA-04", "category": "citation_failure_conversion_chain", "setup": "MC-08-shaped conversion", "expected": {"answer_audit_written": true, "refusal_record_linked": true, "answer_hash_of_suppressed_answer_retained": true}, "tiers": ["T1"]},
+    {"scenario_id": "MA-05", "category": "gated_class_refusals", "setup": "RF-08 through RF-11 shapes", "expected": {"each_writes_refusal_record": true, "kinds_match_contract": true}, "tiers": ["T1", "T2"]},
+    {"scenario_id": "MA-06", "category": "reconstruction_drill", "setup": "run MA-01 then reconstruct the answer from database rows alone", "expected": {"reconstructable_fields": ["query_hash", "guardrail_decision", "retrieved_chunk_ids", "prompt_package_hash", "system_prompt_version", "answer_hash", "citation_levels", "environment_target"], "reconstruction_complete": true}, "tiers": ["T2"]},
+    {"scenario_id": "MA-07", "category": "audit_write_failure_fail_closed", "setup": "retrieval_logs write throws before streaming", "expected": {"answer_streamed": false, "user_safe_refusal": true, "defect_alert": true}, "tiers": ["T1"]}
+  ]
+}

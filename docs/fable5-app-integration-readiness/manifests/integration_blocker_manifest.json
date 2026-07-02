@@ -1,0 +1,38 @@
+{
+  "manifest": "integration_blocker_manifest",
+  "phase": "F5-02",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "blockers": [
+    {"id": "display_gates_closed", "detail": "0 displayable rows across all views and RPC probes; internal-QA tier requires E15 plus owner decision O2", "status": "launch_posture_until_O2"},
+    {"id": "preview_reload_not_executed_after_patch_review", "detail": "Retained batch predates metadata remediation; reload requires E14C output, patch tooling, rehearsal, and O6", "status": "blocked_pending_dependencies"},
+    {"id": "app_database_retrieval_path_not_implemented", "detail": "Zero legal_authority references in app/src; QA route build gated on O7-design/O7", "status": "blocked_pending_owner_decision"},
+    {"id": "embeddings_not_generated", "detail": "0 embeddings by design; hybrid_future retrieval mode refuses until separately approved", "status": "deferred_by_design"},
+    {"id": "dcs_production_answer_authority_prohibited", "detail": "2,014 DCS chunks guardrail/reference only; envelope separation enforced by contract doc 07", "status": "launch_posture_by_design"},
+    {"id": "restricted_lexis_non_display", "detail": "2,392 chunks internal-QA only pending license review; RF-08 refusal path", "status": "launch_posture_by_design"},
+    {"id": "pending_extraction_qa_non_display", "detail": "4,198 chunks gated until sampled extraction QA executes in E14C", "status": "blocked_pending_review"},
+    {"id": "unknown_effectivity_blocked", "detail": "15 versions / 39 chunks excluded until effectivity review", "status": "blocked_pending_review"},
+    {"id": "qa_signoff_pending", "detail": "439 versions require corpus-admin signoff before internal-QA display tier", "status": "blocked_pending_review"},
+    {"id": "audit_logging_not_yet_app_integrated", "detail": "Audit tables and log_refusal_record exist; no app writes; contract doc 09 defines write points", "status": "blocked_pending_build"},
+    {"id": "citation_enforcement_not_yet_app_integrated", "detail": "Verification levels of doc 04 have no implementation; existing validator is existence-only against flat JSON", "status": "blocked_pending_build"},
+    {"id": "refusal_enforcement_not_yet_app_integrated", "detail": "Only excluded-title/topic scope refusals exist today; doc 05 variant table unimplemented", "status": "blocked_pending_build"},
+    {"id": "target_control_not_yet_app_integrated", "detail": "No environment target pin, echo check, banner, or boot validation exists in the app; doc 10 defines them", "status": "blocked_pending_build"}
+  ],
+  "top_blockers_order": [
+    "app_database_retrieval_path_not_implemented",
+    "display_gates_closed",
+    "preview_reload_not_executed_after_patch_review",
+    "qa_signoff_pending",
+    "pending_extraction_qa_non_display",
+    "refusal_enforcement_not_yet_app_integrated",
+    "citation_enforcement_not_yet_app_integrated",
+    "audit_logging_not_yet_app_integrated",
+    "target_control_not_yet_app_integrated",
+    "unknown_effectivity_blocked"
+  ],
+  "detail_documents": [
+    "docs/fable5-app-integration-readiness/00_FABLE5_APP_INTEGRATION_READINESS_REPORT.md",
+    "docs/fable5-launch-acceleration/manifests/launch_blocker_manifest.json"
+  ]
+}

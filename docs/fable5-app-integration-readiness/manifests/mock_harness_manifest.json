@@ -1,0 +1,29 @@
+{
+  "manifest": "mock_harness_manifest",
+  "phase": "F5-02",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "design_document": "docs/fable5-app-integration-readiness/12_MOCK_ONLY_QA_HARNESS_DESIGN.md",
+  "tiers": [
+    {"tier": "T1_mock", "backend": "in_memory_mock_adapter", "build_phase": "F5-04", "database_contact": false},
+    {"tier": "T2_fixture", "backend": "local_disposable_postgres_synthetic_corpus", "build_phase": "F5-04", "database_contact": "local_only"},
+    {"tier": "T3_preview_manual", "backend": "reloaded_preview_internal_qa_tier", "build_phase": "F5-05", "database_contact": "preview_read_paths_only_after_O6_O2_O7"}
+  ],
+  "scenario_files": [
+    {"file": "mock-harness/mock_retrieval_scenarios.json", "prefix": "MR", "count": 10},
+    {"file": "mock-harness/mock_refusal_scenarios.json", "prefix": "RF", "count": 14},
+    {"file": "mock-harness/mock_citation_validation_scenarios.json", "prefix": "MC", "count": 8},
+    {"file": "mock-harness/mock_guardrail_scenarios.json", "prefix": "GG", "count": 12},
+    {"file": "mock-harness/mock_audit_log_scenarios.json", "prefix": "MA", "count": 7},
+    {"file": "mock-harness/mock_environment_target_scenarios.json", "prefix": "ME", "count": 6}
+  ],
+  "total_scenarios": 57,
+  "pass_criteria": {
+    "scenario_pass_rate_required": 1.0,
+    "leakage_events_allowed": 0,
+    "audit_sequence_assertions": "exact_order_and_count",
+    "consecutive_green_runs": 2,
+    "network_access_in_t1": false
+  }
+}

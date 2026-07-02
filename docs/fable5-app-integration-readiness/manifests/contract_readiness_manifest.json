@@ -1,0 +1,21 @@
+{
+  "manifest": "contract_readiness_manifest",
+  "phase": "F5-02",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "contracts": [
+    {"contract": "legal_retrieval_request", "file": "contracts/legal_retrieval_request_contract.json", "spec": "03_DATABASE_RETRIEVAL_CONTRACT_SPEC.md", "status": "drafted_pending_owner_ratification_P1"},
+    {"contract": "legal_retrieval_response", "file": "contracts/legal_retrieval_response_contract.json", "spec": "03_DATABASE_RETRIEVAL_CONTRACT_SPEC.md", "status": "drafted_pending_owner_ratification_P1", "open_item": "G3 text-delivery mechanism finalized in F5-03 (owner P3)"},
+    {"contract": "citation_object", "file": "contracts/citation_object_contract.json", "spec": "04_MANDATORY_CITATION_CONTRACT_SPEC.md", "status": "drafted_pending_owner_ratification_P1"},
+    {"contract": "refusal_object", "file": "contracts/refusal_object_contract.json", "spec": "05_REFUSAL_AND_NO_AUTHORITY_CONTRACT_SPEC.md", "status": "drafted_pending_owner_ratification_P1", "open_item": "user-facing template texts need owner review (P6)"},
+    {"contract": "audit_log_object", "file": "contracts/audit_log_object_contract.json", "spec": "09_AUDIT_LOGGING_AND_TRACEABILITY_SPEC.md", "status": "drafted_pending_owner_ratification_P1", "open_item": "write mechanics (RPC vs constrained policies) finalized in F5-03"},
+    {"contract": "guardrail_decision", "file": "contracts/guardrail_decision_contract.json", "spec": "06_JUDICIAL_GUARDRAIL_CONTRACT_SPEC.md", "status": "drafted_pending_owner_ratification_P1"}
+  ],
+  "amendment_rule": "any contract change after P1 ratification requires a written amendment and full harness re-run",
+  "open_gaps_carried": [
+    {"gap": "G1_rpc_scope_filter", "compensation": "app-layer TRE filter per doc 07 until RPC revision (owner O3)"},
+    {"gap": "G2_dcs_reference_mechanism", "resolution_phase": "F5-03 (owner P4)"},
+    {"gap": "G3_text_delivery_mechanism", "resolution_phase": "F5-03 (owner P3)"}
+  ]
+}
