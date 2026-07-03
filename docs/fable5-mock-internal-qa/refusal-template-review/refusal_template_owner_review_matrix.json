@@ -1,0 +1,40 @@
+{
+  "artifact": "refusal_template_owner_review_matrix",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "classification_scale": ["Accept as written", "Adopt with revision", "Needs owner review", "Reject"],
+  "tone_axes_checked": ["too_broad", "too_narrow", "too_casual", "too_legalistic", "too_directive", "insufficiently_judicial"],
+  "reviewer_note": "review by Fable 5 as internal QA; every classification remains subject to owner sign-off (P6); recommended wording lives ONLY in refusal_template_recommended_revisions.md; app code untouched",
+  "matrix": [
+    {"id": "refusal.excluded_title.v1", "classification": "Adopt with revision", "tone_flags": ["voice_inconsistency"], "why": "Substance is correct and appropriately conservative (names the excluded titles, directs verification outside the system). The message uses first-person 'I cannot answer', while every other template speaks as 'BenchBook.AI'; a judicial reference tool should keep one impersonal system voice."},
+    {"id": "refusal.general_legal_or_web.v1", "classification": "Accept as written", "tone_flags": [], "why": "States the closed universe plainly, refuses web/other-state/general knowledge without lecturing, offers a concrete next step."},
+    {"id": "refusal.ruling_recommendation.v1", "classification": "Accept as written", "tone_flags": [], "why": "Correctly reserves the decision to the court and enumerates the permissible assistance verbs from the judicial guardrail charter verbatim."},
+    {"id": "refusal.credibility_evaluation.v1", "classification": "Accept as written", "tone_flags": [], "why": "'Credibility determinations belong to the court alone' is exactly the right register for the bench; offers evidentiary-standards research as the permissible alternative."},
+    {"id": "refusal.extra_record_facts.v1", "classification": "Accept as written", "tone_flags": [], "why": "Covers investigation, party lookup, and extra-record adjudicative facts in one sentence without accusing the requester."},
+    {"id": "refusal.dcs_authority_demand.v1", "classification": "Accept as written", "tone_flags": [], "why": "Draws the reference-vs-authority line precisely and still offers the DCS reference card; neither too broad (does not refuse DCS reference use) nor too narrow."},
+    {"id": "refusal.prompt_injection.v1", "classification": "Adopt with revision", "tone_flags": ["too_directive"], "why": "'This request attempts to alter the system's operating rules' reads as an accusation. A judge whose phrasing accidentally trips GP-8 should see a neutral 'cannot be processed' message, not an attribution of intent."},
+    {"id": "refusal.classifier_error.v1", "classification": "Accept as written", "tone_flags": [], "why": "Honest fail-closed wording; does not overpromise; asks for a rephrase."},
+    {"id": "refusal.none_found.v1", "classification": "Adopt with revision", "tone_flags": ["too_casual"], "why": "Substance is right (no answer without corpus support). 'Try different terms' is slightly conversational for the bench; a small wording lift keeps the same meaning in a steadier register."},
+    {"id": "refusal.pending_qa_only.v1", "classification": "Accept as written", "tone_flags": [], "why": "States the material class only ('has not completed quality review'), leaks no queue detail, and is honest that display is blocked."},
+    {"id": "refusal.unknown_effectivity.v1", "classification": "Accept as written", "tone_flags": [], "why": "Same conservative pattern as pending-QA; names the defect class (unverified effective-date window) without legal substance."},
+    {"id": "refusal.future_effective.v1", "classification": "Needs owner review", "tone_flags": ["forward_reference"], "why": "Text is sound, but its permissible-help key adjust_as_of_date_guidance points to an as-of-date control the M1 page does not expose. Owner should choose: reword the help entry, hide it until the control exists, or accept the forward reference."},
+    {"id": "refusal.restricted_lexis.v1", "classification": "Accept as written", "tone_flags": [], "why": "'License-restricted and cannot be displayed... consult the licensed source directly' is the correct posture; no restricted metadata leaks."},
+    {"id": "refusal.citation_validation_failure.v1", "classification": "Accept as written", "tone_flags": [], "why": "The most safety-critical template; admits a draft existed and was withheld, which is honest and builds warranted trust in the citation gate."},
+    {"id": "refusal.retrieval_error.v1", "classification": "Accept as written", "tone_flags": [], "why": "Plain infrastructure-failure wording; correctly promises no partial or unsourced answer."},
+    {"id": "refusal.internal_gate_error.v1", "classification": "Accept as written", "tone_flags": [], "why": "Halting language plus 'recorded for review' matches the defect-alert semantics behind it."},
+    {"id": "refusal.target_control.v1", "classification": "Accept as written", "tone_flags": [], "why": "Administrator-facing by design; states the mock/no-production posture explicitly, which is exactly what a misconfiguration should surface."},
+    {"id": "refusal.audit_write_failure.v1", "classification": "Accept as written", "tone_flags": [], "why": "'Does not answer unaudited requests' states the fail-closed audit rule as a user-visible guarantee."},
+    {"id": "refusal.input_invalid.v1", "classification": "Adopt with revision", "tone_flags": ["too_broad"], "why": "Uses refusal_kind out_of_scope for what is mechanically a malformed request. Wording is fine; the owner may prefer a distinct non-scope wording ('The request could not be read') so scope refusal statistics are not polluted by malformed submissions. Kind change would be an app change: deferred to F5-06."},
+    {"id": "refusal.model_no_support.v1", "classification": "Needs owner review", "tone_flags": ["too_narrow"], "why": "Correct wording, but no scenario currently exercises the NO_SUPPORTED_ANSWER path (coverage gap G3), so the owner is reviewing text whose runtime presentation has not been demonstrated. Recommend adding a scripted profile in F5-06 before final sign-off."},
+    {"id": "refusal.leakage_suppressed.v1", "classification": "Accept as written", "tone_flags": [], "why": "Deliberately vague about the leak class (correct: naming the leaked class would itself leak); promises no partial answer."}
+  ],
+  "summary": {
+    "accept_as_written": 15,
+    "adopt_with_revision": 4,
+    "needs_owner_review": 2,
+    "reject": 0,
+    "overall": "conservative and suitable for a judicial internal QA system; four minor wording lifts and two owner decisions; nothing blocks continued mock-only QA use"
+  }
+}

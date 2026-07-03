@@ -1,0 +1,42 @@
+{
+  "manifest": "pr4_acceptance_manifest",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "pr": 4,
+  "head_branch": "feature/qa-research-mock-only",
+  "base_branch": "refactor/codex-gpt55-launch-prep",
+  "pr_state": "draft",
+  "keep_draft": true,
+  "ready_for_merge": false,
+  "classification": "ready_for_owner_review_and_technical_review_not_ready_for_merge",
+  "classification_options_considered": [
+    "not_ready_for_merge",
+    "ready_for_owner_review_only",
+    "ready_for_technical_review_only",
+    "ready_for_guarded_merge_after_specific_conditions"
+  ],
+  "technical_criteria": {
+    "full_suite_green": true,
+    "scenario_coverage_57_of_57": true,
+    "build_and_lint_clean": true,
+    "validators_pass": true,
+    "diff_confined_to_documented_map": true,
+    "no_live_paths": true,
+    "no_body_text": true,
+    "golden_query_exercise": "19 pass + 1 assertion gap"
+  },
+  "owner_criteria_pending": [
+    "refusal_template_signoff_P6",
+    "branch_policy_decision",
+    "gap_acknowledgment_G1_G2_G3"
+  ],
+  "merge_gate_document": "pr-acceptance/pr4_do_not_merge_until.md",
+  "never_conditions": [
+    "no session marks PR #4 ready or merges it",
+    "merging never enables flags, connects databases, or opens gates",
+    "PR #3 unaffected and remains draft"
+  ],
+  "recommended_branch_policy": "hold PR #4 draft until F5-06 applies owner-approved template revisions, then merge once"
+}

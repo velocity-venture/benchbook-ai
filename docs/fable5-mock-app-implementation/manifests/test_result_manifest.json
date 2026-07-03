@@ -1,0 +1,47 @@
+{
+  "manifest": "test_result_manifest",
+  "phase": "F5-04",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "commands": [
+    {"command": "npm test (vitest run)", "result": "PASS", "files": 23, "tests": 226, "runs": "twice consecutively, both green"},
+    {"command": "npm run test:qa (new suites only)", "result": "PASS", "files": 9, "tests": 110},
+    {"command": "npx next build", "result": "PASS", "notes": "/qa-research and /api/qa-research on edge runtime; run without the prebuild corpus script to avoid regenerating a file outside the allowed modify set"},
+    {"command": "npm run lint (next lint)", "result": "PASS", "warnings": 0, "errors": 0},
+    {"command": "npx tsc --noEmit", "result": "PASS_FOR_F5_04_FILES", "pre_existing_errors": 2, "pre_existing_error_files": ["src/__tests__/chat-route-corpus-loading-errors.test.ts", "src/__tests__/supabase-client-creation.test.ts"], "notes": "both legacy test files unmodified from baseline d3533bd; errors reproduce without the F5-04 files"}
+  ],
+  "scenario_coverage": {
+    "canon_total": 57,
+    "covered": 57,
+    "families": {
+      "MR": {"total": 10, "covered": 10, "suite": "qa-route-retrieval.test.ts"},
+      "RF": {"total": 14, "covered": 14, "suite": "qa-route-refusals.test.ts"},
+      "MC": {"total": 8, "covered": 8, "suite": "qa-route-citations.test.ts"},
+      "GG": {"total": 12, "covered": 12, "suite": "qa-route-guardrails.test.ts"},
+      "MA": {"total": 7, "covered": 7, "suite": "qa-route-audit.test.ts"},
+      "ME": {"total": 6, "covered": 6, "suite": "qa-route-environment.test.ts + qa-boot-checks.test.ts"}
+    }
+  },
+  "additional_cases": {
+    "boot_matrix": 8,
+    "static_safety_scans": 19,
+    "contract_shape_checks": 3,
+    "sink_content_rule_tests": 2,
+    "input_validation_shapes": 5,
+    "other_unit_tests": "claim extraction, MC-03 verifier unit, GP-8 plain injection, trace resolution, kind-enum sweep, as-of pin, transport header"
+  },
+  "objective_proof_map": {
+    "citations_mandatory": ["T-CIT-MISSING", "MC-08", "RF-14"],
+    "refusals_mandatory": ["RF-01..RF-14"],
+    "excluded_titles_refused": ["RF-02", "RF-03", "RF-04", "GG-02", "MC-04"],
+    "no_general_fallback": ["MR-07", "RF-01", "RF-05", "static scans", "prompt confinement elements"],
+    "judicial_guardrails": ["RF-06", "RF-12", "RF-13", "GG-03", "GG-04", "GG-05", "GG-08"],
+    "dcs_reference_only": ["MR-06", "MC-07", "RF-07", "GG-06"],
+    "tre_limited_scope": ["MR-04", "MR-05", "MC-06"],
+    "gated_material_blocked": ["RF-08", "RF-09", "RF-10", "RF-11", "MA-05"],
+    "audit_every_request": ["MA-01..MA-07", "per-suite audit assertions"],
+    "environment_mock_only": ["ME-01..ME-06", "transport header test", "page static assertions"],
+    "no_live_paths": ["static-safety suite", "boot matrix", "factory registry tests"]
+  }
+}

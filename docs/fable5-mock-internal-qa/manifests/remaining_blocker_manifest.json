@@ -1,0 +1,27 @@
+{
+  "manifest": "remaining_blocker_manifest",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "pr4_blockers_owner_resolvable": [
+    {"id": "B1", "blocker": "refusal_template_owner_review_pending", "resolution": "owner completes the sign-off block (P6)"},
+    {"id": "B2", "blocker": "pr4_merge_policy_pending", "resolution": "owner chooses hold-until-F5-06 (recommended) / merge-now / long-running"}
+  ],
+  "f5_06_deferrals": [
+    {"id": "G1", "item": "explicit TRJPP-family success assertion", "class": "test_only"},
+    {"id": "G3", "item": "model_no_support scripted profile + demonstration test", "class": "mock_profile_and_test"},
+    {"id": "R1_R4", "item": "owner-approved template wording revisions as .v2 keys", "class": "data_file_diff"},
+    {"id": "O1", "item": "future_effective help-key resolution", "class": "data_file_diff_or_ui_per_owner"}
+  ],
+  "program_blockers_unchanged_by_pr4": [
+    {"id": "P1", "blocker": "o1_e14c_corpus_admin_review_outstanding", "status": "critical_path", "note": "review simulation and then the real E14-C review; independent of the app track"},
+    {"id": "P2", "blocker": "live_adapter_design_blocked", "status": "blocked", "gate_chain": ["O6_reload_executed_and_reqaed", "O2_O4_tier_promotion", "O7_build_approval", "P1_P2_contract_signatures"]},
+    {"id": "P3", "blocker": "preview_reload_blocked", "status": "blocked", "note": "E15-A planning may proceed on the corpus track; execution requires owner approval and the Mac Studio inputs"},
+    {"id": "P4", "blocker": "embeddings_blocked", "status": "blocked", "note": "separate owner approval; not proposed"},
+    {"id": "P5", "blocker": "display_gates_closed", "status": "closed_by_design", "note": "0 displayable rows; deny-by-default unchanged"},
+    {"id": "P6", "blocker": "production_untouched", "status": "untouched", "note": "production display requires a distinct launch approval that does not exist"},
+    {"id": "P7", "blocker": "typescript_legacy_test_cleanup_outstanding", "status": "maintenance", "note": "2 pre-existing errors in legacy test files (G2); owner-scheduled; not bundled into mock phases"}
+  ],
+  "explicitly_not_next": ["live_db_adapter", "embeddings_generation", "production_display", "display_gate_opening"]
+}

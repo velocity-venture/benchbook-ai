@@ -1,0 +1,66 @@
+{
+  "manifest": "mock_internal_qa_manifest",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "branch": "feature/qa-research-mock-only",
+  "base_head": "c3eef92",
+  "metadata_only": true,
+  "body_text_included": false,
+  "app_implementation_code_changed": false,
+  "package_root": "docs/fable5-mock-internal-qa/",
+  "docs": [
+    "00_F5_05_MOCK_INTERNAL_QA_REPORT.md",
+    "01_OWNER_APPROVAL_SCOPE.md",
+    "02_MOCK_SURFACE_QA_BASELINE.md",
+    "03_REFUSAL_TEMPLATE_REVIEW_REPORT.md",
+    "04_GOLDEN_QUERY_EXERCISE_REPORT.md",
+    "05_CITATION_AND_AUDIT_QA_REPORT.md",
+    "06_GUARDRAIL_BEHAVIOR_QA_REPORT.md",
+    "07_ENVIRONMENT_AND_TARGET_CONTROL_QA_REPORT.md",
+    "08_PR4_ACCEPTANCE_CRITERIA.md",
+    "09_PR4_MERGE_BLOCKERS_AND_DEFERRALS.md",
+    "10_OWNER_REVIEW_PACKET.md",
+    "11_NEXT_PHASE_PROMPT.md",
+    "12_NEXT_SESSION_START_HERE.md"
+  ],
+  "refusal_template_review": [
+    "refusal-template-review/refusal_template_inventory.json",
+    "refusal-template-review/refusal_template_owner_review_matrix.json",
+    "refusal-template-review/refusal_template_recommended_revisions.md"
+  ],
+  "exercises": [
+    "exercises/golden_query_mock_exercise.json",
+    "exercises/mock_refusal_exercise.json",
+    "exercises/mock_citation_exercise.json",
+    "exercises/mock_guardrail_exercise.json",
+    "exercises/mock_audit_exercise.json",
+    "exercises/mock_environment_exercise.json"
+  ],
+  "pr_acceptance": [
+    "pr-acceptance/pr4_acceptance_checklist.md",
+    "pr-acceptance/pr4_required_owner_reviews.md",
+    "pr-acceptance/pr4_post_merge_controls.md",
+    "pr-acceptance/pr4_do_not_merge_until.md"
+  ],
+  "manifests": [
+    "manifests/mock_internal_qa_manifest.json",
+    "manifests/refusal_template_review_manifest.json",
+    "manifests/golden_query_exercise_manifest.json",
+    "manifests/pr4_acceptance_manifest.json",
+    "manifests/remaining_blocker_manifest.json"
+  ],
+  "dashboards": [
+    "dashboards/owner_mock_qa_dashboard.md",
+    "dashboards/technical_mock_qa_dashboard.md",
+    "dashboards/guardrail_mock_qa_dashboard.md",
+    "dashboards/pr4_readiness_dashboard.md"
+  ],
+  "validator": "scripts/launch_readiness/validate_f5_05_mock_internal_qa.py",
+  "phase_questions_answered": 10,
+  "findings": {"gaps": ["G1", "G2", "G3"], "template_revisions_recommended": ["R1", "R2", "R3", "R4"], "owner_decisions": ["O1", "O2"], "app_code_defects_found": 0},
+  "database_contacted": false,
+  "embeddings_generated": false,
+  "preview_reload_executed": false,
+  "display_gates_changed": false,
+  "production_touched": false
+}

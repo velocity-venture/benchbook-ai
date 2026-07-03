@@ -1,0 +1,47 @@
+{
+  "manifest": "mock_contract_manifest",
+  "phase": "F5-04",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "contract_source": "docs/fable5-app-integration-readiness/contracts/ (F5-02, unchanged)",
+  "bindings": [
+    {
+      "contract": "legal_retrieval_request",
+      "implemented_by": "route-handler.ts request assembly + types.ts LegalRetrievalRequest",
+      "notes": "corpus_scope constant tn_closed_universe_v1; result_limit clamped 1..50 pre-adapter; as_of_date never future (clamped to today)"
+    },
+    {
+      "contract": "legal_retrieval_response",
+      "implemented_by": "route-handler.ts + mock-retrieval-adapter.ts + types.ts LegalRetrievalResponse",
+      "notes": "gate_attestation all-four-true required; gated_chunk_passage runtime-only, never audited; blocked classes surface as counts only"
+    },
+    {
+      "contract": "citation_object",
+      "implemented_by": "citation-verifier.ts buildCitationObject",
+      "notes": "all 13 required fields present (contract-shape test); 4-level verification enum; granularity clamp renders parent section with page span"
+    },
+    {
+      "contract": "refusal_object",
+      "implemented_by": "refusals.ts buildRefusalObject + refusal-templates.json",
+      "notes": "6-kind enum locked to refusal_records schema; template-key-only wording (P6 review); permissible_help always non-empty"
+    },
+    {
+      "contract": "guardrail_decision",
+      "implemented_by": "guardrail.ts (GP/GQ/GA check series, decision objects with checks_run)",
+      "notes": "fail posture: classifier error refuses (GG-12); decisions feed refusal records"
+    },
+    {
+      "contract": "audit_log_object",
+      "implemented_by": "audit-logger.ts + mock-audit-logger.ts + route-handler.ts write ordering",
+      "notes": "4 record kinds mirroring legal_authority audit tables; hash-only content; fail-closed writes; reconstruction proven (MA-06)"
+    }
+  ],
+  "environment_target_contract": {
+    "m1_registry": ["mock_only"],
+    "production_member_exists": false,
+    "sentinel_behavior": "production-shaped values refuse every request with variant target_control (ME-04)",
+    "echo_check": "per request via assertEcho (ME-05 / SC-1)"
+  },
+  "drift_protection": "qa-route-static-safety.test.ts loads the F5-02 contract JSONs and asserts builder outputs carry every required field and the exact refusal-kind enum; scenario-sync.test.ts sha256-pins the scenario canon"
+}

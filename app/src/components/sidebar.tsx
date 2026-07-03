@@ -32,6 +32,11 @@ const navigation = [
   { name: "TN Code", href: "/tca", icon: BookOpen },
   { name: "TRJPP Rules", href: "/trjpp", icon: Scale },
   { name: "DCS Policies", href: "/dcs-policies", icon: FileText },
+  // Mock-only internal QA surface (F5-04/M1); hidden unless the QA
+  // research flag is exposed to the client build. Serves synthetic data.
+  ...(process.env.NEXT_PUBLIC_QA_RESEARCH_ENABLED === "true"
+    ? [{ name: "QA Research (mock)", href: "/qa-research", icon: FileText }]
+    : []),
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

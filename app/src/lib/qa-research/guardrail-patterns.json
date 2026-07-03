@@ -1,0 +1,112 @@
+{
+  "artifact": "guardrail_patterns",
+  "phase": "F5-04",
+  "version": "1.0.0-m1",
+  "metadata_only": true,
+  "body_text_included": false,
+  "note": "Pattern data for the judicial guardrail classes added by the QA research path. Excluded-title and excluded-topic detection (GP-3) reuses lib/scope-guard.ts unmodified. Regex sources only; no legal body text.",
+  "classes": [
+    {
+      "check_id": "GP-4",
+      "class": "web_or_general_legal",
+      "refusal_kind": "out_of_scope",
+      "refusal_variant": "general_legal_or_web",
+      "patterns": [
+        "\\b(search|look|check|browse)\\b.{0,24}\\b(the\\s+)?(web|internet|online|google|westlaw|lexis(?:nexis)?)\\b",
+        "\\b(another|other|out.of.)state('?s)?\\s+(law|statute|code|case)\\b",
+        "\\bfederal\\s+(law|statute|case\\s?law|precedent)\\b",
+        "\\bgeneral\\s+legal\\s+(knowledge|principles?)\\b",
+        "\\bfrom\\s+your\\s+(own\\s+)?(memory|training)\\b",
+        "\\bwithout\\s+(the\\s+)?corpus\\b"
+      ]
+    },
+    {
+      "check_id": "GP-5",
+      "class": "ruling_recommendation",
+      "refusal_kind": "safety_guardrail",
+      "refusal_variant": "ruling_recommendation",
+      "patterns": [
+        "\\bhow\\s+should\\s+i\\s+rule\\b",
+        "\\bwhat\\s+(ruling|outcome|disposition|sentence)\\s+(should|do)\\s+i\\b",
+        "\\bshould\\s+i\\s+(grant|deny|terminate|order|find|hold|remove|detain)\\b",
+        "\\b(recommend|decide|pick|choose)\\s+(a\\s+|the\\s+)?(ruling|outcome|disposition|verdict)\\b",
+        "\\brule\\s+in\\s+(favor|favour)\\s+of\\b",
+        "\\bwhat\\s+would\\s+you\\s+(rule|decide|order)\\b"
+      ]
+    },
+    {
+      "check_id": "GP-6",
+      "class": "credibility_evaluation",
+      "refusal_kind": "safety_guardrail",
+      "refusal_variant": "credibility_evaluation",
+      "patterns": [
+        "\\b(which|what)\\s+witness(es)?\\b.{0,40}\\b(believe|credib|truthful|lying)\\b",
+        "\\bis\\s+(the\\s+)?(witness|mother|father|caseworker|officer|child)\\b.{0,32}\\b(credible|lying|truthful|believable)\\b",
+        "\\b(assess|evaluate|judge|rate)\\b.{0,24}\\bcredibility\\b",
+        "\\bwho\\s+is\\s+telling\\s+the\\s+truth\\b",
+        "\\bshould\\s+i\\s+believe\\b"
+      ]
+    },
+    {
+      "check_id": "GP-7",
+      "class": "extra_record_facts",
+      "refusal_kind": "safety_guardrail",
+      "refusal_variant": "extra_record_facts",
+      "patterns": [
+        "\\b(look\\s*up|search\\s+for|find|investigate|research)\\b.{0,40}\\b(this|the|a)\\s+(party|parent|mother|father|witness|respondent|juvenile|child|person|family)\\b",
+        "\\b(criminal|arrest|court)\\s+(history|record)s?\\s+(of|for)\\b",
+        "\\bbackground\\s+check\\b",
+        "\\b(facts?|information|records?)\\s+outside\\s+(of\\s+)?the\\s+record\\b",
+        "\\bwhat\\s+can\\s+you\\s+find\\s+(out\\s+)?about\\b.{0,40}\\b(named|party|person|family)\\b",
+        "\\bsocial\\s+media\\s+(posts?|accounts?|activity)\\b"
+      ]
+    },
+    {
+      "check_id": "GP-8",
+      "class": "prompt_injection",
+      "refusal_kind": "safety_guardrail",
+      "refusal_variant": "prompt_injection",
+      "patterns": [
+        "\\bignore\\s+(all\\s+|your\\s+|previous\\s+|prior\\s+)*(instructions?|rules?|guardrails?|guidelines?)\\b",
+        "\\bdisregard\\s+(the\\s+|your\\s+)?(system\\s+prompt|instructions?|guardrails?)\\b",
+        "\\byou\\s+are\\s+now\\s+(a|an|the)\\b",
+        "\\bpretend\\s+(you\\s+are|to\\s+be)\\b",
+        "\\b(reveal|print|show)\\s+(your\\s+)?(system\\s+prompt|hidden\\s+instructions)\\b",
+        "\\bbypass\\s+(the\\s+)?(guardrails?|gates?|filters?)\\b"
+      ]
+    },
+    {
+      "check_id": "GP-9",
+      "class": "dcs_authority_demand",
+      "refusal_kind": "safety_guardrail",
+      "refusal_variant": "dcs_authority_demand",
+      "patterns": [
+        "\\bdcs\\s+polic(y|ies)\\b.{0,64}\\b(controls?|requires?|mandates?|compels?|binds?)\\b.{0,32}\\b(my\\s+)?(ruling|order|decision|disposition|outcome)\\b",
+        "\\b(rule|order|decide)\\b.{0,32}\\bbecause\\s+dcs\\s+policy\\b",
+        "\\bcite\\s+dcs\\s+polic(y|ies)\\s+as\\s+(controlling|binding)\\s+authority\\b",
+        "\\bdcs\\s+polic(y|ies)\\s+as\\s+(the\\s+)?legal\\s+authority\\s+for\\s+(my|the)\\s+(ruling|order|decision)\\b"
+      ]
+    }
+  ],
+  "generation_scan_classes": [
+    {
+      "check_id": "GA-2",
+      "class": "response_side_ruling",
+      "patterns": [
+        "\\byou\\s+should\\s+(rule|grant|deny|order|find|hold|terminate)\\b",
+        "\\bthe\\s+court\\s+should\\s+(rule|grant|deny|order|find|hold)\\b",
+        "\\bi\\s+recommend\\s+(ruling|granting|denying|ordering|finding)\\b",
+        "\\brule\\s+in\\s+(favor|favour)\\s+of\\b"
+      ]
+    },
+    {
+      "check_id": "GA-3",
+      "class": "leakage_markers",
+      "patterns": [
+        "RESTRICTED-LEXIS",
+        "RESTRICTED_MARKER",
+        "\\bpending\\s+extraction\\s+qa\\s+row\\b"
+      ]
+    }
+  ]
+}
