@@ -1,0 +1,29 @@
+{
+  "artifact": "mock_refusal_exercise",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "objective": "verify every refusal includes a reason (kind+variant+owner-reviewed message), a stage, and a permissible next action, and that each path is conservative",
+  "executed_via": "qa-route-refusals.test.ts (RF-01..RF-14) plus refusal paths in the GG/MA/ME suites at HEAD c3eef92; 226/226 green",
+  "per_refusal_checks": [
+    {"check": "reason present", "how": "refusal_kind + refusal_variant + user_message_key on every refusal envelope; template resolution throws if missing", "result": "PASS (asserted in the shared expectPreRetrievalRefusal helper and per-scenario tests)"},
+    {"check": "stage present", "how": "stage field constrained to pre_retrieval | retrieval | post_generation", "result": "PASS"},
+    {"check": "permissible next action present", "how": "permissible_help asserted non-empty; inventory shows every template carries at least one action", "result": "PASS"},
+    {"check": "audit reference present", "how": "refusal_record_id written and linked (except sentinel/broken-sink paths, which degrade to null gracefully)", "result": "PASS"},
+    {"check": "no leakage in refusal", "how": "restricted/pending chunk ids and passages asserted absent from serialized events (RF-08, RF-09, RF-11, GG-09)", "result": "PASS"},
+    {"check": "no lock-in after refusal", "how": "GG-11 answers normally immediately after a refusal", "result": "PASS"}
+  ],
+  "variant_coverage": {
+    "exercised_variants": ["excluded_title", "general_legal_or_web", "ruling_recommendation", "credibility_evaluation", "extra_record_facts", "dcs_authority_demand", "prompt_injection", "classifier_error", "none_found", "pending_qa_only", "unknown_effectivity", "future_effective", "restricted_lexis", "citation_validation_failure", "retrieval_error", "internal_gate_error", "target_control", "audit_write_failure", "input_invalid", "leakage_suppressed"],
+    "unexercised_variants": ["model_no_support"],
+    "gap_ref": "G3: NO_SUPPORTED_ANSWER path has a template and route hook but no scripted profile drives it; recommend F5-06 test addition"
+  },
+  "conservatism_findings": [
+    "pre-retrieval refusals never touch the adapter (call-count spies at zero)",
+    "post-generation conversions suppress the entire draft; no delta events escape",
+    "zero-authority precedence resolves to the MOST restrictive applicable class (restricted > future-effective > pending > unknown > none_found)",
+    "misclassified intent degrades toward refusal (no-authority), never toward leakage"
+  ],
+  "verdict": "refusal surface is owner-reviewable, conservative, and fully attributable; one demonstration gap (G3)"
+}

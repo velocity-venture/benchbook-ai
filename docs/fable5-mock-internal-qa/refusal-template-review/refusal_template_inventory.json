@@ -1,0 +1,39 @@
+{
+  "artifact": "refusal_template_inventory",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "source_file": "app/src/lib/qa-research/refusal-templates.json (read-only in this phase)",
+  "template_count": 21,
+  "templates": [
+    {"id": "refusal.excluded_title.v1", "kind": "out_of_scope", "category": "excluded statutory titles (39/40/55) and excluded topics", "stage_usage": "pre_retrieval (GP-3), post-generation leakage backstop", "permissible_help": ["locate_authorities_within_v1_corpus", "open_corpus_browsers"], "proven_by": ["RF-02", "RF-03", "RF-04", "GG-02"]},
+    {"id": "refusal.general_legal_or_web.v1", "kind": "out_of_scope", "category": "web retrieval, other-state or federal law, general legal knowledge", "stage_usage": "pre_retrieval (GP-4)", "permissible_help": ["locate_authorities_within_v1_corpus", "rephrase_within_corpus"], "proven_by": ["RF-05"]},
+    {"id": "refusal.ruling_recommendation.v1", "kind": "safety_guardrail", "category": "case-specific ruling/outcome requests", "stage_usage": "pre_retrieval (GP-5) and post_generation (GA-2)", "permissible_help": ["locate_authorities_within_v1_corpus", "summarize_cited_authorities"], "proven_by": ["RF-06", "GG-03", "GG-08", "GG-10"]},
+    {"id": "refusal.credibility_evaluation.v1", "kind": "safety_guardrail", "category": "witness/party credibility requests", "stage_usage": "pre_retrieval (GP-6)", "permissible_help": ["locate_authorities_within_v1_corpus"], "proven_by": ["RF-12", "GG-04"]},
+    {"id": "refusal.extra_record_facts.v1", "kind": "safety_guardrail", "category": "extra-record factfinding / party lookup", "stage_usage": "pre_retrieval (GP-7)", "permissible_help": ["locate_authorities_within_v1_corpus"], "proven_by": ["RF-13", "GG-05"]},
+    {"id": "refusal.dcs_authority_demand.v1", "kind": "safety_guardrail", "category": "demand that DCS policy control a ruling", "stage_usage": "pre_retrieval (GP-9)", "permissible_help": ["open_dcs_reference_material", "locate_authorities_within_v1_corpus"], "proven_by": ["RF-07"]},
+    {"id": "refusal.prompt_injection.v1", "kind": "safety_guardrail", "category": "prompt injection attempts", "stage_usage": "pre_retrieval (GP-8)", "permissible_help": ["rephrase_within_corpus"], "proven_by": ["GP-8 plain-injection test"]},
+    {"id": "refusal.classifier_error.v1", "kind": "safety_guardrail", "category": "guardrail classifier failure (fail closed)", "stage_usage": "pre_retrieval catch-all", "permissible_help": ["rephrase_within_corpus"], "proven_by": ["GG-12"]},
+    {"id": "refusal.none_found.v1", "kind": "no_authority_support", "category": "zero displayable authority", "stage_usage": "retrieval (GQ-3)", "permissible_help": ["open_corpus_browsers", "rephrase_within_corpus"], "proven_by": ["RF-01", "MR-07"]},
+    {"id": "refusal.pending_qa_only.v1", "kind": "no_authority_support", "category": "only pending-extraction-QA material matches", "stage_usage": "retrieval", "permissible_help": ["open_corpus_browsers", "rephrase_within_corpus"], "proven_by": ["RF-09", "MA-05"]},
+    {"id": "refusal.unknown_effectivity.v1", "kind": "no_authority_support", "category": "only unknown-effectivity material matches", "stage_usage": "retrieval", "permissible_help": ["open_corpus_browsers", "rephrase_within_corpus"], "proven_by": ["RF-10", "MA-05"]},
+    {"id": "refusal.future_effective.v1", "kind": "future_effective_only", "category": "only future-effective material matches", "stage_usage": "retrieval", "permissible_help": ["adjust_as_of_date_guidance", "open_corpus_browsers"], "proven_by": ["RF-11", "MA-05"]},
+    {"id": "refusal.restricted_lexis.v1", "kind": "restricted_display_only", "category": "license-restricted material matches", "stage_usage": "retrieval", "permissible_help": ["locate_authorities_within_v1_corpus"], "proven_by": ["RF-08", "MA-05"]},
+    {"id": "refusal.citation_validation_failure.v1", "kind": "no_authority_support", "category": "generation citations unverifiable; answer withheld", "stage_usage": "post_generation (GA-1/GA-4)", "permissible_help": ["rephrase_within_corpus", "open_corpus_browsers"], "proven_by": ["RF-14", "MC-08", "T-CIT-MISSING"]},
+    {"id": "refusal.retrieval_error.v1", "kind": "no_authority_support", "category": "adapter/model infrastructure failure", "stage_usage": "retrieval or post_generation", "permissible_help": ["retry_request"], "proven_by": ["MR-08"]},
+    {"id": "refusal.internal_gate_error.v1", "kind": "no_authority_support", "category": "internal gate/as-of consistency defect", "stage_usage": "retrieval (GQ-1/GQ-4), defect alert", "permissible_help": ["retry_request"], "proven_by": ["MR-09", "GG-07"]},
+    {"id": "refusal.target_control.v1", "kind": "safety_guardrail", "category": "environment target invalid, production-shaped, or echo mismatch", "stage_usage": "pre_retrieval / retrieval", "permissible_help": ["contact_administrator"], "proven_by": ["GG-01", "ME-04", "ME-05"]},
+    {"id": "refusal.audit_write_failure.v1", "kind": "no_authority_support", "category": "audit record could not be written; answer blocked", "stage_usage": "retrieval / post_generation", "permissible_help": ["retry_request"], "proven_by": ["MA-07", "answer-audit failure test"]},
+    {"id": "refusal.input_invalid.v1", "kind": "out_of_scope", "category": "malformed or oversized request", "stage_usage": "pre_retrieval (input validation, HTTP 400)", "permissible_help": ["rephrase_within_corpus"], "proven_by": ["input validation matrix"]},
+    {"id": "refusal.model_no_support.v1", "kind": "unsupported_answer", "category": "model reports no supported answer from retrieved passages", "stage_usage": "post_generation", "permissible_help": ["rephrase_within_corpus", "open_corpus_browsers"], "proven_by": ["prompt-contract NO_SUPPORTED_ANSWER hook (no scenario exercises it; noted as coverage gap G3)"]},
+    {"id": "refusal.leakage_suppressed.v1", "kind": "safety_guardrail", "category": "response-side leakage (restricted markers, excluded-title reintroduction)", "stage_usage": "post_generation (GA-3)", "permissible_help": ["rephrase_within_corpus"], "proven_by": ["GG-09", "MC-04"]}
+  ],
+  "kind_distribution": {"out_of_scope": 3, "safety_guardrail": 8, "no_authority_support": 7, "future_effective_only": 1, "restricted_display_only": 1, "unsupported_answer": 1},
+  "invariants_checked": [
+    "every template has a non-empty permissible_help list",
+    "every template kind is within the 6-kind refusal_records enum",
+    "no template contains legal substance, statute text, or restricted metadata",
+    "every route refusal variant resolves to a template (missing template throws)"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "artifact": "mock_audit_exercise",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "objective": "verify every request generates an audit object chain and that audit content rules hold structurally",
+  "executed_via": "qa-route-audit.test.ts (MA-01..MA-07 plus sink rejection tests) at HEAD c3eef92",
+  "chains_verified": [
+    {"outcome": "answer", "chain": ["retrieval_logs", "answer_audit_records", "citation_verification_records"], "evidence": "MA-01", "result": "PASS (order asserted)"},
+    {"outcome": "pre-retrieval refusal", "chain": ["refusal_records"], "evidence": "MA-02", "result": "PASS"},
+    {"outcome": "zero-result refusal", "chain": ["retrieval_logs (refused_before_generation=true)", "refusal_records"], "evidence": "MA-03", "result": "PASS"},
+    {"outcome": "citation-failure conversion", "chain": ["retrieval_logs", "refusal_records", "answer_audit_records (answer_suppressed=true, hash retained, refusal linked)"], "evidence": "MA-04", "result": "PASS"},
+    {"outcome": "gated-class refusals", "chain": ["refusal_records with enum-valid kinds"], "evidence": "MA-05", "result": "PASS"}
+  ],
+  "content_rules": [
+    {"rule": "queries stored as sha256 hashes only", "evidence": "MA-01 hash assertion; sink throws on non-hash query_hash", "result": "PASS"},
+    {"rule": "no passages or body-text fields in any record", "evidence": "sink throws on prohibited field names and >240-char strings (structural rejection tests); MA-01 asserts no placeholder passage text", "result": "PASS"},
+    {"rule": "answer stored as hash only", "evidence": "sink throws on non-hash answer_hash", "result": "PASS"}
+  ],
+  "reconstruction_drill": {"evidence": "MA-06", "fields_reconstructed": ["query_hash", "returned_chunk_ids", "prompt_package_hash", "system_prompt_version", "answer_hash", "citation verification levels", "environment_target"], "result": "PASS: full request reconstructable from sink rows alone"},
+  "fail_closed": [
+    {"case": "retrieval-log write failure", "evidence": "MA-07", "result": "no answer streamed; user-safe audit_write_failure refusal with defect alert"},
+    {"case": "answer-audit write failure", "evidence": "answer-audit failure test", "result": "no unaudited answer; converts to refusal"}
+  ],
+  "trace_propagation": {"evidence": "trace-resolution test: done-event audit ids resolve to sink records; page renders the trace line", "result": "PASS"},
+  "verdict": "every request path produces its audit chain; content rules are enforced by the sink itself, not by convention"
+}

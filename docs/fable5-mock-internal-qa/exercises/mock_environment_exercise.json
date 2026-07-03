@@ -1,0 +1,28 @@
+{
+  "artifact": "mock_environment_exercise",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "objective": "verify the mock surface clearly discloses MOCK_ONLY / no-production status and that target control is layered and fail-closed",
+  "executed_via": "qa-route-environment.test.ts (ME-01..ME-06), qa-boot-checks.test.ts, transport-header test at HEAD c3eef92",
+  "disclosure_checks": [
+    {"check": "banner text", "expected": "MOCK ONLY - SYNTHETIC DATA - NOT FOR JUDICIAL RELIANCE as the FIRST SSE event on answers AND refusals", "evidence": "ME-01", "result": "PASS"},
+    {"check": "target chip data", "expected": "target=mock_only, label=MOCK_ONLY, tier=mock, fixture manifest hash, as-of date", "evidence": "ME-02", "result": "PASS"},
+    {"check": "no-production notice", "expected": "'cannot connect to production' text in the environment event and page footer", "evidence": "ME-02 + page static assertions", "result": "PASS"},
+    {"check": "transport-layer label", "expected": "X-Environment-Label: MOCK_ONLY on every SSE response", "evidence": "transport header test", "result": "PASS"},
+    {"check": "page frame elements", "expected": "banner, chip, trace line, reference-material notice, evidentiary notice rendered from events", "evidence": "page-source static assertions (ME-01/ME-02 page side)", "result": "PASS"}
+  ],
+  "target_control_checks": [
+    {"check": "production sentinel", "evidence": "ME-04/GG-01: every request refuses with target_control and a boot alert", "result": "PASS"},
+    {"check": "echo mismatch (SC-1)", "evidence": "ME-05: adapter echo differing from the pin refuses with defect alert", "result": "PASS"},
+    {"check": "boot failure never degrades", "evidence": "ME-06: missing/unknown target, flag off, invalid model id all yield 503 unavailable", "result": "PASS"},
+    {"check": "no live target representable", "evidence": "boot-check registry tests + static scans: type enum and all three factories are mock-only", "result": "PASS"},
+    {"check": "flag default off", "evidence": "boot matrix: only the exact string 'true' enables the route", "result": "PASS"}
+  ],
+  "residual_notes": [
+    "the API accepts an as_of_date field but the M1 page exposes no picker (ties to refusal-template finding O1)",
+    "nav entry visibility uses NEXT_PUBLIC_QA_RESEARCH_ENABLED; hidden by default (deviation D5, documented)"
+  ],
+  "verdict": "MOCK_ONLY disclosure is redundant across event, transport, and page layers; production is unrepresentable in this build"
+}

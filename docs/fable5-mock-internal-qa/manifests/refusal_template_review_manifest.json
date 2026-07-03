@@ -1,0 +1,32 @@
+{
+  "manifest": "refusal_template_review_manifest",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "source_file": "app/src/lib/qa-research/refusal-templates.json",
+  "source_file_modified_this_phase": false,
+  "templates_in_source": 21,
+  "templates_reviewed": 21,
+  "coverage_complete": true,
+  "classification_counts": {
+    "accept_as_written": 15,
+    "adopt_with_revision": 4,
+    "needs_owner_review": 2,
+    "reject": 0
+  },
+  "adopt_with_revision_ids": [
+    "refusal.excluded_title.v1",
+    "refusal.prompt_injection.v1",
+    "refusal.none_found.v1",
+    "refusal.input_invalid.v1"
+  ],
+  "needs_owner_review_ids": [
+    "refusal.future_effective.v1",
+    "refusal.model_no_support.v1"
+  ],
+  "recommendation_ids": ["R1", "R2", "R3", "R4", "O1", "O2"],
+  "revision_mechanism": "owner-approved changes land in F5-06 as a data-file diff with .v2 template keys plus test updates; route throws on unknown keys so drift is impossible",
+  "owner_signoff_status": "PENDING (sign-off block in refusal_template_recommended_revisions.md)",
+  "suitability_verdict": "conservative and suitable for judicial internal QA as written; wording lifts are polish, not safety fixes"
+}

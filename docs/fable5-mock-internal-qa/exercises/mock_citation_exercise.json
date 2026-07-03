@@ -1,0 +1,23 @@
+{
+  "artifact": "mock_citation_exercise",
+  "phase": "F5-05",
+  "generated_at": "2026-07-02",
+  "metadata_only": true,
+  "body_text_included": false,
+  "objective": "verify every non-refusal answer requires citation metadata and that citation objects are contract-complete",
+  "executed_via": "qa-route-citations.test.ts (MC-01..MC-08, T-CIT-MISSING) plus contract-shape checks in qa-route-static-safety.test.ts at HEAD c3eef92",
+  "checks": [
+    {"check": "citationless answer impossible", "evidence": "T-CIT-MISSING converts a citationless generation to refusal; the page additionally refuses to render answer text without a verified citation (defensive rule in page source)", "result": "PASS"},
+    {"check": "all-unresolved answer impossible", "evidence": "MC-08 conversion with answer_suppressed audit", "result": "PASS"},
+    {"check": "citation objects contract-complete", "evidence": "contract-shape test asserts all 13 required fields from citation_object_contract.json on builder output", "result": "PASS"},
+    {"check": "verification levels honest", "evidence": "MC-01 verified_retrieved; MC-02 verified_resolved demotion with distinct badge and MEDIUM confidence cap (M-2); MC-03 unresolved renders as warning only", "result": "PASS"},
+    {"check": "model text never rendered as citation", "evidence": "canonical_citation strings come from fixture rows; MC-03 asserts the fabricated string is absent from citation objects", "result": "PASS"},
+    {"check": "granularity clamp", "evidence": "MC-05 subsection claim renders parent section with page span, granularity_clamped=true", "result": "PASS"},
+    {"check": "out-of-universe claim suppression", "evidence": "MC-04 excluded-title citation suppresses the answer with zero leakage", "result": "PASS"},
+    {"check": "SYNTHETIC marker preservation", "evidence": "MR-01 asserts SYNTHETIC in rendered canonical citations; fixture lint requires the marker on every record", "result": "PASS"},
+    {"check": "TRE scope tag rendered", "evidence": "MC-06 evidentiary tag on citation and source card", "result": "PASS"},
+    {"check": "DCS never counts toward confidence", "evidence": "MC-07 reference cards excluded from answer citations; confidence stays HIGH from statute support alone", "result": "PASS"},
+    {"check": "one verification record per rendered citation", "evidence": "MC-01 record count equals citation count; MA-06 levels reconstructable", "result": "PASS"}
+  ],
+  "verdict": "citation mandate holds on every executed path; no non-refusal response exists without verified citation metadata"
+}
